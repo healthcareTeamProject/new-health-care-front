@@ -1,7 +1,12 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'src/components/InputBox'
+import { ResponseDto } from 'src/apis/dto/response';
+import { IdCheckRequestDto } from 'src/apis/dto/request/auth';
+import { idCheckRequest, nicknameCheckRequest } from 'src/apis';
+import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
 
+// interface:  //
 interface SignUpFirstProps {
     onNext: () => void;
     name: string;
@@ -18,28 +23,6 @@ interface SignUpFirstProps {
     setTelNumber: (telNumber: string) => void;
     authNumber: string;
     setAuthNumber: (authNumber: string) => void;
-}
-
-interface SignUpSecondProps {
-    onPrevious: () => void;
-    profileImageFile: File | null;
-    setProfileImageFile: (file: File | null) => void;
-    height: string;
-    setHeight: (height: string) => void;
-    weight: string;
-    setWeight: (weight: string) => void;
-    skeletalMuscleMass: string;
-    setSkeletalMuscleMass: (skeletalMuscleMass: string) => void;
-    bodyFatMass: string;
-    setBodyFatMass: (bodyFatMass: string) => void;
-    deadlift: string;
-    setDeadlift: (deadlift: string) => void;
-    benchPress: string;
-    setBenchPress: (benchPress: string) => void;
-    squat: string;
-    setSquat: (squat: string) => void;
-    personalGoals: string;
-    setPersonalGoals: (personalGoals: string) => void;
 }
 
 function SignUpFirst({ 
@@ -81,6 +64,75 @@ function SignUpFirst({
     const isComplete = name && id && isCheckedId && nickname && isCheckedNickname && password && passwordCheck && isMatchedPassword && isCheckedPassword
     && telNumber && isSend && authNumber && isCheckedAuthNumber;
 
+    // function: 아이디 중복 확인 Response 처리 함수 //
+    const idCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DI' ? '이미 사용중인 아이디 입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 아이디 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setIdMessage(message);
+        setIdMessageError(!isSuccessed);
+        setCheckedId(isSuccessed);
+
+    }
+
+    // function: 아이디 중복 확인 Response 처리 함수 //
+    const nicknameCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DI' ? '이미 사용중인 닉네임 입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setNicknameMessage(message);
+        setNicknameMessageError(!isSuccessed);
+        setCheckedNickname(isSuccessed);
+
+    }
+
+    // function: 전화번호 인증 Response 처리 함수 //
+    const telAuthResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '숫자 11자 입력해주세요' : 
+            responseBody.code === 'DT' ? '중복된 전화번호 입니다' : 
+            responseBody.code === 'MSF' ? '인증번호 전송에 실패하였습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '인증번호가 전송되었습니다': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setTelNumberMessage(message);
+        setTelNumberMessageError(!isSuccessed);
+        setSend(isSuccessed);
+
+    }
+
+    // function: 전화번호 인증 확인 Response 처리 함수 //
+    const telAuthCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '인증번호가 확인되었습니다': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setAuthNumberMessage(message);
+        setAuthNumberMessageError(!isSuccessed);
+        setCheckedAuthNumber(isSuccessed);
+
+    }
+
     // event handler: 이름 변경 이벤트 처리 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
@@ -93,7 +145,6 @@ function SignUpFirst({
         setId(value);
         setCheckedId(false);
         setIdMessage('');
-        console.log(value);
 
         const pattern = /^[a-zA-Z0-9]*$/;
         if (!pattern.test(value) && value.length > 0) {
@@ -178,31 +229,44 @@ function SignUpFirst({
             return;
         }
 
-        if (id === 'qwer1234') {
-            setIdMessage('중복된 아이디입니다');
-            setIdMessageError(true);
-            setCheckedId(false);
-        } else {
-            setIdMessage('사용 가능한 아이디입니다');
-            setIdMessageError(false);
-            setCheckedId(true);
+        const requestBody: IdCheckRequestDto = {
+            userId: id
         }
+
+        idCheckRequest(requestBody).then(idCheckResponse);
+
+        // if (id === 'qwer1234') {
+        //     setIdMessage('중복된 아이디입니다');
+        //     setIdMessageError(true);
+        //     setCheckedId(false);
+        //     console.log('중복된 아이디입니다')
+        // } else {
+        //     setIdMessage('사용 가능한 아이디입니다');
+        //     setIdMessageError(false);
+        //     setCheckedId(true);
+        // }
 
     }
 
     // event handler: 닉네임 중복 확인 버튼 클릭 이벤트 처리 //
     const onNicknameCheckClickHandler = () => {
-        if (!id) return;
+        if (!nickname) return;
 
-        if (id === 'qwer1234') {
-            setNicknameMessage('중복된 닉네임입니다');
-            setNicknameMessageError(true);
-            setCheckedNickname(false);
-        } else {
-            setNicknameMessage('사용 가능한 닉네임입니다');
-            setNicknameMessageError(false);
-            setCheckedNickname(true);
+        const requestBody: NicknameCheckRequestDto = {
+            nickname: nickname
         }
+
+        nicknameCheckRequest(requestBody).then(nicknameCheckResponse);
+
+        // if (id === 'qwer1234') {
+        //     setNicknameMessage('중복된 닉네임입니다');
+        //     setNicknameMessageError(true);
+        //     setCheckedNickname(false);
+        // } else {
+        //     setNicknameMessage('사용 가능한 닉네임입니다');
+        //     setNicknameMessageError(false);
+        //     setCheckedNickname(true);
+        // }
 
     }
 
@@ -284,6 +348,29 @@ function SignUpFirst({
     );
 }
 
+// interface:  //
+interface SignUpSecondProps {
+    onPrevious: () => void;
+    profileImageFile: File | null;
+    setProfileImageFile: (file: File | null) => void;
+    height: string;
+    setHeight: (height: string) => void;
+    weight: string;
+    setWeight: (weight: string) => void;
+    skeletalMuscleMass: string;
+    setSkeletalMuscleMass: (skeletalMuscleMass: string) => void;
+    bodyFatMass: string;
+    setBodyFatMass: (bodyFatMass: string) => void;
+    deadlift: string;
+    setDeadlift: (deadlift: string) => void;
+    benchPress: string;
+    setBenchPress: (benchPress: string) => void;
+    squat: string;
+    setSquat: (squat: string) => void;
+    personalGoals: string;
+    setPersonalGoals: (personalGoals: string) => void;
+}
+
 // variable: 기본 프로필 이미지 URL //
 const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
 
@@ -313,10 +400,6 @@ function SignUpSecond({
     // state: 사용자 정보 메시지 에러 상태 //
     const [heightMessageError, setHeightMessageError] = useState<boolean>(false);
     const [weightMessageError, setWeightMessageError] = useState<boolean>(false);
-
-    // state: 입력값 검증 상태 //
-    const [isCheckedHeight, setCheckedHeight] = useState<boolean>(false);
-    const [isCheckedWeight, setCheckedWeight] = useState<boolean>(false);
 
     // variable: 다음페이지 이동 가능 여부 //
     const isComplete = height && weight;
