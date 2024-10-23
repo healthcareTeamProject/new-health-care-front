@@ -144,6 +144,13 @@
     width: 350px;
 }
 
+.sign-up-second {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+
 .main-home-button,
 .next-button,
 .previous-button,
@@ -183,3 +190,4 @@
 .signup-button {
     background-color: var(--gray-default-color)
 }
+
