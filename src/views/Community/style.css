@@ -1,0 +1,116 @@
+.categoryKing {
+    margin-top: 45px;
+    margin-left: 100px;
+    margin-right: 95px;
+}
+
+.category-search {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px gray;
+}
+
+.categories {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+.categories label {
+    font-weight: bold;
+}
+
+.category-button {
+    padding: 8px 16px;
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.search-bar button img {
+    width: 8px;
+    height: 8px;
+}
+
+#container {
+    width: 278.26px;
+    height: 32.29px;
+    position: relative;
+    display: flex;
+}
+
+#container input {
+    width: 100%;
+    border-radius: 5px;
+}
+
+#container button {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    right: 5px;
+    width: 18px;
+    height: 18px;
+}
+
+.popularTag {
+    margin-left: 100px;
+}
+
+.popularTags1 {
+    display: flex;
+    gap: 30px;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+.popularTags2 {
+    display: flex;
+    gap: 30px;
+    margin-left: 100px;
+    margin-right: 100px;
+}
+
+
+.popularTag-button1 {
+    width: 145px;
+    height: 30px;
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-bottom: 5px;
+    
+}
+
+.popularTag-button2 {
+    width: 145px;
+    height: 30px;
+    background-color: #f8f8f8;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    margin-top: 5px;
+}
+
+
+.board-table {
+    padding-top: 10px;
+    padding-right: 110px;
+    padding-left: 110px;
+    padding-bottom: 60px;
+    word-spacing: 20px;
+    line-height: 200%;
+    
+}
+
+.pagination {
+    display: flex;
+    justify-content: space-between;
+    gap: 31px;
+    margin-right: 648.94px;
+    margin-left: 648px;
+    margin-bottom: 45px;
+}
+

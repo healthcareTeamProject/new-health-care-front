@@ -1,0 +1,45 @@
+#main-layout{
+    display: flex; 
+}
+
+#layout-top-logo{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    width: 1920px;
+    height: 80px;
+    padding: 0 20px;
+
+    background-color: rgba(237, 230, 230, 0.25);
+    border-bottom: 1px solid rgba(216, 216, 216, 1);
+}
+
+#layout-top-logo .home-button,
+#layout-top-logo .board-button,
+#layout-top-logo .schedule-button,
+#layout-top-logo .mypage-button,
+#layout-top-logo .logout-button
+{
+    font-size: 20px;
+
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+#layout-top-logo .logo-box{
+    width: 200px;
+    height: 55px;
+
+    background-image: url('/public/images/logo.png');
+    background-size: 100% 100%;
+}
+
+.menu-box,
+.logout-mypage-box {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+
+    margin: 0 40px;
+}
