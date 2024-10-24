@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ResponseDto } from "./dto/response";
-import { IdCheckRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
+import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.dto";
 
 // variable: API URL 상수 //
@@ -62,6 +62,14 @@ export const telAuthRequest = async (requestBody: TelAuthRequestDto) => {
 // function: tel auth check 요청 함수 //
 export const telAuthCheckRequest = async (requestBody: TelAuthCheckRequestDto) => {
   const responseBody = await axios.post(TEL_AUTH_CHECK_API_URL, requestBody)
+      .then(responseDataHandler<ResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: sign up 요청 함수 //
+export const signUpRequest = async (requestBody: SignUpRequestDto) => {
+  const responseBody = await axios.post(SIGN_UP_API_URL, requestBody)
       .then(responseDataHandler<ResponseDto>)
       .catch(responseErrorHandler);
   return responseBody;
