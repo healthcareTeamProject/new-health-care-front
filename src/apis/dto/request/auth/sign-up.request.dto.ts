@@ -8,13 +8,7 @@ export default interface SignUpRequestDto {
   authNumber: string;
   joinPath: string;
   snsId?: string | null;
-  weight: string;
   height: string;
-  skeletalMuscleMass?: string | null;
-  bodyFatMass?: string | null;
-  deadlift?: string | null;
-  benchPress?: string | null;
-  squat?: string | null;
   profileImage?: string | null;
   personalGoals?: string | null;
 }
