@@ -1,7 +1,13 @@
 import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import InputBox from 'src/components/InputBox'
+import { ResponseDto } from 'src/apis/dto/response';
+import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from 'src/apis/dto/request/auth';
+import { idCheckRequest, nicknameCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
+import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
+import { useSearchParams } from 'react-router-dom';
 
+// interface:  //
 interface SignUpFirstProps {
     onNext: () => void;
     name: string;
@@ -18,28 +24,6 @@ interface SignUpFirstProps {
     setTelNumber: (telNumber: string) => void;
     authNumber: string;
     setAuthNumber: (authNumber: string) => void;
-}
-
-interface SignUpSecondProps {
-    onPrevious: () => void;
-    profileImageFile: File | null;
-    setProfileImageFile: (file: File | null) => void;
-    height: string;
-    setHeight: (height: string) => void;
-    weight: string;
-    setWeight: (weight: string) => void;
-    skeletalMuscleMass: string;
-    setSkeletalMuscleMass: (skeletalMuscleMass: string) => void;
-    bodyFatMass: string;
-    setBodyFatMass: (bodyFatMass: string) => void;
-    deadlift: string;
-    setDeadlift: (deadlift: string) => void;
-    benchPress: string;
-    setBenchPress: (benchPress: string) => void;
-    squat: string;
-    setSquat: (squat: string) => void;
-    personalGoals: string;
-    setPersonalGoals: (personalGoals: string) => void;
 }
 
 function SignUpFirst({ 
@@ -78,8 +62,79 @@ function SignUpFirst({
     const [isCheckedAuthNumber, setCheckedAuthNumber] = useState<boolean>(false);
 
     // variable: 다음페이지 이동 가능 여부 //
-    const isComplete = name && id && isCheckedId && nickname && isCheckedNickname && password && passwordCheck && isMatchedPassword && isCheckedPassword
-    && telNumber && isSend && authNumber && isCheckedAuthNumber;
+    // const isComplete = name && id && isCheckedId && nickname && isCheckedNickname && password && passwordCheck && isMatchedPassword && isCheckedPassword
+    // && telNumber && isSend && authNumber && isCheckedAuthNumber;
+
+    const isComplete = true;
+
+    // function: 아이디 중복 확인 Response 처리 함수 //
+    const idCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DI' ? '이미 사용중인 아이디 입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 아이디 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setIdMessage(message);
+        setIdMessageError(!isSuccessed);
+        setCheckedId(isSuccessed);
+
+    }
+
+    // function: 아이디 중복 확인 Response 처리 함수 //
+    const nicknameCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DI' ? '이미 사용중인 닉네임 입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setNicknameMessage(message);
+        setNicknameMessageError(!isSuccessed);
+        setCheckedNickname(isSuccessed);
+
+    }
+
+    // function: 전화번호 인증 Response 처리 함수 //
+    const telAuthResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '숫자 11자 입력해주세요' : 
+            responseBody.code === 'DT' ? '중복된 전화번호 입니다' : 
+            responseBody.code === 'MSF' ? '인증번호 전송에 실패하였습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '인증번호가 전송되었습니다': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setTelNumberMessage(message);
+        setTelNumberMessageError(!isSuccessed);
+        setSend(isSuccessed);
+
+    }
+
+    // function: 전화번호 인증 확인 Response 처리 함수 //
+    const telAuthCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '인증번호가 확인되었습니다': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setAuthNumberMessage(message);
+        setAuthNumberMessageError(!isSuccessed);
+        setCheckedAuthNumber(isSuccessed);
+
+    }
 
     // event handler: 이름 변경 이벤트 처리 //
     const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -93,7 +148,6 @@ function SignUpFirst({
         setId(value);
         setCheckedId(false);
         setIdMessage('');
-        console.log(value);
 
         const pattern = /^[a-zA-Z0-9]*$/;
         if (!pattern.test(value) && value.length > 0) {
@@ -102,7 +156,6 @@ function SignUpFirst({
             return;
         }
 
-        setIdMessageError(false);
     };
 
     // event handler: 닉네임 변경 이벤트 처리 //
@@ -178,31 +231,44 @@ function SignUpFirst({
             return;
         }
 
-        if (id === 'qwer1234') {
-            setIdMessage('중복된 아이디입니다');
-            setIdMessageError(true);
-            setCheckedId(false);
-        } else {
-            setIdMessage('사용 가능한 아이디입니다');
-            setIdMessageError(false);
-            setCheckedId(true);
+        const requestBody: IdCheckRequestDto = {
+            userId: id
         }
+
+        idCheckRequest(requestBody).then(idCheckResponse);
+
+        // if (id === 'qwer1234') {
+        //     setIdMessage('중복된 아이디입니다');
+        //     setIdMessageError(true);
+        //     setCheckedId(false);
+        //     console.log('중복된 아이디입니다')
+        // } else {
+        //     setIdMessage('사용 가능한 아이디입니다');
+        //     setIdMessageError(false);
+        //     setCheckedId(true);
+        // }
 
     }
 
     // event handler: 닉네임 중복 확인 버튼 클릭 이벤트 처리 //
     const onNicknameCheckClickHandler = () => {
-        if (!id) return;
+        if (!nickname) return;
 
-        if (id === 'qwer1234') {
-            setNicknameMessage('중복된 닉네임입니다');
-            setNicknameMessageError(true);
-            setCheckedNickname(false);
-        } else {
-            setNicknameMessage('사용 가능한 닉네임입니다');
-            setNicknameMessageError(false);
-            setCheckedNickname(true);
+        const requestBody: NicknameCheckRequestDto = {
+            nickname: nickname
         }
+
+        nicknameCheckRequest(requestBody).then(nicknameCheckResponse);
+
+        // if (id === 'qwer1234') {
+        //     setNicknameMessage('중복된 닉네임입니다');
+        //     setNicknameMessageError(true);
+        //     setCheckedNickname(false);
+        // } else {
+        //     setNicknameMessage('사용 가능한 닉네임입니다');
+        //     setNicknameMessageError(false);
+        //     setCheckedNickname(true);
+        // }
 
     }
 
@@ -219,6 +285,10 @@ function SignUpFirst({
             return;
         }
 
+        const requestBody: TelAuthRequestDto = { telNumber }
+
+        telAuthRequest(requestBody).then(telAuthResponse);
+
         setTelNumberMessage('인증번호가 전송되었습니다');
         setSend(true);
 
@@ -227,6 +297,10 @@ function SignUpFirst({
     // event handler: 인증 확인 버튼 클릭 이벤트 처리 //
     const onAuthNumberCheckClickHandler = () => {
         if (!authNumber) return;
+
+        const requestBody: TelAuthCheckRequestDto = { telNumber, authNumber }
+
+        telAuthCheckRequest(requestBody).then(telAuthCheckResponse);
 
         if (authNumber === '1234') {
             setAuthNumberMessage('인증번호가 일치합니다');
@@ -284,11 +358,32 @@ function SignUpFirst({
     );
 }
 
+// interface:  //
+interface SignUpSecondProps {
+    profileImageFile: File | null;
+    setProfileImageFile: (file: File | null) => void;
+    height: string;
+    setHeight: (height: string) => void;
+    weight: string;
+    setWeight: (weight: string) => void;
+    skeletalMuscleMass: string;
+    setSkeletalMuscleMass: (skeletalMuscleMass: string) => void;
+    bodyFatMass: string;
+    setBodyFatMass: (bodyFatMass: string) => void;
+    deadlift: string;
+    setDeadlift: (deadlift: string) => void;
+    benchPress: string;
+    setBenchPress: (benchPress: string) => void;
+    squat: string;
+    setSquat: (squat: string) => void;
+    personalGoals: string;
+    setPersonalGoals: (personalGoals: string) => void;
+}
+
 // variable: 기본 프로필 이미지 URL //
 const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
 
-function SignUpSecond({ 
-    onPrevious,
+function SignUpSecond({
     profileImageFile, setProfileImageFile,
     height, setHeight,
     weight, setWeight,
@@ -307,19 +402,12 @@ function SignUpSecond({
     const [previewUrl, setPreviewUrl] = useState<string>(defaultProfileImageUrl);
 
     // state: 사용자 입력 메시지 상태 //
-    const [heightMessage, setHeightMessage] = useState<string>('');
-    const [weightMessage, setWeightMessage] = useState<string>('');
+    const [heightMessage, setHeightMessage] = useState<string>('키를 입력해주세요');
+    const [weightMessage, setWeightMessage] = useState<string>('몸무게를 입력해주세요');
 
     // state: 사용자 정보 메시지 에러 상태 //
-    const [heightMessageError, setHeightMessageError] = useState<boolean>(false);
-    const [weightMessageError, setWeightMessageError] = useState<boolean>(false);
-
-    // state: 입력값 검증 상태 //
-    const [isCheckedHeight, setCheckedHeight] = useState<boolean>(false);
-    const [isCheckedWeight, setCheckedWeight] = useState<boolean>(false);
-
-    // variable: 다음페이지 이동 가능 여부 //
-    const isComplete = height && weight;
+    const [heightMessageError, setHeightMessageError] = useState<boolean>(true);
+    const [weightMessageError, setWeightMessageError] = useState<boolean>(true);
 
     // event handler: 프로필 이미지 클릭 이벤트 처리 //
     const onProfileImageClickHandler = () => {
@@ -349,14 +437,12 @@ function SignUpSecond({
         const pattern = /^\d*\.?\d*$/;
         const isMatched = pattern.test(value);
 
-        if (pattern.test(value)) {
+        if (isMatched) {
             setHeight(value);
         }
 
-        const message = (!value) ? '키를 입력해주세요' : '';
-
+        const message = (!value || !isMatched) ? '키를 입력해주세요' : '';
         setHeightMessage(message);
-        setHeightMessageError(isMatched);
     };
 
     // event handler: 몸무게 변경 이벤트 처리 //
@@ -365,14 +451,12 @@ function SignUpSecond({
         const pattern = /^\d*\.?\d*$/;
         const isMatched = pattern.test(value);
 
-        if (pattern.test(value)) {
+        if (isMatched) {
             setWeight(value);
         }
 
-        const message = (!value) ? '몸무게를 입력해주세요' : '';
-
+        const message = (!value || !isMatched) ? '몸무게를 입력해주세요' : '';
         setWeightMessage(message);
-        setWeightMessageError(isMatched);
     };
 
     // event handler: 골격근량 변경 이벤트 처리 //
@@ -459,24 +543,19 @@ function SignUpSecond({
                     <input className='user-goal' value={personalGoals} placeholder='개인 목표를 입력해 주세요' onChange={onNameChangeHandler} />
                 </div>
             </div>
-            <div className='button-box'>
-                <div className='previous-button' onClick={onPrevious}>이전 페이지</div>
-                <div className={`signup-button ${!isComplete ? 'disabled' : ''}`} 
-                    onClick={() => {
-                        if (isComplete) {
-                            alert('회원가입');
-                        }
-                    }}
-                >회원가입
-                </div>
-            </div>
         </div>
     );
 }
 
 export default function SignUp() {
+
     // state: 페이지 전환 상태 //
     const [signUpPage, setSignUpPage] = useState(true);
+
+    // state: Query Parameter 상태 //
+    const [queryParam] = useSearchParams();
+    const snsId = queryParam.get('snsId');
+    const joinPath = queryParam.get('joinPath');
 
     // state: 사용자 입력 정보 상태 //
     const [name, setName] = useState<string>('');
@@ -496,10 +575,73 @@ export default function SignUp() {
     const [squat, setSquat] = useState<string>('');
     const [personalGoals, setPersonalGoals] = useState<string>('');
 
+    // variable: 회원가입 가능 여부 //
+    const isComplete = name && id && nickname && password && passwordCheck && telNumber && authNumber &&
+        height && weight;
+
+    // function: 회원가입 Response 처리 함수 //
+    const signUpResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DI' ? '중복된 아이디 입니다' : 
+            responseBody.code === 'DT' ? '중복된 전화번호 입니다' : 
+            responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+
+    }
+
     // event handler: 회원가입 페이지 전환 핸들러 //
     const onSignUpPageChangeHandler = () => {
         setSignUpPage(prev => !prev);
     };
+
+    // event handler: 회원가입 버튼 클릭 이벤트 처리 //
+    const onSignUpButtonHandler = () => {
+        if (!isComplete) return;
+
+        const requestBody: SignUpRequestDto = {
+            name,
+            userId: id,
+            password,
+            telNumber,
+            authNumber,
+            joinPath: joinPath ? joinPath : 'home',
+            snsId
+        }
+
+        signUpRequest(requestBody).then(signUpResponse);
+
+    }
+
+    // // event handler: 등록 버튼 클릭 이벤트 처리 //
+    // const onPostClickHandler = async () => {
+    //     if (!name || !birth || !charger || !location) return;
+
+
+    //     let url: string | null = null;
+    //     if (profileImageFile) {
+    //         const formData = new FormData();
+    //         formData.append('file', profileImageFile);
+    //         url = await fileUploadRequest(formData);
+    //     }
+    //     url = url ? url : defaultProfileImageUrl;
+
+    //     const requestBody: PostCustomerRequestDto = {
+    //         profileImage: url,
+    //         name, birth, charger, address, location
+    //     }
+    //     postCustomerRequest(requestBody, accessToken).then(postCustomerResponse);
+
+    // }
 
     // render: 회원가입 컴포넌트 렌더딩 //
     return (
@@ -507,7 +649,7 @@ export default function SignUp() {
             <div id='su-main'>
                 <div className='sign-up-contain'>
                     <div className='sign-up-title'>회원가입</div>
-                    
+
                     {signUpPage ? 
                         (<SignUpFirst 
                             onNext={onSignUpPageChangeHandler} 
@@ -519,19 +661,32 @@ export default function SignUp() {
                             telNumber={telNumber} setTelNumber={setTelNumber}
                             authNumber={authNumber} setAuthNumber={setAuthNumber}
                         />) : 
-                        (<SignUpSecond 
-                            onPrevious={onSignUpPageChangeHandler} 
-                            profileImageFile={profileImageFile} setProfileImageFile={setProfileImageFile} 
-                            height={height} setHeight={setHeight} 
-                            weight={weight} setWeight={setWeight} 
-                            skeletalMuscleMass={skeletalMuscleMass} setSkeletalMuscleMass={setSkeletalMuscleMass} 
-                            bodyFatMass={bodyFatMass} setBodyFatMass={setBodyFatMass} 
-                            deadlift={deadlift} setDeadlift={setDeadlift} 
-                            benchPress={benchPress} setBenchPress={setBenchPress} 
-                            squat={squat} setSquat={setSquat} 
-                            personalGoals={personalGoals} setPersonalGoals={setPersonalGoals}
-                        />)
+                        (<div className='sign-up-second'>
+                            <SignUpSecond
+                                profileImageFile={profileImageFile} setProfileImageFile={setProfileImageFile} 
+                                height={height} setHeight={setHeight} 
+                                weight={weight} setWeight={setWeight} 
+                                skeletalMuscleMass={skeletalMuscleMass} setSkeletalMuscleMass={setSkeletalMuscleMass} 
+                                bodyFatMass={bodyFatMass} setBodyFatMass={setBodyFatMass} 
+                                deadlift={deadlift} setDeadlift={setDeadlift} 
+                                benchPress={benchPress} setBenchPress={setBenchPress} 
+                                squat={squat} setSquat={setSquat} 
+                                personalGoals={personalGoals} setPersonalGoals={setPersonalGoals}
+                            />
+                            <div className='button-box'>
+                                <div className='previous-button' onClick={onSignUpPageChangeHandler}>이전 페이지</div>
+                                <div className={`signup-button ${!isComplete ? 'disabled' : ''}`} 
+                                    onClick={() => {
+                                        if (isComplete) {
+                                            alert('회원가입');
+                                        }
+                                    }}
+                                >회원가입
+                                </div>
+                            </div>
+                        </div>)
                     }
+
                 </div>
             </div>
         </div>
