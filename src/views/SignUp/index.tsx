@@ -3,9 +3,10 @@ import './style.css'
 import InputBox from 'src/components/InputBox'
 import { ResponseDto } from 'src/apis/dto/response';
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from 'src/apis/dto/request/auth';
-import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
+import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, postThreeMajorLiftRequest, postUserMuscleFatRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
 import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
 import { useSearchParams } from 'react-router-dom';
+import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
 
 // interface:  //
 interface SignUpFirstProps {
@@ -606,9 +607,38 @@ export default function SignUp() {
     }
 
     // event handler: 회원가입 버튼 클릭 이벤트 처리 //
+    // const onSignUpButtonHandler = async () => {
+    //     if (!isComplete) return;
+
+    //     let url: string | null = null;
+    //     if (profileImageFile) {
+    //         const formData = new FormData();
+    //         formData.append('file', profileImageFile);
+    //         url = await fileUploadRequest(formData);
+    //     }
+    //     url = url ? url : defaultProfileImageUrl;
+
+    //     const requestBody: SignUpRequestDto = {
+    //         name,
+    //         userId: id,
+    //         nickname,
+    //         password,
+    //         telNumber,
+    //         authNumber,
+    //         joinPath: joinPath ? joinPath : 'home',
+    //         snsId,
+    //         height,
+    //         profileImage: url,
+    //         personalGoals
+    //     }
+
+    //     signUpRequest(requestBody).then(signUpResponse);
+
+    // }
+
     const onSignUpButtonHandler = async () => {
         if (!isComplete) return;
-
+    
         let url: string | null = null;
         if (profileImageFile) {
             const formData = new FormData();
@@ -616,7 +646,7 @@ export default function SignUp() {
             url = await fileUploadRequest(formData);
         }
         url = url ? url : defaultProfileImageUrl;
-
+    
         const requestBody: SignUpRequestDto = {
             name,
             userId: id,
@@ -626,20 +656,36 @@ export default function SignUp() {
             authNumber,
             joinPath: joinPath ? joinPath : 'home',
             snsId,
-            weight,
             height,
-            skeletalMuscleMass,
-            bodyFatMass,
-            deadlift,
-            benchPress,
-            squat,
             profileImage: url,
             personalGoals
+        };
+    
+        // 회원가입 요청
+        const signUpResponseBody = await signUpRequest(requestBody);
+        signUpResponse(signUpResponseBody);
+    
+        // 회원가입 성공 후 신체 정보 및 운동 정보 등록
+        if (signUpResponseBody && signUpResponseBody.code === 'SU') {
+            const muscleFatRequestBody: PostUserMuscleFatRequestDto = {
+                userId: id,
+                weight: weight, // 사용자로부터 입력받은 무게
+                skeletalMuscleMass: skeletalMuscleMass, // 선택 사항
+                bodyFatMass: bodyFatMass // 선택 사항
+            };
+    
+            await postUserMuscleFatRequest(muscleFatRequestBody);
+    
+            const threeMajorLiftRequestBody: PostThreeMajorLiftRequestDto = {
+                userId: id,
+                deadlift: deadlift, // 사용자로부터 입력받은 데드리프트
+                benchPress: benchPress, // 사용자로부터 입력받은 벤치프레스
+                squat: squat // 사용자로부터 입력받은 스쿼트
+            };
+    
+            await postThreeMajorLiftRequest(threeMajorLiftRequestBody);
         }
-
-        signUpRequest(requestBody).then(signUpResponse);
-
-    }
+    };
 
     // render: 회원가입 컴포넌트 렌더딩 //
     return (
