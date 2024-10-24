@@ -5,6 +5,7 @@ import Pagination from 'src/components/Pagination';
 import { usePagination } from 'src/hooks';
 import { Board } from 'src/types';
 import { useLocation } from 'react-router';
+import CommunityBoard from 'src/components/Post';
 
 // 카테고리 컴포넌트
 
@@ -114,8 +115,8 @@ export default function Community() {
                 <CategoryPopularTag />
                 <div>
                     <tbody>
-                        {boardData.map((item) => (
-                            <tr key={item.id}>
+                        {boardData.map((item, index) => (
+                            <tr key={index}>
                                 <td>{item.id}</td>
                                 <td>{item.title}</td>
                                 <td>{item.author}</td>
@@ -130,6 +131,7 @@ export default function Community() {
                 <Pagination currentPage={currentPage} {...paginationProps} />
                 <button className="post-on">글쓰기</button>
             </div>
+            <CommunityBoard />
         </div>
     );
 }
