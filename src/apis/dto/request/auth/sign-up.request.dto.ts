@@ -16,5 +16,5 @@ export default interface SignUpRequestDto {
   benchPress?: string | null;
   squat?: string | null;
   profileImage?: string | null;
-  personalGoal?: string | null;
+  personalGoals?: string | null;
 }

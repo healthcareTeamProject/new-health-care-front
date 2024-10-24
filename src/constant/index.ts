@@ -7,6 +7,8 @@ export const USER_MYPAGE_DETAIL_PATH = (userId: string) => `/user/${userId}`;
 
 export const AUTH_PATH = '/auth';
 
+export const SIGN_UP_PATH = '/sign-up';
+
 export const BOARD_LIST_PATH = '/board';
 export const BOARD_DETAIL_PATH = (boardNumber: number | string) => `/board/detail/${boardNumber}`;
 export const BOARD_UPDATE_PATH =  (boardNumber: number | string) => `/board/detail/${boardNumber}/update`;
@@ -25,6 +27,8 @@ export const MAIN_ABSOLUTE_PATH = MAIN_PATH;
 export const MAIN_MYPAGE_DETAIL_ABSOLUTE_PATH = (userId: string) => `${MAIN_PATH}/${USER_MYPAGE_DETAIL_PATH(userId)}`;
 
 export const AUTH_ABSOLUTE_PATH = AUTH_PATH;
+
+export const SIGN_UP_ABSOLUTE_PATH = SIGN_UP_PATH;
 
 export const BOARD_LIST_ABSOLUTE_PATH = BOARD_LIST_PATH;
 export const BOARD_DETAIL_ABSOLUTE_PATH = (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_DETAIL_PATH(boardNumber)}`;

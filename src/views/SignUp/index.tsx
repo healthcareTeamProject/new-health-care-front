@@ -3,7 +3,7 @@ import './style.css'
 import InputBox from 'src/components/InputBox'
 import { ResponseDto } from 'src/apis/dto/response';
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from 'src/apis/dto/request/auth';
-import { idCheckRequest, nicknameCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
+import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
 import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
 import { useSearchParams } from 'react-router-dom';
 
@@ -327,13 +327,6 @@ function SignUpFirst({
     // render: 회원가입 화면1 컴포넌트 렌더딩 //
     return (
         <div className='auth-box'>
-            <div className='sns-box'>
-                <div className='sns-title'>sns 간편 로그인</div>
-                <div className='icon-box'>
-                    <div>카카오</div>
-                    <div>네이버</div>
-                </div>
-            </div>
             <div className="input-container">
                 <InputBox label='이름' type='text' placeholder='이름을 입력해주세요' value={name} onChange={onNameChangeHandler} />
                 <InputBox label='아이디' type='text' placeholder='아이디를 입력해주세요' value={id} messageError={idMessageError} message={idMessage} buttonName='중복 확인' onChange={onIdChangeHandler} onButtonClick={onIdCheckClickHandler} />
@@ -575,6 +568,9 @@ export default function SignUp() {
     const [squat, setSquat] = useState<string>('');
     const [personalGoals, setPersonalGoals] = useState<string>('');
 
+    // variable: SNS 회원가입 여부 //
+    const isSnsSignUp = snsId !== null && joinPath !== null;
+
     // variable: 회원가입 가능 여부 //
     const isComplete = name && id && nickname && password && passwordCheck && telNumber && authNumber &&
         height && weight;
@@ -586,6 +582,7 @@ export default function SignUp() {
             !responseBody ? '서버에 문제가 있습니다' : 
             responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
             responseBody.code === 'DI' ? '중복된 아이디 입니다' : 
+            responseBody.code === 'DN' ? '중복된 닉네임 입니다' : 
             responseBody.code === 'DT' ? '중복된 전화번호 입니다' : 
             responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다' : 
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
@@ -596,7 +593,6 @@ export default function SignUp() {
             return;
         }
 
-
     }
 
     // event handler: 회원가입 페이지 전환 핸들러 //
@@ -604,44 +600,46 @@ export default function SignUp() {
         setSignUpPage(prev => !prev);
     };
 
+    // event handler: SNS 버튼 클릭 이벤트 처리 //
+    const onSnsButtonClickHandler = (sns: 'kakao' | 'naver') => {
+        window.location.href = `http://localhost:4000/api/v1/auth/sns-sign-in/${sns}`;
+    }
+
     // event handler: 회원가입 버튼 클릭 이벤트 처리 //
-    const onSignUpButtonHandler = () => {
+    const onSignUpButtonHandler = async () => {
         if (!isComplete) return;
+
+        let url: string | null = null;
+        if (profileImageFile) {
+            const formData = new FormData();
+            formData.append('file', profileImageFile);
+            url = await fileUploadRequest(formData);
+        }
+        url = url ? url : defaultProfileImageUrl;
 
         const requestBody: SignUpRequestDto = {
             name,
             userId: id,
+            nickname,
             password,
             telNumber,
             authNumber,
             joinPath: joinPath ? joinPath : 'home',
-            snsId
+            snsId,
+            weight,
+            height,
+            skeletalMuscleMass,
+            bodyFatMass,
+            deadlift,
+            benchPress,
+            squat,
+            profileImage: url,
+            personalGoals
         }
 
         signUpRequest(requestBody).then(signUpResponse);
 
     }
-
-    // // event handler: 등록 버튼 클릭 이벤트 처리 //
-    // const onPostClickHandler = async () => {
-    //     if (!name || !birth || !charger || !location) return;
-
-
-    //     let url: string | null = null;
-    //     if (profileImageFile) {
-    //         const formData = new FormData();
-    //         formData.append('file', profileImageFile);
-    //         url = await fileUploadRequest(formData);
-    //     }
-    //     url = url ? url : defaultProfileImageUrl;
-
-    //     const requestBody: PostCustomerRequestDto = {
-    //         profileImage: url,
-    //         name, birth, charger, address, location
-    //     }
-    //     postCustomerRequest(requestBody, accessToken).then(postCustomerResponse);
-
-    // }
 
     // render: 회원가입 컴포넌트 렌더딩 //
     return (
@@ -651,16 +649,35 @@ export default function SignUp() {
                     <div className='sign-up-title'>회원가입</div>
 
                     {signUpPage ? 
-                        (<SignUpFirst 
-                            onNext={onSignUpPageChangeHandler} 
-                            name={name} setName={setName} 
-                            id={id} setId={setId} 
-                            nickname={nickname} setNickname={setNickname}
-                            password={password} setPassword={setPassword}
-                            passwordCheck={passwordCheck} setPasswordCheck={setPasswordCheck}
-                            telNumber={telNumber} setTelNumber={setTelNumber}
-                            authNumber={authNumber} setAuthNumber={setAuthNumber}
-                        />) : 
+                        (
+                        <div className='sign-up-first'>
+                            <div className='sns-box'>
+                                <div className='sns-title'>sns 간편 로그인</div>
+                                <div className='icon-box'>
+                                    <div>카카오</div>
+                                    <div>네이버</div>
+                                </div>
+                            </div>
+
+                            {/* <div className="sns-container">
+                                <div className="title">sns 간편 회원가입</div>
+                                <div className="sns-button-container">
+                                    <div className={`sns-button ${type === '회원가입' ? 'md ' : ''}kakao`} onClick={() => onSnsButtonClickHandler('kakao')}></div>
+                                    <div className={`sns-button ${type === '회원가입' ? 'md ' : ''}naver`} onClick={() => onSnsButtonClickHandler('naver')}></div>
+                                </div>
+                            </div> */}
+
+                            <SignUpFirst 
+                                onNext={onSignUpPageChangeHandler} 
+                                name={name} setName={setName} 
+                                id={id} setId={setId} 
+                                nickname={nickname} setNickname={setNickname}
+                                password={password} setPassword={setPassword}
+                                passwordCheck={passwordCheck} setPasswordCheck={setPasswordCheck}
+                                telNumber={telNumber} setTelNumber={setTelNumber}
+                                authNumber={authNumber} setAuthNumber={setAuthNumber}
+                            />
+                        </div>) : 
                         (<div className='sign-up-second'>
                             <SignUpSecond
                                 profileImageFile={profileImageFile} setProfileImageFile={setProfileImageFile} 
@@ -676,11 +693,7 @@ export default function SignUp() {
                             <div className='button-box'>
                                 <div className='previous-button' onClick={onSignUpPageChangeHandler}>이전 페이지</div>
                                 <div className={`signup-button ${!isComplete ? 'disabled' : ''}`} 
-                                    onClick={() => {
-                                        if (isComplete) {
-                                            alert('회원가입');
-                                        }
-                                    }}
+                                    onClick={onSignUpButtonHandler}
                                 >회원가입
                                 </div>
                             </div>
