@@ -7,7 +7,8 @@
     justify-content: space-between;
     align-items: center;
 
-    width: 1920px;
+    width: 100%;
+    min-width: 1920px;
     height: 80px;
     padding: 0 20px;
 

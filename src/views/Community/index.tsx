@@ -12,7 +12,6 @@ function Category () {
 
     return (
         <>
-        <TopBar />
         <div className="categoryKing">
             <label className='category'>카테고리</label>
             <div className='category-search'>
