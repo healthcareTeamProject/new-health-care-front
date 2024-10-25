@@ -11,6 +11,7 @@ import { signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
+import CommunityBoard from 'src/components/Post';
 
 
 
