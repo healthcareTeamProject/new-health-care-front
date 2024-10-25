@@ -8,7 +8,6 @@ import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.re
 import { useSearchParams } from 'react-router-dom';
 import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
 
-// interface:  //
 interface SignUpFirstProps {
     onNext: () => void;
     name: string;
@@ -27,6 +26,7 @@ interface SignUpFirstProps {
     setAuthNumber: (authNumber: string) => void;
 }
 
+// component: 회원가입 화면1 컴포넌트 //
 function SignUpFirst({ 
     onNext, 
     name, setName, 
@@ -63,10 +63,9 @@ function SignUpFirst({
     const [isCheckedAuthNumber, setCheckedAuthNumber] = useState<boolean>(false);
 
     // variable: 다음페이지 이동 가능 여부 //
-    // const isComplete = name && id && isCheckedId && nickname && isCheckedNickname && password && passwordCheck && isMatchedPassword && isCheckedPassword
-    // && telNumber && isSend && authNumber && isCheckedAuthNumber;
+    const isComplete = name && id && isCheckedId && nickname && isCheckedNickname && password && passwordCheck && isMatchedPassword && isCheckedPassword
+    && telNumber && isSend && authNumber && isCheckedAuthNumber;
 
-    const isComplete = true;
 
     // function: 아이디 중복 확인 Response 처리 함수 //
     const idCheckResponse = (responseBody: ResponseDto | null) => {
@@ -238,17 +237,6 @@ function SignUpFirst({
 
         idCheckRequest(requestBody).then(idCheckResponse);
 
-        // if (id === 'qwer1234') {
-        //     setIdMessage('중복된 아이디입니다');
-        //     setIdMessageError(true);
-        //     setCheckedId(false);
-        //     console.log('중복된 아이디입니다')
-        // } else {
-        //     setIdMessage('사용 가능한 아이디입니다');
-        //     setIdMessageError(false);
-        //     setCheckedId(true);
-        // }
-
     }
 
     // event handler: 닉네임 중복 확인 버튼 클릭 이벤트 처리 //
@@ -260,16 +248,6 @@ function SignUpFirst({
         }
 
         nicknameCheckRequest(requestBody).then(nicknameCheckResponse);
-
-        // if (id === 'qwer1234') {
-        //     setNicknameMessage('중복된 닉네임입니다');
-        //     setNicknameMessageError(true);
-        //     setCheckedNickname(false);
-        // } else {
-        //     setNicknameMessage('사용 가능한 닉네임입니다');
-        //     setNicknameMessageError(false);
-        //     setCheckedNickname(true);
-        // }
 
     }
 
@@ -352,7 +330,6 @@ function SignUpFirst({
     );
 }
 
-// interface:  //
 interface SignUpSecondProps {
     profileImageFile: File | null;
     setProfileImageFile: (file: File | null) => void;
@@ -541,6 +518,7 @@ function SignUpSecond({
     );
 }
 
+// component: 회원가입 컴포넌트 //
 export default function SignUp() {
 
     // state: 페이지 전환 상태 //
@@ -596,6 +574,7 @@ export default function SignUp() {
 
     }
 
+    // function: 신체정보 Response 처리 함수 //
     const userMuscleFatResponse = (responseBody: ResponseDto | null) => {
 
         const message = 
@@ -611,6 +590,7 @@ export default function SignUp() {
 
     }
 
+    // function: 3대측정 Response 처리 함수 //
     const threeMajorLiftResponse = (responseBody: ResponseDto | null) => {
 
         const message = 
@@ -630,68 +610,6 @@ export default function SignUp() {
     const onSignUpPageChangeHandler = () => {
         setSignUpPage(prev => !prev);
     };
-
-    // event handler: SNS 버튼 클릭 이벤트 처리 //
-    const onSnsButtonClickHandler = (sns: 'kakao' | 'naver') => {
-        window.location.href = `http://localhost:4000/api/v1/auth/sns-sign-in/${sns}`;
-    }
-
-    // // event handler: 회원가입 버튼 클릭 이벤트 처리 //
-    // const onSignUpButtonHandler = async () => {
-    //     if (!isComplete) return;
-
-    //     let url: string | null = null;
-    //     if (profileImageFile) {
-    //         const formData = new FormData();
-    //         formData.append('file', profileImageFile);
-    //         url = await fileUploadRequest(formData);
-    //     }
-    //     url = url ? url : defaultProfileImageUrl;
-
-    //     const requestBody: SignUpRequestDto = {
-    //         name,
-    //         userId: id,
-    //         nickname,
-    //         password,
-    //         telNumber,
-    //         authNumber,
-    //         joinPath: joinPath ? joinPath : 'home',
-    //         snsId,
-    //         profileImage: url,
-    //         personalGoals,
-    //         height,
-    //     }
-
-    //     signUpRequest(requestBody).then(signUpResponse);
-
-    // }
-
-    // const onSignUpUserMuscleFatButtonHandler = () => {
-    //     if (!isComplete) return;
-
-    //     const requsetBody: PostUserMuscleFatRequestDto = {
-    //         userId: id,
-    //         weight,
-    //         bodyFatMass,
-    //         skeletalMuscleMass
-    //     }
-
-    //     postUserMuscleFatRequest(requsetBody).then(userMuscleFatResponse)
-
-    // }
-
-    // const onSignUpThreeMajorLiftButtonHandler = () => {
-    //     if (!isComplete) return;
-    
-    //     const requestBody: PostThreeMajorLiftRequestDto = {
-    //         userId: id, // 사용자 ID
-    //         deadlift, // 사용자 입력 (데드리프트)
-    //         benchPress, // 사용자 입력 (벤치프레스)
-    //         squat, // 사용자 입력 (스쿼트)
-    //     };
-    
-    //     postThreeMajorLiftRequest(requestBody).then(threeMajorLiftResponse);
-    // };
 
     // event handler: 회원가입 버튼 클릭 이벤트 처리 //
     const onSignUpButtonHandler = async () => {
