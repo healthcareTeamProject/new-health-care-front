@@ -110,7 +110,6 @@ export default function Community() {
 
     return (
         <div id='cm-wrapper'>
-            <Topbar />
             <div className='top'>
                 <CategoryPopularTag />
                 <div>
