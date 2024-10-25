@@ -1,7 +1,7 @@
 import React from 'react'
 import './style.css'
 import TopBar from 'src/layouts/Topbar'
-import CommunityBoard from 'src/components/Post'
+import CommunityBoard from 'src/components/Board'
 
 export default function Main() {
     return (

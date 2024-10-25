@@ -2,14 +2,6 @@ import React from 'react';
 import { Board } from 'src/types';
 import './style.css'
 
-interface Post {
-    id: number;
-    title: string;
-    author: string;
-    date: string;
-    views: number;
-};
-
 const posts: Board[] = [
     { boardNumber: 187, boardTitle: '턱걸이 어꺠 뚜둑 소리', nickname: '마라닭가슴살', boardUploadDate: '2024-10-11 17:15', boardViewCount: 826 },
     { boardNumber: 187, boardTitle: '턱걸이 어꺠 뚜둑 소리', nickname: '마라닭가슴살', boardUploadDate: '2024-10-11 17:15', boardViewCount: 826 },
