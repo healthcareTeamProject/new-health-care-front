@@ -13,6 +13,7 @@ import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
 
 
+
 // component: 로그인 입력 컴포넌트 //
 function LoginContainer(){
 
@@ -152,7 +153,7 @@ export default function Main() {
                     </div>
                 </div>
                 <div className='main-under-detail-box'>
-                    <div className='main-community-latest-box'></div>
+                    <CommunityBoard />
                     <div className='main-user-detail-grap-box'></div>
                 </div>
             </div>

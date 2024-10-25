@@ -4,11 +4,11 @@ import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
+
 import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MAIN_SIGN_IN_PATH, MAIN_SIGN_IN_ABSOLUTE_PATH, ROOT_PATH, SIGN_UP_PATH } from './constant';
 import { useCookies } from 'react-cookie';
 import { useSignInUserStore } from './stores';
 import MainSginIn from './views/MainSginIn';
-
 
 // component: root path 컴포넌트 //
 function Index(){

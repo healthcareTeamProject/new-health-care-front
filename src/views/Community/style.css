@@ -1,7 +1,11 @@
-.categoryKing {
+.categoryHead {
     margin-top: 45px;
     margin-left: 100px;
     margin-right: 95px;
+}
+
+.category {
+    font-size: 20px;
 }
 
 .category-search {
@@ -9,8 +13,9 @@
     justify-content: space-between;
     align-items: center;
     padding: 10px;
-    border-bottom: 1px gray;
+    border-bottom: 1px solid gray;
 }
+
 
 .categories {
     display: flex;
@@ -18,42 +23,50 @@
     align-items: center;
 }
 
-.categories label {
-    font-weight: bold;
-}
-
 .category-button {
-    padding: 8px 16px;
+    width: 120px;
+    height: 39.47px;
     background-color: #f8f8f8;
     border: 1px solid #ccc;
     border-radius: 8px;
     cursor: pointer;
+    font-size: 20px;
+    white-space: nowrap
 }
 
 .search-bar button img {
-    width: 8px;
-    height: 8px;
+    width: 16px;
+    height: 16px;
 }
 
-#container {
+#search {
     width: 278.26px;
     height: 32.29px;
     position: relative;
     display: flex;
 }
 
-#container input {
+#search input {
     width: 100%;
     border-radius: 5px;
 }
 
-#container button {
+#search button {
     position: absolute;
     top: 5px;
     bottom: 5px;
     right: 5px;
     width: 18px;
     height: 18px;
+    background-image: url('/public/images/searchIcon.png');
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.mid {
+    justify-content: space-between;
+    align-items: center;
 }
 
 .popularTag {
@@ -65,6 +78,7 @@
     gap: 30px;
     margin-left: 100px;
     margin-right: 100px;
+    white-space: nowrap;
 }
 
 .popularTags2 {
@@ -72,6 +86,7 @@
     gap: 30px;
     margin-left: 100px;
     margin-right: 100px;
+    white-space: nowrap
 }
 
 
@@ -81,8 +96,8 @@
     background-color: #f8f8f8;
     border: 1px solid #ccc;
     border-radius: 8px;
+    margin-top: 10px;
     margin-bottom: 5px;
-    
 }
 
 .popularTag-button2 {
@@ -92,17 +107,28 @@
     border: 1px solid #ccc;
     border-radius: 8px;
     margin-top: 5px;
+    margin-bottom: 10px;
 }
 
 
-.board-table {
-    padding-top: 10px;
-    padding-right: 110px;
-    padding-left: 110px;
-    padding-bottom: 60px;
-    word-spacing: 20px;
-    line-height: 200%;
+.td-number,
+.td-author,
+.td-date,
+.td-views {
+    width: 50px;
     
+    text-align: center;
+}
+
+.td-title {
+    width: 500px;
+
+    text-align: center;
+}
+
+.bottom {
+    display: flex;
+    justify-content: space-between;
 }
 
 .pagination {
@@ -112,5 +138,14 @@
     margin-right: 648.94px;
     margin-left: 648px;
     margin-bottom: 45px;
+}
+
+.post-on {
+    width: 60px;
+    height: 28px;
+    border-radius: 8px;
+    margin-right: 95px;
+    background-color: black;
+    color: white
 }
 

@@ -28,18 +28,18 @@
     max-width: 500px;
 }
 
-.auth-box .sns-box {
+.sns-box {
     display: flex;
     flex-direction: column;
     align-items: center;
     gap: 20px;
 }
 
-.auth-box .sns-box .sns-title {
+.sns-box .sns-title {
     font-size: 20px;
 }
 
-.auth-box .sns-box .icon-box {
+.sns-box .icon-box {
     display: flex;
     flex-direction: row;
     gap: 20px;
@@ -142,7 +142,16 @@
     display: flex;
     justify-content: space-between;
     width: 350px;
+
+    margin-bottom: 20px;
 }
+
+.sign-up-second {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
 
 .main-home-button,
 .next-button,
@@ -164,7 +173,7 @@
 
 .main-home-button,
 .previous-button {
-    background-color: rgba(95, 99, 104, 1);
+    background-color: var(--gray-default-color);
 }
 
 .next-button,
@@ -183,3 +192,4 @@
 .signup-button {
     background-color: var(--gray-default-color)
 }
+

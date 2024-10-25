@@ -1,0 +1,62 @@
+#my-wrapper {
+    display: flex;
+    gap: 45px;
+}
+
+#my-wrapper .my-page-left {
+    display: flex;
+    width: 330px;
+}
+
+.my-page-title {
+    padding-left: 10px;
+}
+
+#my-wrapper .my-page-main {
+    display: flex;
+    flex-direction: column;
+
+    width: 1500px;
+    height: 1030px;
+}
+
+.my-page-main .top {
+    display: flex;
+
+    width: 1500px;
+    height: 320px;
+}
+
+.my-page-main .top .personal {
+    display: flex;
+
+    width: 700px;
+    height: 320px;
+}
+
+.my-page-main .top .user-muscle-fat {
+    display: flex;
+
+    width: 800px;
+    height: 320px;
+}
+
+.my-page-main .buttom {
+    display: flex;
+
+    width: 1500px;
+    height: 710px;
+}
+
+.my-page-main .buttom .buttom-left {
+    display: flex;
+    flex-direction: column;
+}
+
+.my-page-main .buttom .buttom-left .three-major-lift {
+    
+}
+
+.my-page-main .buttom .buttom-right {
+    display: flex;
+}

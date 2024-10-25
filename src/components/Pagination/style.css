@@ -5,20 +5,20 @@
 }
 
 .round-left-button {
-    width: 40px;
-    height: 40px;
+    width: 113.19px;
+    height: 26.67px;
 
-    background-image: url(/public/images/round-left.png);
+    background-image: url(/public/images/PaginationPrevious.png);
     background-size: 100% 100%;
 
     cursor: pointer;
 }
 
 .round-right-button {
-    width: 40px;
-    height: 40px;
+    width: 84.14px;
+    height: 26.67px;
 
-    background-image: url(/public/images/round-right.png);
+    background-image: url(/public/images/PaginationNext.png);
     background-size: 100% 100%;
 
     cursor: pointer;
