@@ -1,7 +1,7 @@
-import React from 'react'
+import React, { ChangeEvent, useEffect, useState } from 'react'
 import './style.css'
 import TopBar from 'src/layouts/Topbar'
-import CommunityBoard from 'src/components/Board'
+import CommunityBoard from 'src/components/Post'
 
 export default function Main() {
     return (

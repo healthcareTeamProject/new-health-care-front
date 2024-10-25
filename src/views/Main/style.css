@@ -65,55 +65,14 @@
 
 .login-big-box{
     display: flex;
-    flex-direction: row;
     height: 180px;
     align-items: center;
 
 }
 
-.login-id-password-box{
+.login-middle-box{
     display: flex;
     flex-direction: column;
-    width: 280px;
-    margin: 0 15px;
-}
-
-.login-id-box,
-.login-password-box
-{
-    display: flex;
-    flex-direction: column;
-
-    height: 80px;
-    gap: 15px;
-}
-
-.login-in-id-text,
-.login-in-password-text
-{
-    font-size: 16px;
-    font-weight: 540;
-}
-
-.login-in-id-box,
-.login-in-password-box
-{
-    display: flex;
-    height: 30px;
-
-    border-radius: 5px;
-    border: 1px solid #A7A7A7;
-    align-items: center;
-}
-
-.login-input-id-text,
-.login-input-password-text
-{
-    font-size: 16px;
-    font-weight: 540;
-    color: #A7A7A7;
-
-    margin-left: 10px;
 }
 
 .login-sign-up-button-box{
