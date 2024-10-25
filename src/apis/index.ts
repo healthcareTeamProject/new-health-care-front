@@ -17,7 +17,7 @@ const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
 const POST_USER_MUSCLE_FAT = `${HEALTHCARE_API_DOMAIN}/api/v1/muscle-fat`
-const POST_THREE_MAJOR_LIFT = `$${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
+const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
 
 const CUSTOMER_MODUEL_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
@@ -79,7 +79,7 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
   return responseBody;
 }
 
-// function: 신체 정보 등록 요청 함수 //
+// function: post user muscle fat 요청 함수 //
 export const postUserMuscleFatRequest = async (requestBody: PostUserMuscleFatRequestDto) => {
   const responseBody = await axios.post(POST_USER_MUSCLE_FAT, requestBody)
       .then(responseDataHandler<ResponseDto>)
@@ -87,7 +87,7 @@ export const postUserMuscleFatRequest = async (requestBody: PostUserMuscleFatReq
   return responseBody;
 }
 
-// function: 운동 정보 등록 요청 함수 //
+// function: post three major lift 요청 함수 //
 export const postThreeMajorLiftRequest = async (requestBody: PostThreeMajorLiftRequestDto) => {
   const responseBody = await axios.post(POST_THREE_MAJOR_LIFT, requestBody)
       .then(responseDataHandler<ResponseDto>)

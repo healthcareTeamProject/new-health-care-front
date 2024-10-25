@@ -596,6 +596,36 @@ export default function SignUp() {
 
     }
 
+    const userMuscleFatResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+    }
+
+    const threeMajorLiftResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+    }
+
     // event handler: 회원가입 페이지 전환 핸들러 //
     const onSignUpPageChangeHandler = () => {
         setSignUpPage(prev => !prev);
@@ -606,7 +636,7 @@ export default function SignUp() {
         window.location.href = `http://localhost:4000/api/v1/auth/sns-sign-in/${sns}`;
     }
 
-    // event handler: 회원가입 버튼 클릭 이벤트 처리 //
+    // // event handler: 회원가입 버튼 클릭 이벤트 처리 //
     // const onSignUpButtonHandler = async () => {
     //     if (!isComplete) return;
 
@@ -627,15 +657,43 @@ export default function SignUp() {
     //         authNumber,
     //         joinPath: joinPath ? joinPath : 'home',
     //         snsId,
-    //         height,
     //         profileImage: url,
-    //         personalGoals
+    //         personalGoals,
+    //         height,
     //     }
 
     //     signUpRequest(requestBody).then(signUpResponse);
 
     // }
 
+    // const onSignUpUserMuscleFatButtonHandler = () => {
+    //     if (!isComplete) return;
+
+    //     const requsetBody: PostUserMuscleFatRequestDto = {
+    //         userId: id,
+    //         weight,
+    //         bodyFatMass,
+    //         skeletalMuscleMass
+    //     }
+
+    //     postUserMuscleFatRequest(requsetBody).then(userMuscleFatResponse)
+
+    // }
+
+    // const onSignUpThreeMajorLiftButtonHandler = () => {
+    //     if (!isComplete) return;
+    
+    //     const requestBody: PostThreeMajorLiftRequestDto = {
+    //         userId: id, // 사용자 ID
+    //         deadlift, // 사용자 입력 (데드리프트)
+    //         benchPress, // 사용자 입력 (벤치프레스)
+    //         squat, // 사용자 입력 (스쿼트)
+    //     };
+    
+    //     postThreeMajorLiftRequest(requestBody).then(threeMajorLiftResponse);
+    // };
+
+    // event handler: 회원가입 버튼 클릭 이벤트 처리 //
     const onSignUpButtonHandler = async () => {
         if (!isComplete) return;
     
@@ -647,44 +705,40 @@ export default function SignUp() {
         }
         url = url ? url : defaultProfileImageUrl;
     
-        const requestBody: SignUpRequestDto = {
+        const signUpRequestBody: SignUpRequestDto = {
             name,
             userId: id,
             nickname,
             password,
             telNumber,
             authNumber,
-            joinPath: joinPath ? joinPath : 'home',
+            joinPath: joinPath || 'home',
             snsId,
-            height,
             profileImage: url,
-            personalGoals
+            personalGoals,
+            height,
         };
     
-        // 회원가입 요청
-        const signUpResponseBody = await signUpRequest(requestBody);
-        signUpResponse(signUpResponseBody);
+        const muscleFatRequestBody: PostUserMuscleFatRequestDto = {
+            userId: id,
+            weight,
+            bodyFatMass,
+            skeletalMuscleMass,
+        };
     
-        // 회원가입 성공 후 신체 정보 및 운동 정보 등록
-        if (signUpResponseBody && signUpResponseBody.code === 'SU') {
-            const muscleFatRequestBody: PostUserMuscleFatRequestDto = {
-                userId: id,
-                weight: weight, // 사용자로부터 입력받은 무게
-                skeletalMuscleMass: skeletalMuscleMass, // 선택 사항
-                bodyFatMass: bodyFatMass // 선택 사항
-            };
+        const majorLiftRequestBody: PostThreeMajorLiftRequestDto = {
+            userId: id,
+            deadlift,
+            benchPress,
+            squat,
+        };
     
-            await postUserMuscleFatRequest(muscleFatRequestBody);
-    
-            const threeMajorLiftRequestBody: PostThreeMajorLiftRequestDto = {
-                userId: id,
-                deadlift: deadlift, // 사용자로부터 입력받은 데드리프트
-                benchPress: benchPress, // 사용자로부터 입력받은 벤치프레스
-                squat: squat // 사용자로부터 입력받은 스쿼트
-            };
-    
-            await postThreeMajorLiftRequest(threeMajorLiftRequestBody);
-        }
+        signUpRequest(signUpRequestBody)
+            .then(signUpResponse)
+            .then(() => postUserMuscleFatRequest(muscleFatRequestBody))
+            .then(userMuscleFatResponse)
+            .then(() => postThreeMajorLiftRequest(majorLiftRequestBody))
+            .then(threeMajorLiftResponse);
     };
 
     // render: 회원가입 컴포넌트 렌더딩 //
