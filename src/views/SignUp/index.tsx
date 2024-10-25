@@ -750,34 +750,16 @@ export default function SignUp() {
 
                     {signUpPage ? 
                         (
-                        <div className='sign-up-first'>
-                            <div className='sns-box'>
-                                <div className='sns-title'>sns 간편 로그인</div>
-                                <div className='icon-box'>
-                                    <div>카카오</div>
-                                    <div>네이버</div>
-                                </div>
-                            </div>
-
-                            {/* <div className="sns-container">
-                                <div className="title">sns 간편 회원가입</div>
-                                <div className="sns-button-container">
-                                    <div className={`sns-button ${type === '회원가입' ? 'md ' : ''}kakao`} onClick={() => onSnsButtonClickHandler('kakao')}></div>
-                                    <div className={`sns-button ${type === '회원가입' ? 'md ' : ''}naver`} onClick={() => onSnsButtonClickHandler('naver')}></div>
-                                </div>
-                            </div> */}
-
-                            <SignUpFirst 
-                                onNext={onSignUpPageChangeHandler} 
-                                name={name} setName={setName} 
-                                id={id} setId={setId} 
-                                nickname={nickname} setNickname={setNickname}
-                                password={password} setPassword={setPassword}
-                                passwordCheck={passwordCheck} setPasswordCheck={setPasswordCheck}
-                                telNumber={telNumber} setTelNumber={setTelNumber}
-                                authNumber={authNumber} setAuthNumber={setAuthNumber}
-                            />
-                        </div>) : 
+                        <SignUpFirst 
+                            onNext={onSignUpPageChangeHandler} 
+                            name={name} setName={setName} 
+                            id={id} setId={setId} 
+                            nickname={nickname} setNickname={setNickname}
+                            password={password} setPassword={setPassword}
+                            passwordCheck={passwordCheck} setPasswordCheck={setPasswordCheck}
+                            telNumber={telNumber} setTelNumber={setTelNumber}
+                            authNumber={authNumber} setAuthNumber={setAuthNumber}
+                        />) : 
                         (<div className='sign-up-second'>
                             <SignUpSecond
                                 profileImageFile={profileImageFile} setProfileImageFile={setProfileImageFile} 
