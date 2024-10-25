@@ -1,5 +1,5 @@
-export default interface LoginUser{
-    profilImage: string | null;
+export default interface Customer {
+  profilImage: string | null;
     name: string;
     userId: String;
     nickname: string;
@@ -11,5 +11,4 @@ export default interface LoginUser{
     benchPress : number | null;
     squat: number | null;
     personalGoal : number | null;
-
 }
