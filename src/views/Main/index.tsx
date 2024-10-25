@@ -1,6 +1,7 @@
 import React from 'react'
 import './style.css'
 import TopBar from 'src/layouts/Topbar'
+import CommunityBoard from 'src/components/Post'
 
 export default function Main() {
     return (
@@ -58,7 +59,7 @@ export default function Main() {
                     </div>
                 </div>
                 <div className='main-under-detail-box'>
-                    <div className='main-community-latest-box'></div>
+                    <CommunityBoard />
                     <div className='main-user-detail-grap-box'></div>
                 </div>
             </div>
