@@ -85,7 +85,7 @@ function SignUpFirst({
 
     }
 
-    // function: 아이디 중복 확인 Response 처리 함수 //
+    // function: 닉네임 중복 확인 Response 처리 함수 //
     const nicknameCheckResponse = (responseBody: ResponseDto | null) => {
 
         const message = 
