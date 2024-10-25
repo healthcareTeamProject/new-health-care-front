@@ -1,25 +1,24 @@
 import { useCookies } from 'react-cookie'
 import './style.css'
 
-import React from 'react'
-import { useUserStore } from 'src/stores';
+import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
-import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_ABSOLUTE_PATH, SCHEDUL_DATH, USER_MYPAGE_DETAIL_PATH } from 'src/constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, CUSTOMER_MYPAGE_DETAIL_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MAIN_SIGN_IN_PATH, ROOT_ABSOLUTE_PATH, SCHEDULE_PATH} from 'src/constant';
 
-// component: 로그인 전 컴포넌트 //
+// component: 로그인 후 컴포넌트 //
 function LoginTop(){
 
     // state: 로그인 후 컴포넌트 상태 //
     const[cookies, setCookies, removeCookie] = useCookies();
-    // state: 로그인 유저 상태 //
-    const {user, setUser} = useUserStore();
+    // state: 로그인 되지 않은 컴포넌트 상태 //
+    const [loginstate, setLoginState] = useState<boolean>(false);
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
     // event handler: 마이페이지 버튼 클릭 이벤트 처리 //
     const onMyPageButtonClickHandler = () => {
-        navigator(USER_MYPAGE_DETAIL_PATH(cookies.accessToken))
+        navigator(CUSTOMER_MYPAGE_DETAIL_PATH)
     }
     
     // event handler: 로그아웃 버튼 클릭 이벤트 처리 //
@@ -27,6 +26,13 @@ function LoginTop(){
         removeCookie(ACCESS_TOKEN, {path: ROOT_ABSOLUTE_PATH});
         navigator(MAIN_ABSOLUTE_PATH);
     }
+
+    // effect: 마운트 시 경로 이동 effect //
+    useEffect(()=> {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(accessToken) navigator(MAIN_SIGN_IN_PATH);
+        else setLoginState(false);
+    }, []);
 
     // render: 로그인 후 컴포넌트 렌더링 //
     return(
@@ -40,9 +46,12 @@ function LoginTop(){
 
 // component: 상단 기본 컴포넌트 //
 export default function TopBar() {
-
+    
     // state: 쿠키 상태 //
     const [cookies] = useCookies();
+
+    // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
+    const isLoggedIn = !!cookies[ACCESS_TOKEN];
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
@@ -59,7 +68,7 @@ export default function TopBar() {
     
     // event handler: 스케줄러 클릭 이벤트 처리 //
     const onScheduleClickHandler = () => {
-        navigator(SCHEDUL_DATH);
+        navigator(SCHEDULE_PATH);
     };
     return (
             <div id='main-layout'>
@@ -70,7 +79,7 @@ export default function TopBar() {
                         <div className='schedule-button'onClick={onScheduleClickHandler}>스케줄표</div>
                     </div>
                     <div className='logo-box'></div>
-                    <LoginTop />
+                    {isLoggedIn && <LoginTop />}
                 </div>
             </div>
     )

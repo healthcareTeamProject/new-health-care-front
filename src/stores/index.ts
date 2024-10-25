@@ -1,5 +1,5 @@
-import useUserStore from "./user.store";
+import useSignInUserStore from './sign-in-user.store';
 
 export {
-    useUserStore
+    useSignInUserStore
 }
