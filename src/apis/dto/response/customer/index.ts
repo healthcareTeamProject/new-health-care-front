@@ -1,3 +1,5 @@
-import GetCustomerResponseDto from "./get-customer.response.dto";
+import GetSignInResponseDto from "./get-sign-in.response.dto";
 
-export type { GetCustomerResponseDto };
+export type {
+    GetSignInResponseDto
+}

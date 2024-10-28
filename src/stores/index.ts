@@ -1,5 +1,5 @@
-import useSignInUserStore from './sign-in-user.store';
+import useSignInCustomerStroe from './sign_in-customer.store'
 
 export {
-    useSignInUserStore
+    useSignInCustomerStroe
 }

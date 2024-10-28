@@ -4,6 +4,7 @@ import { IdCheckRequestDto, SignInRequestDto, TelAuthCheckRequestDto, TelAuthReq
 import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.dto";
 import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
+import { GetSignInResponseDto } from "./dto/response/customer";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
@@ -19,12 +20,11 @@ const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
 const CUSTOMER_MODULE_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
-
-const CUSTOMER_MODUEL_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
+const GET_SIGN_IN_API_URL = `{CUSTOMER_MODULE_URL}/sign-in`
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({
-  headers: { Authorization: `Bearer ${accessToken}` },
+  headers: { 'Authorization': `Bearer ${accessToken}` }
 });
 
 // function: response data 처리 함수 //
@@ -73,10 +73,17 @@ export const telAuthCheckRequest = async (requestBody: TelAuthCheckRequestDto) =
 };
 // function: sign in 요청 함수 //
 export const signInRequest = async (requestBody: SignInRequestDto) => {
-  const responseBody = await axios.post(SIGN_UP_API_URL, requestBody)
+  const responseBody = await axios.post(SIGN_IN_API_URL, requestBody)
   .then(responseDataHandler<SignInResponseDto>)
   .catch(responseErrorHandler);
   return responseBody;
+}
 
+// function: get sign in 요청 함수 //
+export const getSignInRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_SIGN_IN_API_URL, bearerAuthorization(accessToken))
+  .then(responseDataHandler<GetSignInResponseDto>)
+  .catch(responseErrorHandler);
+  return responseBody;
 }
 

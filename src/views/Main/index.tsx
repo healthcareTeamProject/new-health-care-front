@@ -12,18 +12,20 @@ import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
 
-
-// component: 로그인 입력 컴포넌트 //
-function LoginContainer(){
+// component: 로그인 상자 컴포넌트 //
+function SignInComponent(){
 
     // state: 쿠키 상태 //
-    const [ cookies, setCookies] = useCookies();
+    const [cookies, setCookies] = useCookies();
     // state: 로그인 입력 정보 상태 //
-    const [id, setId] = useState<string>('');
+    const [userId, setUserId] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     // state: 로그인 입력 메세지 상태 //
     const [message, setMessage] = useState<string>('');
-
+    // state: Query Parameyer 상태 //
+    const[queryParam] = useSearchParams();
+    const snsId = queryParam.get('snsId');
+    const joinPath = queryParam.get('joinPath');
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
@@ -51,7 +53,7 @@ function LoginContainer(){
     // event handler: 아이디 변경 이벤트 처리 //
     const onIdChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const {value} = event.target;
-        setId(value);
+        setUserId(value);
     }
 
     // event handler: 비밀번호 변경 이벤트 처리 //
@@ -66,24 +68,26 @@ function LoginContainer(){
     }
 
     // event handler: 로그인 버튼 클릭 이벤트 처리 //
-    const onSignInButtonHandler = () => {
-        if(!id || !password) return;
+    const onSignInButtonClickHandler = () => {
+        if(!userId || !password) return;
 
-        const requestBody: SignInRequestDto ={
-            userId: id,
-            password
-        };
+        const requestBody: SignInRequestDto = {userId, password};
         signInRequest(requestBody).then(signInResponse);
     }
-
     // event handler: 회원가입 버튼 클릭 이벤트 처리 //
     const onSignUpButtonClickHandler = () => {
         navigator(SIGN_UP_ABSOLUTE_PATH);
-    }
+        };
+    
     // effect: 아이디 및 비밀번호 변경시 실행할 함수 //
     useEffect(() => {
         setMessage('');
-    }, [id, password]);
+    }, [userId, password]);
+
+    // effect: 첫 로드시에 Query Param의 snsId와 joinPath 존재시 회원가입 화면전환 함수 //
+    useEffect(()=> {
+        if (snsId && joinPath) navigator(SIGN_UP_ABSOLUTE_PATH);
+    }, []);
 
     // render: 로그인 전 메인 화면 컴포넌트 렌더링 //
     return(
@@ -93,13 +97,13 @@ function LoginContainer(){
             </div>
                 <div className='login-big-box'>
                     <div className='login-middle-box'>
-                        <MainInputBox value={id} onChange={onIdChangeHandler} message='' messageError type='text' label='아이디' placeholder='아이디를 입력해주세요' />
-                            <MainInputBox value={password} onChange={onPasswordChangeHandler} message={message} messageError type='password' label = '비밀번호' placeholder='비밀번호를 입력해주세요' />
+                        <MainInputBox value={userId} onChange={onIdChangeHandler} message='' messageError type='text' label='아이디' placeholder='아이디를 입력해주세요' />
+                        <MainInputBox value={password} onChange={onPasswordChangeHandler} message={message} messageError type='password' label = '비밀번호' placeholder='비밀번호를 입력해주세요' />
                     </div>
                         <div className='login-sign-up-button-box'>
                             <div className='login-button-box'>
-                                <div className='login-button-top'>
-                                    <div className='login-button-text'onClick={onSignInButtonHandler}>로그인</div>
+                                <div className='login-button-top'onClick={onSignInButtonClickHandler}>
+                                    <div className='login-button-text'>로그인</div>
                                 </div>
                             </div>
                             <div className='sign-up-button-box' onClick={onSignUpButtonClickHandler}>
@@ -122,23 +126,10 @@ function LoginContainer(){
                 </div>
         </div>
     )
-}
 
+};
 // component: 로그인 전 메인 화면 컴포넌트 //
 export default function Main() {
-
-    // state: Query Parameyer 상태 //
-    const[queryParam] = useSearchParams();
-    const snsId = queryParam.get('snsId');
-    const joinPath = queryParam.get('joinPath');
-
-    // function: 네비게이션 함수//
-    const navigator = useNavigate();
-
-    // effect: 첫 로드시에 Query Param의 snsId와 joinPath 존재시 회원가입 화면전환 함수 //
-    useEffect(()=> {
-        if (snsId && joinPath) navigator(SIGN_UP_ABSOLUTE_PATH);
-    }, []);
 
     // render: 로그인 전 메인 화면 컴포넌트 //
     return (
@@ -147,7 +138,7 @@ export default function Main() {
                 <div className='main-top-detail-box'>
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
-                        <LoginContainer />
+                        <SignInComponent />
                         <div className='scadul-mini-box'></div>
                     </div>
                 </div>
