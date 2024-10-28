@@ -45,6 +45,7 @@ function SignInComponent(){
             setMessage(message);
             return;
         }
+
         const {accessToken, expiration} = responseBody as SignInResponseDto;
         const expires = new Date(Date.now() + (expiration * 1000));
         setCookies(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});

@@ -142,10 +142,21 @@
 
 .my-page-main .top .user-muscle-fat {
     display: flex;
+    text-align: center;
 
     width: 800px;
     height: 320px;
 }
+
+.user-muscle-fat .chart-container {
+    width: 800px; /* 차트 너비 */
+    height: 250px; /* 차트 높이 */
+    margin: 0 auto; /* 차트를 수평 가운데 배치 */
+}
+
+
+
+
 
 .my-page-main .buttom {
     display: flex;
@@ -181,4 +192,19 @@
 
     width: 800px;
     height: 710px;
+}
+
+
+
+
+
+
+
+
+
+
+
+.chart {
+    width: 500px;
+    height: 500px;
 }
