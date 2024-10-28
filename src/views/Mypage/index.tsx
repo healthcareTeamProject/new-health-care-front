@@ -7,19 +7,28 @@ function Personal() {
     // render: 개인정보 컴포넌트 렌더딩 //
     return (
         <div className='personal'>
-            <div className='personal-logo'></div>
+            <div className='personal-logo'>로고</div>
             <div className='personal-buttom'>
-                <div className='profile-image'></div>
+                <div className='profile-image'>이미지</div>
                 <div className='personal-information'>
-                    <div className='name'></div>
-                    <div className='nickname'></div>
-                    <div className='height'></div>
+                    <div className='name'>
+                        <div className='name-title'>이름</div>
+                        <div className='name-value'>임의의 이름</div>
+                    </div>
+                    <div className='nickname'>
+                        <div className='nickname-title'>닉네임</div>
+                        <div className='nickname-value'>임의의 닉네임</div>
+                    </div>
+                    <div className='height'>
+                        <div className='height-title'>키</div>
+                        <div className='height-value'>임의의 키</div>
+                    </div>
                 </div>
                 <div className='personal-goals-box'>
-                    <div className='personal-goals-box-icon'></div>
+                    <div className='personal-goals-box-icon'>수정</div>
                     <div>
-                        <div className='personal-goals-box-title'></div>
-                        <input className='personal-goals-box-content' />
+                        <div className='personal-goals-box-title'>개인목표</div>
+                        <input className='personal-goals-box-content' placeholder='개인목표' />
                     </div>
                 </div>
             </div>
@@ -43,7 +52,13 @@ function ThreeMajorLift() {
 
     // render: 3대측정 컴포넌트 렌더딩 //
     return (
-        <div className='three-major-lift'>3대측정</div>
+        <div className='three-major-lift'>
+            <div className='three-major-lift-top'>
+                <div className='three-major-lift-top-title'></div>
+                <div className='three-major-lift-top-icon'></div>
+            </div>
+            <div className='three-major-lift-buttom'>내용물</div>
+        </div>
     )
 
 }
@@ -53,7 +68,10 @@ function Board() {
 
     // render: 내 게시물 컴포넌트 렌더딩 //
     return (
-        <div className='board'>내 게시물</div>
+        <div className='board'>
+            <div className='board-title'>내 게시물</div>
+            <div></div>
+        </div>
     )
 
 }
