@@ -22,8 +22,7 @@ export default function MainInputBox({
     message,
     messageError,
     buttonName, 
-    onChange,
-    onButtonClick,
+    onChange
 }: Props) {
     return (
         <div className='login-id-password-box'>

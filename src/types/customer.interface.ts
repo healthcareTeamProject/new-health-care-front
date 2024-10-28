@@ -1,5 +1,5 @@
 export default interface Customer {
-  profilImage: string | null;
+    profilImage: string | null;
     name: string;
     userId: String;
     nickname: string;

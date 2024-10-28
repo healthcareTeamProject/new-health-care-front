@@ -5,11 +5,13 @@ import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
 
-import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MAIN_SIGN_IN_PATH, MAIN_SIGN_IN_ABSOLUTE_PATH, ROOT_PATH, SIGN_UP_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH } from './constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MAIN_SIGN_IN_PATH, MAIN_SIGN_IN_ABSOLUTE_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH } from './constant';
 import { useCookies } from 'react-cookie';
-import { useSignInUserStore } from './stores';
 import MainSginIn from './views/MainSginIn';
-import Mypage from './views/Mypage';
+import { useSignInCustomerStroe } from './stores';
+import { GetSignInResponseDto } from './apis/dto/response/customer';
+import { ResponseDto } from './apis/dto/response';
+import { getSignInRequest } from './apis';
 
 // component: root path 컴포넌트 //
 function Index(){
@@ -64,6 +66,43 @@ function SnsSuccess(){
 // component: Healthcare 컴포넌트 //
 export default function Healthcare() {
 
+  // state: 로그인 유저 정보 상태 //
+  const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
+
+  // state: cookie 상태 //
+  const [cookies, setCookie, removeCookie] = useCookies();
+
+  // function: 네비게이터 함수 //
+  const navigator = useNavigate();
+
+  // function: get sign in 요청 함수 //
+  const getSignInResponse = (responseBody:  GetSignInResponseDto | ResponseDto | null) => {
+    const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+          
+    const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+    if(!isSuccessed) {
+      alert(message);
+      removeCookie(ACCESS_TOKEN, {path: ROOT_PATH});
+      setSignInCustomer(null);
+      navigator(MAIN_ABSOLUTE_PATH);
+      return;
+    }
+
+    const {userId, name, nickname} = responseBody as GetSignInResponseDto;
+    setSignInCustomer({userId, name, nickname});
+  }
+  // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
+  useEffect(() => {
+    const accessToken = cookies[ACCESS_TOKEN];
+    if(accessToken) getSignInRequest(accessToken).then(getSignInResponse)
+      else setSignInCustomer(null);
+  }, [cookies[ACCESS_TOKEN]]);
+
   return (
     <Routes>
       <Route index element={<Index/>} />
@@ -72,7 +111,9 @@ export default function Healthcare() {
       <Route path={MAIN_SIGN_IN_PATH} element={<MainSginIn />}/>
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH} element={<Mypage />} />
       <Route path={BOARD_LIST_PATH} element={<Community />} />
-      <Route path='*' element={<SnsSuccess/>} />
+      <Route path={SIGN_UP_PATH} element={<SignUp />} />
+      <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />
+      <Route path={OTHERS_PATH} element={<Index />} />
     </Routes>
   );
 }
