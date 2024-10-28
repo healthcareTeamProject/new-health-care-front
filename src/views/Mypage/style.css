@@ -40,9 +40,36 @@
 
 .my-page-main .top .personal {
     display: flex;
+    flex-direction: column;
+    align-items: center;
 
     width: 700px;
     height: 320px;
+}
+
+.personal .personal-logo {
+    width: 230px;
+    height: 80px;
+
+    background-color: aqua;
+}
+
+.personal .personal-buttom {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 700px;
+    height: 240px;
+
+    gap: 20px;
+}
+
+.personal .personal-buttom .profile-image {
+    background-color: bisque;
+
+    width: 220px;
+    height: 220px;
 }
 
 .my-page-main .top .user-muscle-fat {

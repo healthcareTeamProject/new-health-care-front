@@ -5,6 +5,7 @@ import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.d
 import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
 import { GetSignInResponseDto } from "./dto/response/customer";
+import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
