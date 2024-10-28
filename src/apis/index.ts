@@ -1,6 +1,6 @@
 import axios, { AxiosResponse } from "axios";
 import { ResponseDto } from "./dto/response";
-import { IdCheckRequestDto, SignInRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
+import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from "./dto/request/auth";
 import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.dto";
 import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
@@ -18,9 +18,13 @@ const TEL_AUTH_CHECK_API_URL = `${AUTH_MODULE_URL}/tel-auth-check`;
 const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
+const POST_USER_MUSCLE_FAT = `${HEALTHCARE_API_DOMAIN}/api/v1/muscle-fat`
+const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
+
 const CUSTOMER_MODULE_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
 const GET_SIGN_IN_API_URL = `{CUSTOMER_MODULE_URL}/sign-in`
+
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({
@@ -85,5 +89,41 @@ export const getSignInRequest = async (accessToken: string) => {
   .then(responseDataHandler<GetSignInResponseDto>)
   .catch(responseErrorHandler);
   return responseBody;
+}
+
+// function: sign up 요청 함수 //
+export const signUpRequest = async (requestBody: SignUpRequestDto) => {
+  const responseBody = await axios.post(SIGN_UP_API_URL, requestBody)
+      .then(responseDataHandler<ResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: post user muscle fat 요청 함수 //
+export const postUserMuscleFatRequest = async (requestBody: PostUserMuscleFatRequestDto) => {
+  const responseBody = await axios.post(POST_USER_MUSCLE_FAT, requestBody)
+      .then(responseDataHandler<ResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: post three major lift 요청 함수 //
+export const postThreeMajorLiftRequest = async (requestBody: PostThreeMajorLiftRequestDto) => {
+  const responseBody = await axios.post(POST_THREE_MAJOR_LIFT, requestBody)
+      .then(responseDataHandler<ResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
+}
+
+const FILE_UPLOAD_URL = `${HEALTHCARE_API_DOMAIN}/file/upload`;
+
+const multipart = { headers: { 'Content-Type': 'multipart/form-data' } }
+
+// function: file upload 요청 함수 //
+export const fileUploadRequest = async (requestBody: FormData) => {
+    const url = await axios.post(FILE_UPLOAD_URL, requestBody, multipart)
+        .then(responseDataHandler<string>)
+        .catch(error => null);
+    return url;
 }
 

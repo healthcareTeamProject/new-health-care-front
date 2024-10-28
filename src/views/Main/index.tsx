@@ -11,6 +11,8 @@ import { signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
+import CommunityBoard from 'src/components/Post';
+
 
 // component: 로그인 상자 컴포넌트 //
 function SignInComponent(){
@@ -143,7 +145,7 @@ export default function Main() {
                     </div>
                 </div>
                 <div className='main-under-detail-box'>
-                    <div className='main-community-latest-box'></div>
+                    <CommunityBoard />
                     <div className='main-user-detail-grap-box'></div>
                 </div>
             </div>
