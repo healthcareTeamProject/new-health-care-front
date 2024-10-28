@@ -4,7 +4,7 @@ import { useNavigate, useParams } from "react-router";
 import { getSignInRequest } from "src/apis";
 import { ResponseDto } from "src/apis/dto/response";
 import { GetSignInResponseDto } from "src/apis/dto/response/customer";
-import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from "src/constant";
+import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_SIGN_IN_ABSOLUTE_PATH } from "src/constant";
 import { useSignInCustomerStroe } from "src/stores";
 
 // component: 로그인 후 개인 정보 박스 컴포넌트 //
@@ -35,7 +35,6 @@ function CustomerComponent(){
         if(!isSuccessed) {
             alert(message);
             setSignInCustomer(null);
-            navigator(MAIN_ABSOLUTE_PATH);
             return;
     }
 
@@ -44,6 +43,8 @@ function CustomerComponent(){
     setName(name);
     setNickname(nickname);
     setPersonalGoals(personalGoals);
+
+    navigator(MAIN_SIGN_IN_ABSOLUTE_PATH);
 };
 
     // effect: cookie의 accessToken 값이 변경시 로그인 유저 정보 요청 //
