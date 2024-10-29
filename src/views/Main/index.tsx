@@ -11,9 +11,9 @@ import { getSignInRequest, signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
-import CommunityBoard from 'src/components/Post';
 import { GetSignInResponseDto } from 'src/apis/dto/response/customer';
 import { useSignInCustomerStroe } from 'src/stores';
+import CommunityBoard from 'src/components/Board';
 
 // component: 로그인 후 개인 정보 박스 컴포넌트 //
 function CustomerComponent(){
@@ -138,8 +138,6 @@ function SignInComponent(){
             setMessage(message);
             return;
         }
-        
-        console.log(responseBody.code);
 
         const {accessToken, expiration} = responseBody as SignInResponseDto;
         const expires = new Date(Date.now() + (expiration * 1000));

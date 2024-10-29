@@ -76,6 +76,7 @@ export const telAuthCheckRequest = async (requestBody: TelAuthCheckRequestDto) =
       .catch(responseErrorHandler);
   return responseBody;
 };
+
 // function: sign in 요청 함수 //
 export const signInRequest = async (requestBody: SignInRequestDto) => {
   const responseBody = await axios.post(SIGN_IN_API_URL, requestBody)
