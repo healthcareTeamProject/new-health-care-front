@@ -11,7 +11,7 @@ import { signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
-import CommunityBoard from 'src/components/Post';
+import CommunityBoard from 'src/components/Board';
 
 
 // component: 로그인 상자 컴포넌트 //
