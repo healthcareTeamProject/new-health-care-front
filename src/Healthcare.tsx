@@ -5,9 +5,8 @@ import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
 
-import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MAIN_SIGN_IN_PATH, MAIN_SIGN_IN_ABSOLUTE_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH } from './constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH } from './constant';
 import { useCookies } from 'react-cookie';
-import MainSginIn from './views/MainSginIn';
 import { useSignInCustomerStroe } from './stores';
 import { GetSignInResponseDto } from './apis/dto/response/customer';
 import { ResponseDto } from './apis/dto/response';
@@ -25,7 +24,7 @@ function Index(){
 
   // effect: 마운트 시 경로 이동 effect //
   useEffect(()=> {
-      if(cookies.accessToken) navigator(MAIN_SIGN_IN_PATH);
+      if(cookies.accessToken) navigator(MAIN_PATH);
       else navigator(MAIN_ABSOLUTE_PATH);
   }, []);
 
@@ -55,9 +54,10 @@ function SnsSuccess(){
       const expires = new Date(Date.now() + Number(expiration) * 1000);
       setCookies(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});
 
-      navigator(MAIN_SIGN_IN_ABSOLUTE_PATH);
+      navigator(MAIN_ABSOLUTE_PATH);
+      return;
     }
-    else navigator(MAIN_ABSOLUTE_PATH);
+
   }, []);
 
   // render: Sns success 컴포넌트 렌더링 //
@@ -109,7 +109,6 @@ export default function Healthcare() {
       <Route index element={<Index/>} />
       <Route path={MAIN_PATH} element={<Main />} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
-      <Route path={MAIN_SIGN_IN_PATH} element={<MainSginIn />}/>
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH} element={<Mypage />} />
       <Route path={BOARD_LIST_PATH} element={<Community />} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />

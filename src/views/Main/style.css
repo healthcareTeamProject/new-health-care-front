@@ -222,3 +222,39 @@
     border-radius: 8px;
     border: 1px solid #A7A7A7;
 }
+
+.login-customer-box{
+    display: flex;
+}
+
+.login-customer-left-box{
+    display: flex;
+    min-width: 299px;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+}
+
+.login-customer-image-box{
+    display: flex;
+    width: 150px;
+    height: 150px;
+    justify-content: center;
+    align-items: center;
+}
+.login-customer-image-box{
+    width: 120px;
+    height: 120px;
+
+    background-image: url(/public/images/main-image.png);
+    background-size: 100% 100%;
+}
+.login-customer-detail-box{
+    display: flex;
+    width: 149px;
+    flex-direction: column;
+}
+.login-customer-name{
+    display: flex;
+    font-size: 13px;
+}

@@ -3,7 +3,7 @@ import './style.css'
 
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
-import { ACCESS_TOKEN, BOARD_LIST_PATH, CUSTOMER_MYPAGE_DETAIL_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, MAIN_SIGN_IN_PATH, ROOT_ABSOLUTE_PATH, SCHEDULE_PATH} from 'src/constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, CUSTOMER_MYPAGE_DETAIL_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH,ROOT_ABSOLUTE_PATH, SCHEDULE_PATH} from 'src/constant';
 
 // component: 로그인 후 컴포넌트 //
 function LoginTop(){
@@ -30,7 +30,7 @@ function LoginTop(){
     // effect: 마운트 시 경로 이동 effect //
     useEffect(()=> {
         const accessToken = cookies[ACCESS_TOKEN];
-        if(accessToken) navigator(MAIN_SIGN_IN_PATH);
+        if(accessToken) navigator(MAIN_PATH);
         else setLoginState(false);
     }, []);
 
