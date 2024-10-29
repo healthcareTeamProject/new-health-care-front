@@ -133,16 +133,29 @@
 
 .my-page-main .top .user-muscle-fat {
     display: flex;
+    flex-direction: column;
     text-align: center;
 
     width: 800px;
     height: 320px;
+    margin: 0 auto;
+}
+
+.user-muscle-fat .chart-top {
+    display: flex;
+
+    padding: 20px 0 0 15px;
+
+    height: 70px;
+
+    font-size: 24px;
+
 }
 
 .user-muscle-fat .chart-container {
-    width: 800px; /* 차트 너비 */
-    height: 250px; /* 차트 높이 */
-    margin: 0 auto; /* 차트를 수평 가운데 배치 */
+    width: 100%;
+    height: 300px;
+    margin: 0 auto;
 }
 
 

@@ -64,33 +64,49 @@ function UserMucleFat() {
     
     const options = {
         responsive: true,
-        indexAxis: 'y' as const, // 세로 막대 그래프
+        maintainAspectRatio: false,
+        indexAxis: 'y' as const, // 명시적으로 'y'로 설정
         scales: {
             y: {
                 beginAtZero: true,
+                ticks: {
+                    font: {
+                        size: 14,
+                        weight: 'bold' as 'bold', // 'bold'로 설정
+                        family: 'Arial',
+                    },
+                },
             },
             x: {
                 beginAtZero: true,
-                max: maxValue, // X축 최대값 설정
+                max: maxValue,
                 ticks: {
-                    stepSize: 20, // 가로 축 값 간격 설정
+                    stepSize: 20,
+                    font: {
+                        size: 14,
+                        weight: 'bold' as 'bold', // 'bold'로 설정
+                        family: 'Arial',
+                    },
                 },
             },
         },
         plugins: {
             legend: {
-                display: false, // 범례를 숨김
+                display: false,
             },
-            title: {
-                display: true,
-                text: '골격근 지방분석',
-            },
+        },
+        animation: {
+            duration: 0,
         },
     };
     
     // render: 신체정보 컴포넌트 렌더딩 //
     return (
         <div className='user-muscle-fat'>
+            <div className='chart-top'>
+                <div className='chart-title'>골격근 - 지방분석 </div>
+                <div className='chart-icon'>ㅇ</div>
+            </div>
             <div className='chart-container'>
                 <Bar data={data} options={options} />
             </div>
