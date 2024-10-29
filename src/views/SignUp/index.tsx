@@ -574,38 +574,6 @@ export default function SignUp() {
 
     }
 
-    // function: 신체정보 Response 처리 함수 //
-    const userMuscleFatResponse = (responseBody: ResponseDto | null) => {
-
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다' : 
-            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-
-    }
-
-    // function: 3대측정 Response 처리 함수 //
-    const threeMajorLiftResponse = (responseBody: ResponseDto | null) => {
-
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다' : 
-            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-
-    }
-
     // event handler: 회원가입 페이지 전환 핸들러 //
     const onSignUpPageChangeHandler = () => {
         setSignUpPage(prev => !prev);
@@ -635,28 +603,17 @@ export default function SignUp() {
             profileImage: url,
             personalGoals,
             height,
-        };
-    
-        const muscleFatRequestBody: PostUserMuscleFatRequestDto = {
-            userId: id,
             weight,
             bodyFatMass,
             skeletalMuscleMass,
-        };
-    
-        const majorLiftRequestBody: PostThreeMajorLiftRequestDto = {
-            userId: id,
             deadlift,
             benchPress,
             squat,
         };
+            
+        
     
-        signUpRequest(signUpRequestBody)
-            .then(signUpResponse)
-            .then(() => postUserMuscleFatRequest(muscleFatRequestBody))
-            .then(userMuscleFatResponse)
-            .then(() => postThreeMajorLiftRequest(majorLiftRequestBody))
-            .then(threeMajorLiftResponse);
+        signUpRequest(signUpRequestBody).then(signUpResponse)
     };
 
     // render: 회원가입 컴포넌트 렌더딩 //
