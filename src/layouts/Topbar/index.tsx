@@ -31,7 +31,7 @@ function LoginTop(){
     useEffect(()=> {
         const accessToken = cookies[ACCESS_TOKEN];
         if(accessToken) navigator(MAIN_PATH);
-        else setLoginState(false);
+        return;
     }, []);
 
     // render: 로그인 후 컴포넌트 렌더링 //

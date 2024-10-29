@@ -89,7 +89,6 @@ export default function Healthcare() {
     if(!isSuccessed) {
       alert(message);
       removeCookie(ACCESS_TOKEN, {path: ROOT_PATH});
-      setSignInCustomer(null);
       navigator(MAIN_ABSOLUTE_PATH);
       return;
     }
