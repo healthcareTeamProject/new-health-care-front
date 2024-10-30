@@ -96,12 +96,14 @@
     align-items: center;
     justify-content: center;
 
+    gap: 5px;
+
     width: 250px;
     height: 240px;
 }
 
 .personal-goals-box .personal-goals-box-icon {
-    margin-left: 160px;
+    margin-left: 200px;
 
     width: 30px;
     height: 30px;
@@ -113,21 +115,28 @@
 
 .personal-goals-box .personal-goals-box-buttom {
     width: 220px;
-    height: 210px;
+    height: 190px;
+
+    border: 1px solid rgba(0, 0, 0, 1);
+    border-radius: 8px;
 }
 
-.personal-goals-box .personal-goals-box-buttom .personal-goals-box-title {
+.personal-goals-box .personal-goals-box-buttom .personal-goals-box-buttom-title {
+    height: 30px;
+
+    padding-left: 10px;
+
     font-size: 20px;
 }
 
 .personal-goals-box .personal-goals-box-buttom .personal-goals-box-buttom-content {
-    width: 180px;
-    height: 140px;
+    width: 200px;
+    height: 130px;
 
     padding: 10px;
 
-    border-radius: 8px;
-    border: 1px solid var(--gray-default-color);
+    border: none;
+    border-top: 1px solid var(--gray-default-color);
 }
 
 

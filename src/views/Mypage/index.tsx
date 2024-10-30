@@ -1,38 +1,92 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.css'
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { useCookies } from 'react-cookie';
+import { useParams } from 'react-router';
+import { getCustomerMyPageRequest } from 'src/apis';
+import { ACCESS_TOKEN } from 'src/constant';
+import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { ResponseDto } from 'src/apis/dto/response';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 // component: 개인정보 컴포넌트 //
 function Personal() {
 
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+
+    // state: 사용자 정보 상태 //
+    const [profileImage, setProfileImage] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [nickname, setNickname] = useState<string>('');
+    const [height, setHeight] = useState<string>('');
+    const [personalGoals, setPersonalGoals] = useState<string>('');
+
+
+    // function: get customer response 처리 함수 //
+    const getCustomerResponse = (responseBody: GetCustomerResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            return;
+    }
+
+    const { profileImage, name, nickname, height, personalGoals } = responseBody as  GetCustomerResponseDto;
+    setProfileImage(profileImage);
+    setName(name);
+    setNickname(nickname);
+    setHeight(height);
+    setPersonalGoals(personalGoals);
+};
+
+console.log(name);
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
+    }, [userId])
+
     // render: 개인정보 컴포넌트 렌더딩 //
     return (
         <div className='personal'>
-            <div className='personal-logo'></div>
+            <div className='personal-logo' style={{ backgroundImage: `url(${profileImage})` }}></div>
             <div className='personal-buttom'>
-                <div className='profile-image'>이미지</div>
+                <div className='profile-image'></div>
                 <div className='personal-information'>
                     <div className='name'>
                         <div className='name-title'>이름</div>
-                        <div className='name-value'>임의의 이름</div>
+                        <div className='name-value'>{name}</div>
                     </div>
                     <div className='nickname'>
                         <div className='nickname-title'>닉네임</div>
-                        <div className='nickname-value'>임의의 닉네임</div>
+                        <div className='nickname-value'>{nickname}</div>
                     </div>
                     <div className='height'>
                         <div className='height-title'>키</div>
-                        <div className='height-value'>임의의 키</div>
+                        <div className='height-value'>{height}</div>
                     </div>
                 </div>
                 <div className='personal-goals-box'>
                     <div className='personal-goals-box-icon'></div>
                     <div className='personal-goals-box-buttom'>
                         <div className='personal-goals-box-buttom-title'>개인목표</div>
-                        <input className='personal-goals-box-buttom-content' placeholder='개인목표' />
+                        <input className='personal-goals-box-buttom-content' value={personalGoals} placeholder='개인목표' />
                     </div>
                 </div>
             </div>
