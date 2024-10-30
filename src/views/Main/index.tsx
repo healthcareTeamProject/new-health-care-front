@@ -11,7 +11,7 @@ import { getCustomerRequest, getSignInRequest, signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
-import { GetCustomerResposeDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
 import { useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 
@@ -34,7 +34,7 @@ function CustomerComponent(){
     const navigator = useNavigate();
 
     // function: get customer response 처리 함수 //
-    const getSignInCustomerResponse = (responseBody: GetCustomerResposeDto | ResponseDto | null) => {
+    const getSignInCustomerResponse = (responseBody: GetCustomerResponseDto | ResponseDto | null) => {
         const message = 
         !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
         responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
