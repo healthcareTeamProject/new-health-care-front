@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import './style.css'
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
@@ -7,6 +7,13 @@ ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
 
 // component: 개인정보 컴포넌트 //
 function Personal() {
+
+    // state: 사용자 정보 상태 //
+    const [profileImageFile, setProfileImageFile] = useState<string>('');
+    const [name, setName] = useState<string>('');
+    const [nickname, setNickname] = useState<string>('');
+    const [height, setHeight] = useState<string>('');
+    const [personalGoals, setPersonalGoals] = useState<string>('');
 
     // render: 개인정보 컴포넌트 렌더딩 //
     return (

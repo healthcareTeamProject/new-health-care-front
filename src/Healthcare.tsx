@@ -106,7 +106,7 @@ export default function Healthcare() {
 
   return (
     <Routes>
-      <Route index element={<Index/>} />
+      <Route index element={<Index />} />
       <Route path={MAIN_PATH} element={<Main />} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH} element={<Mypage />} />
