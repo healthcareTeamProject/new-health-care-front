@@ -22,13 +22,15 @@ function CustomerComponent(){
     const [cookies] = useCookies();
     // state: customer 아이디 상태 //
     const {userId} = useParams();
+
+    console.log(userId);
     // state: 로그인 유저 상태 //
     const {signInCustomer} = useSignInCustomerStroe();
     // state: 고객 정보 상태 //
-    const [profileImage, setProfileImage] = useState<string | undefined>('');
+    const [profileImage, setProfileImage] = useState<string>('');
     const [name, setName] = useState<string>('');
     const [nickname, setNickname] = useState<string>('');
-    const [personalGoals, setPersonalGoals] = useState<string | undefined>('');
+    const [personalGoals, setPersonalGoals] = useState<string>('');
     
     // function: 네비게이터 변경 함수 //
     const navigator = useNavigate();
@@ -42,12 +44,14 @@ function CustomerComponent(){
         responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-
         if(!isSuccessed) {
             alert(message);
             navigator(MAIN_ABSOLUTE_PATH);
             return;
     }
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
         
 
     const { profileImage, name, nickname, personalGoals } = responseBody as  GetSignInResponseDto;
@@ -71,7 +75,7 @@ function CustomerComponent(){
     return (
         <div className='login-box'>
             <div className='login-logo-image-box'>
-                <div className='login-logo-image'></div>
+                <div className='login-logo-image'>{profileImage}</div>
             </div>
             <div className='login-customer-box'>
                 <div className='login-customer-left-box'>
@@ -81,11 +85,11 @@ function CustomerComponent(){
                     <div className='login-customer-big-detail-box'>
                         <div className="login-customer-detail-box">
                             <div className="login-customer-name">이름</div>
-                            <div className="login-customer-detail-name">{'홍길동'}</div>
+                            <div className="login-customer-detail-name">{name}</div>
                         </div>
                         <div className="login-customer-detail-box">
                             <div className="login-customer-nickname">닉네임</div>
-                            <div className="login-customer-detail-nickname">{'뛰라노사우르스'}</div>
+                            <div className="login-customer-detail-nickname">{nickname}</div>
                         </div>
                     </div>
                 </div>
@@ -96,7 +100,7 @@ function CustomerComponent(){
                         </div>
                     </div>
                         <div className="login-customer-personal-goals-detail-box">
-                            <div className="login-customer-personal-goals-detail">{'건강을 위하여'}</div>
+                            <div className="login-customer-personal-goals-detail">{personalGoals}</div>
                         </div>
                     
                 </div>
