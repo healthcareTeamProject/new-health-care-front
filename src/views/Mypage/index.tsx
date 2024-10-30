@@ -16,15 +16,15 @@ function Personal() {
                 <div className='profile-image'>이미지</div>
                 <div className='personal-information'>
                     <div className='name'>
-                        <div className='name title'>이름</div>
+                        <div className='name-title'>이름</div>
                         <div className='name-value'>임의의 이름</div>
                     </div>
                     <div className='nickname'>
-                        <div className='nickname title'>닉네임</div>
+                        <div className='nickname-title'>닉네임</div>
                         <div className='nickname-value'>임의의 닉네임</div>
                     </div>
                     <div className='height'>
-                        <div className='height title'>키</div>
+                        <div className='height-title'>키</div>
                         <div className='height-value'>임의의 키</div>
                     </div>
                 </div>
@@ -42,7 +42,6 @@ function Personal() {
 }
 
 
-
 // component: 신체정보 컴포넌트 //
 function UserMucleFat() {
     const originalData = {
@@ -52,12 +51,11 @@ function UserMucleFat() {
     
     // 최대 값 설정
     const maxValue = 100;
-
+    
     const data = {
         labels: originalData.labels,
         datasets: [
             {
-                label: '측정 값 (%)',
                 data: originalData.values.map(value => (value)), // 정규화하지 않고 실제 값 사용
                 backgroundColor: 'rgba(75, 192, 192, 0.6)',
             },
@@ -66,41 +64,55 @@ function UserMucleFat() {
     
     const options = {
         responsive: true,
-        indexAxis: 'y' as const, // 세로 막대 그래프
+        maintainAspectRatio: false,
+        indexAxis: 'y' as const, // 명시적으로 'y'로 설정
         scales: {
             y: {
                 beginAtZero: true,
+                ticks: {
+                    font: {
+                        size: 14,
+                        weight: 'bold' as 'bold', // 'bold'로 설정
+                        family: 'Arial',
+                    },
+                },
             },
             x: {
                 beginAtZero: true,
-                max: maxValue, // X축 최대값 설정
+                max: maxValue,
                 ticks: {
-                    stepSize: 20, // 가로 축 값 간격 설정
+                    stepSize: 20,
+                    font: {
+                        size: 14,
+                        weight: 'bold' as 'bold', // 'bold'로 설정
+                        family: 'Arial',
+                    },
                 },
             },
         },
         plugins: {
             legend: {
-                position: 'top' as const,
-            },
-            title: {
-                display: true,
-                text: '골격근 지방분석',
+                display: false,
             },
         },
+        animation: {
+            duration: 0,
+        },
     };
-
+    
     // render: 신체정보 컴포넌트 렌더딩 //
     return (
         <div className='user-muscle-fat'>
-            <div className='chart-container'> {/* 차트 컨테이너 div */}
+            <div className='chart-top'>
+                <div className='chart-title'>골격근 - 지방분석 </div>
+                <div className='chart-icon'>ㅇ</div>
+            </div>
+            <div className='chart-container'>
                 <Bar data={data} options={options} />
             </div>
-            {/* <div className='max-value'>최대값: {maxValue}</div> */}
         </div>
     );
 }
-
 
 
 // component: 3대측정 컴포넌트 //
@@ -110,14 +122,26 @@ function ThreeMajorLift() {
     return (
         <div className='three-major-lift'>
             <div className='three-major-lift-top'>
-                <div className='three-major-lift-top-title'></div>
+                <div className='three-major-lift-top-title'>3대 측정</div>
                 <div className='three-major-lift-top-icon'></div>
             </div>
-            <div className='three-major-lift-buttom'>내용물</div>
+            <div className='three-major-lift-buttom'>
+                <div className='three-major-lift-buttom-title'>
+                    <div className='right-border'>밴치프레스</div>
+                    <div className='right-border'>데드리프트</div>
+                    <div>스쿼트</div>
+                </div>
+                <div className='three-major-lift-buttom-contents'>
+                    <div className='right-border'>110kg</div>
+                    <div className='right-border'>120kg</div>
+                    <div>100kg</div>
+                </div>
+            </div>
         </div>
     )
 
 }
+
 
 // component: 내 게시물 컴포넌트 //
 function Board() {
@@ -132,6 +156,7 @@ function Board() {
 
 }
 
+
 // component: 신체정보 컴포넌트 //
 function Graph() {
 
@@ -141,9 +166,6 @@ function Graph() {
     )
 
 }
-
-
-
 
 
 // component: 마이페이지 컴포넌트 //

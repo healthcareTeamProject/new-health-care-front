@@ -5,7 +5,6 @@ export const MAIN_PATH = '/main';
 
 export const SIGN_UP_PATH = '/sign-up';
 
-export const MAIN_SIGN_IN_PATH = '/sign-in';
 export const CUSTOMER_MYPAGE_DETAIL_PATH = `/mypage`;
 
 export const MY_PAGE_PATH = '/my-page';
@@ -26,7 +25,6 @@ export const OTHERS_PATH = '*';
 export const ROOT_ABSOLUTE_PATH = ROOT_PATH;
 
 export const MAIN_ABSOLUTE_PATH = MAIN_PATH;
-export const MAIN_SIGN_IN_ABSOLUTE_PATH = MAIN_SIGN_IN_PATH;
 export const SIGN_UP_ABSOLUTE_PATH = SIGN_UP_PATH;
 
 export const CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH = CUSTOMER_MYPAGE_DETAIL_PATH;

@@ -11,4 +11,10 @@ export default interface SignUpRequestDto {
   height: string;
   profileImage?: string | null;
   personalGoals?: string | null;
+  deadlift?: string | null;
+  benchPress?: string | null;
+  squat?: string | null;
+  weight: string;
+  skeletalMuscleMass?: string | null;
+  bodyFatMass?: string | null;
 }

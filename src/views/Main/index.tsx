@@ -2,17 +2,107 @@ import React, { ChangeEvent, useEffect, useState } from 'react'
 import './style.css'
 import TopBar from 'src/layouts/Topbar'
 import { useCookies } from 'react-cookie'
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
-import { ACCESS_TOKEN, MAIN_SIGN_IN_ABSOLUTE_PATH, ROOT_PATH, SIGN_UP_ABSOLUTE_PATH } from 'src/constant';
-import { signInRequest } from 'src/apis';
+import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
+import { getCustomerRequest, getSignInRequest, signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
+import { GetCustomerResposeDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 
+// component: 로그인 후 개인 정보 박스 컴포넌트 //
+function CustomerComponent(){
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+    // state: 로그인 유저 상태 //
+    const {signInCustomer} = useSignInCustomerStroe();
+    // state: 고객 정보 상태 //
+    const [profileImage, setProfileImage] = useState<string | undefined>('');
+    const [name, setName] = useState<string>('');
+    const [nickname, setNickname] = useState<string>('');
+    const [personalGoals, setPersonalGoals] = useState<string | undefined>('');
+    
+    // function: 네비게이터 변경 함수 //
+    const navigator = useNavigate();
+
+    // function: get customer response 처리 함수 //
+    const getSignInCustomerResponse = (responseBody: GetCustomerResposeDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            navigator(MAIN_ABSOLUTE_PATH);
+            return;
+    }
+        
+
+    const { profileImage, name, nickname, personalGoals } = responseBody as  GetSignInResponseDto;
+    setProfileImage(profileImage);
+    setName(name);
+    setNickname(nickname);
+    setPersonalGoals(personalGoals);
+};
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerRequest(userId, accessToken).then(getSignInCustomerResponse);
+    }, [userId])
+
+
+    // render: 로그인 후 메인 개인정보 박스 컴포넌트 렌더링 //
+    return (
+        <div className='login-box'>
+            <div className='login-logo-image-box'>
+                <div className='login-logo-image'></div>
+            </div>
+            <div className='login-customer-box'>
+                <div className='login-customer-left-box'>
+                    <div className="login-customer-image-box">
+                        <div className="login-customer-image"></div>
+                    </div>
+                    <div className="login-customer-detail-box">
+                        <div className="login-customer-name">이름</div>
+                        <div className="login-customer-detail-name">{'홍길동'}</div>
+                    </div>
+                    <div className="login-customer-detail-box">
+                        <div className="login-customer-nickname">닉네임</div>
+                        <div className="login-customer-detail-nickname">{'뛰라노사우르스'}</div>
+                    </div>
+                    <div className="login-customer-detail-box">
+                        <div className="login-customer-height">키(cm)</div>
+                        <div className="login-customer-detail-height">{'180'}cm</div>
+                    </div>
+                </div>
+                <div className="login-cutomer-right-box">
+                    <div className="login-customer-personal-goals-box">
+                        <div className="login-customer-personal-goals">개인목표</div>
+                        <div className="login-customer-personal-goals-detail-box">
+                            <div className="login-customer-personal-goals-detail">{'건강을 위하여'}</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    )
+}
 
 // component: 로그인 상자 컴포넌트 //
 function SignInComponent(){
@@ -50,7 +140,7 @@ function SignInComponent(){
         const expires = new Date(Date.now() + (expiration * 1000));
         setCookies(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});
 
-        navigator(MAIN_SIGN_IN_ABSOLUTE_PATH);
+        navigator(MAIN_PATH);
     };
 
     // event handler: 아이디 변경 이벤트 처리 //
@@ -89,7 +179,7 @@ function SignInComponent(){
 
     // effect: 첫 로드시에 Query Param의 snsId와 joinPath 존재시 회원가입 화면전환 함수 //
     useEffect(()=> {
-        if (snsId && joinPath) navigator(SIGN_UP_ABSOLUTE_PATH);
+        if (snsId && joinPath) navigator(SIGN_UP_PATH);
     }, []);
 
     // render: 로그인 전 메인 화면 컴포넌트 렌더링 //
@@ -134,6 +224,11 @@ function SignInComponent(){
 // component: 로그인 전 메인 화면 컴포넌트 //
 export default function Main() {
 
+    const [cookies] = useCookies();
+
+    const isLoggedIn = !!cookies[ACCESS_TOKEN];
+
+
     // render: 로그인 전 메인 화면 컴포넌트 //
     return (
         <div id='main-wrapper'>
@@ -141,7 +236,7 @@ export default function Main() {
                 <div className='main-top-detail-box'>
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
-                        <SignInComponent />
+                        {isLoggedIn ? <CustomerComponent/> : <SignInComponent />}
                         <div className='scadul-mini-box'></div>
                     </div>
                 </div>

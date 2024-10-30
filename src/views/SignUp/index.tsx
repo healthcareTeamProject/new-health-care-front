@@ -5,8 +5,9 @@ import { ResponseDto } from 'src/apis/dto/response';
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from 'src/apis/dto/request/auth';
 import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, postThreeMajorLiftRequest, postUserMuscleFatRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
 import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
+import { MAIN_ABSOLUTE_PATH } from 'src/constant';
 
 interface SignUpFirstProps {
     onNext: () => void;
@@ -554,6 +555,9 @@ export default function SignUp() {
     const isComplete = name && id && nickname && password && passwordCheck && telNumber && authNumber &&
         height && weight;
 
+    // function: 네비게이터 함수 //
+    const navigator = useNavigate();
+
     // function: 회원가입 Response 처리 함수 //
     const signUpResponse = (responseBody: ResponseDto | null) => {
 
@@ -564,38 +568,6 @@ export default function SignUp() {
             responseBody.code === 'DN' ? '중복된 닉네임 입니다' : 
             responseBody.code === 'DT' ? '중복된 전화번호 입니다' : 
             responseBody.code === 'TAF' ? '인증번호가 일치하지 않습니다' : 
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-
-    }
-
-    // function: 신체정보 Response 처리 함수 //
-    const userMuscleFatResponse = (responseBody: ResponseDto | null) => {
-
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다' : 
-            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed) {
-            alert(message);
-            return;
-        }
-
-    }
-
-    // function: 3대측정 Response 처리 함수 //
-    const threeMajorLiftResponse = (responseBody: ResponseDto | null) => {
-
-        const message = 
-            !responseBody ? '서버에 문제가 있습니다' : 
-            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
@@ -635,28 +607,17 @@ export default function SignUp() {
             profileImage: url,
             personalGoals,
             height,
-        };
-    
-        const muscleFatRequestBody: PostUserMuscleFatRequestDto = {
-            userId: id,
             weight,
             bodyFatMass,
             skeletalMuscleMass,
-        };
-    
-        const majorLiftRequestBody: PostThreeMajorLiftRequestDto = {
-            userId: id,
             deadlift,
             benchPress,
             squat,
         };
-    
-        signUpRequest(signUpRequestBody)
-            .then(signUpResponse)
-            .then(() => postUserMuscleFatRequest(muscleFatRequestBody))
-            .then(userMuscleFatResponse)
-            .then(() => postThreeMajorLiftRequest(majorLiftRequestBody))
-            .then(threeMajorLiftResponse);
+
+        signUpRequest(signUpRequestBody).then(signUpResponse)
+
+        navigator(MAIN_ABSOLUTE_PATH);
     };
 
     // render: 회원가입 컴포넌트 렌더딩 //
