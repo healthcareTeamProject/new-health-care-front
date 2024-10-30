@@ -109,7 +109,6 @@ export default function Healthcare() {
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH} element={<Mypage />} />
       <Route path={BOARD_LIST_PATH} element={<Community />} />
-      <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />
       <Route path={OTHERS_PATH} element={<Index />} />
     </Routes>

@@ -242,7 +242,7 @@
     justify-content: center;
     align-items: center;
 }
-.login-customer-image-box{
+.login-customer-image{
     width: 120px;
     height: 120px;
 
@@ -252,6 +252,7 @@
 .login-customer-big-detail-box{
     display: flex;
     flex-direction: column;
+    gap: 15px;
 }
 .login-customer-detail-box{
     display: flex;
@@ -261,6 +262,37 @@
 .login-customer-name{
     display: flex;
     font-size: 13px;
+}
+.login-cutomer-right-box{
+    display: flex;
+    width: 260px;
+    flex-direction: column;
+    border-radius: 5px;
+    border: 1px solid #A7A7A7;
+}
+.login-customer-big-personal-goals-box{
+    width: 260px;
+    height: 40px;
+}
+.login-customer-personal-goals-box{
+    display: flex;
+    height: 40px;
+    align-items: center;
+}
+.login-customer-personal-goals-text{
+    font-size: 15px;
+    font-weight: 500;
+}
+.login-customer-personal-goals-detail-box{
+    display: flex;
+    height: 40px;
+    align-items: center;
+    
+    border-top: 2px solid #A7A7A7;
+}
+.login-customer-personal-goals-detail{
+    font-size: 15px;
+    color: #A7A7A7;
 }
 
 #community-board {

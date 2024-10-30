@@ -90,12 +90,15 @@ function CustomerComponent(){
                     </div>
                 </div>
                 <div className="login-cutomer-right-box">
-                    <div className="login-customer-personal-goals-box">
-                        <div className="login-customer-personal-goals">개인목표</div>
+                    <div className="login-customer-big-personal-goals-box">
+                        <div className="login-customer-personal-goals-box">
+                            <div className="login-customer-personal-goals-text">개인목표</div>
+                        </div>
+                    </div>
                         <div className="login-customer-personal-goals-detail-box">
                             <div className="login-customer-personal-goals-detail">{'건강을 위하여'}</div>
                         </div>
-                    </div>
+                    
                 </div>
             </div>
         </div>
