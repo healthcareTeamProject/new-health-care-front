@@ -249,6 +249,10 @@
     background-image: url(/public/images/main-image.png);
     background-size: 100% 100%;
 }
+.login-customer-big-detail-box{
+    display: flex;
+    flex-direction: column;
+}
 .login-customer-detail-box{
     display: flex;
     width: 149px;

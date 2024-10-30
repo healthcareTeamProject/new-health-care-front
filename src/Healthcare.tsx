@@ -5,7 +5,7 @@ import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
 
-import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH } from './constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH, SIGN_UP_ABSOLUTE_PATH } from './constant';
 import { useCookies } from 'react-cookie';
 import { useSignInCustomerStroe } from './stores';
 import { GetSignInResponseDto } from './apis/dto/response/customer';
@@ -24,8 +24,8 @@ function Index(){
 
   // effect: 마운트 시 경로 이동 effect //
   useEffect(()=> {
-      if(cookies.accessToken) navigator(MAIN_PATH);
-      else navigator(MAIN_ABSOLUTE_PATH);
+      if(cookies.accessToken) navigator(MAIN_ABSOLUTE_PATH);
+      else navigator(SIGN_UP_ABSOLUTE_PATH);
   }, []);
 
   // render: root path 컴포넌트 렌더링 //
@@ -55,9 +55,8 @@ function SnsSuccess(){
       setCookies(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});
 
       navigator(MAIN_ABSOLUTE_PATH);
-      return;
     }
-
+      else navigator(SIGN_UP_ABSOLUTE_PATH);
   }, []);
 
   // render: Sns success 컴포넌트 렌더링 //
