@@ -13,6 +13,8 @@ export const BOARD_LIST_PATH = '/board';
 export const BOARD_DETAIL_PATH = (boardNumber: number | string) => `/board/detail/${boardNumber}`;
 export const BOARD_UPDATE_PATH =  (boardNumber: number | string) => `/board/detail/${boardNumber}/update`;
 
+export const POST_PATH = '/post';
+
 export const SCHEDULE_PATH = '/schedul';
 
 export const SNS_SUCCESS_PATH = '/sns-success';
@@ -32,6 +34,8 @@ export const MY_PAGE_ABSOLUTE_PATH = MY_PAGE_PATH;
 export const BOARD_LIST_ABSOLUTE_PATH = BOARD_LIST_PATH;
 export const BOARD_DETAIL_ABSOLUTE_PATH = (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_DETAIL_PATH(boardNumber)}`;
 export const BOARD_UPDATE_ABSOLUTE_PATH =  (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_UPDATE_PATH(boardNumber)}`;
+
+export const POST_ABSOLUTE_PATH = POST_PATH;
 
 
 export const SCHEDULE_ABSOLUTE_DATH = SCHEDULE_PATH;
