@@ -5,7 +5,7 @@ export const MAIN_PATH = '/main';
 
 export const SIGN_UP_PATH = '/sign-up';
 
-export const CUSTOMER_MYPAGE_DETAIL_PATH = `/mypage`;
+export const CUSTOMER_MYPAGE_DETAIL_PATH = (userId : string) => `/mypage/${userId}`;
 
 export const MY_PAGE_PATH = '/my-page';
 
