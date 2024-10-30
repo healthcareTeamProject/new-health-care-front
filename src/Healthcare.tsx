@@ -25,7 +25,7 @@ function Index(){
 
   // effect: 마운트 시 경로 이동 effect //
   useEffect(()=> {
-      if(cookies.accessToken) navigator(MAIN_SIGN_IN_PATH);
+      if(cookies.accessToken) navigator(MAIN_PATH);
       else navigator(MAIN_ABSOLUTE_PATH);
   }, []);
 
@@ -106,7 +106,7 @@ export default function Healthcare() {
 
   return (
     <Routes>
-      <Route index element={<Index/>} />
+      <Route index element={<Index />} />
       <Route path={MAIN_PATH} element={<Main />} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={MAIN_SIGN_IN_PATH} element={<MainSginIn />}/>
