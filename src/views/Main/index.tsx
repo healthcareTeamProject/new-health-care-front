@@ -78,17 +78,15 @@ function CustomerComponent(){
                     <div className="login-customer-image-box">
                         <div className="login-customer-image"></div>
                     </div>
-                    <div className="login-customer-detail-box">
-                        <div className="login-customer-name">이름</div>
-                        <div className="login-customer-detail-name">{'홍길동'}</div>
-                    </div>
-                    <div className="login-customer-detail-box">
-                        <div className="login-customer-nickname">닉네임</div>
-                        <div className="login-customer-detail-nickname">{'뛰라노사우르스'}</div>
-                    </div>
-                    <div className="login-customer-detail-box">
-                        <div className="login-customer-height">키(cm)</div>
-                        <div className="login-customer-detail-height">{'180'}cm</div>
+                    <div className='login-customer-big-detail-box'>
+                        <div className="login-customer-detail-box">
+                            <div className="login-customer-name">이름</div>
+                            <div className="login-customer-detail-name">{'홍길동'}</div>
+                        </div>
+                        <div className="login-customer-detail-box">
+                            <div className="login-customer-nickname">닉네임</div>
+                            <div className="login-customer-detail-nickname">{'뛰라노사우르스'}</div>
+                        </div>
                     </div>
                 </div>
                 <div className="login-cutomer-right-box">
