@@ -37,8 +37,8 @@
 }
 
 .search-bar button img {
-    width: 16px;
-    height: 16px;
+    width: 18px;
+    height: 18px;
 }
 
 #search {
@@ -59,12 +59,13 @@
     top: 5px;
     bottom: 5px;
     right: 5px;
-    width: 18px;
-    height: 18px;
+    width: 21px;
+    height: 21px;
     background-image: url('/public/images/searchIcon.png');
     display: flex;
     justify-content: center;
     align-items: center;
+    border: none;
 }
 
 .mid {
