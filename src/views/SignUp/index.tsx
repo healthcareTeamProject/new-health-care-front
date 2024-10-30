@@ -6,7 +6,6 @@ import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthReq
 import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, postThreeMajorLiftRequest, postUserMuscleFatRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
 import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
 import { MAIN_ABSOLUTE_PATH } from 'src/constant';
 
 interface SignUpFirstProps {

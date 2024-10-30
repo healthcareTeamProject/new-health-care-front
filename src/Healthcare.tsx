@@ -5,7 +5,7 @@ import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
 
-import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH, SIGN_UP_ABSOLUTE_PATH } from './constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH, SIGN_UP_ABSOLUTE_PATH, POST_PATH } from './constant';
 
 import { useCookies } from 'react-cookie';
 import { useSignInCustomerStroe } from './stores';
