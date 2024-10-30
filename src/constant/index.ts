@@ -5,7 +5,6 @@ export const MAIN_PATH = '/main';
 
 export const SIGN_UP_PATH = '/sign-up';
 
-export const MAIN_SIGN_IN_PATH = '/sign-in';
 export const CUSTOMER_MYPAGE_DETAIL_PATH = `/mypage`;
 
 export const MY_PAGE_PATH = '/my-page';
@@ -13,6 +12,8 @@ export const MY_PAGE_PATH = '/my-page';
 export const BOARD_LIST_PATH = '/board';
 export const BOARD_DETAIL_PATH = (boardNumber: number | string) => `/board/detail/${boardNumber}`;
 export const BOARD_UPDATE_PATH =  (boardNumber: number | string) => `/board/detail/${boardNumber}/update`;
+
+export const POST_PATH = '/post';
 
 export const SCHEDULE_PATH = '/schedul';
 
@@ -24,7 +25,6 @@ export const OTHERS_PATH = '*';
 export const ROOT_ABSOLUTE_PATH = ROOT_PATH;
 
 export const MAIN_ABSOLUTE_PATH = MAIN_PATH;
-export const MAIN_SIGN_IN_ABSOLUTE_PATH = MAIN_SIGN_IN_PATH;
 export const SIGN_UP_ABSOLUTE_PATH = SIGN_UP_PATH;
 
 export const CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH = CUSTOMER_MYPAGE_DETAIL_PATH;
@@ -34,6 +34,8 @@ export const MY_PAGE_ABSOLUTE_PATH = MY_PAGE_PATH;
 export const BOARD_LIST_ABSOLUTE_PATH = BOARD_LIST_PATH;
 export const BOARD_DETAIL_ABSOLUTE_PATH = (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_DETAIL_PATH(boardNumber)}`;
 export const BOARD_UPDATE_ABSOLUTE_PATH =  (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_UPDATE_PATH(boardNumber)}`;
+
+export const POST_ABSOLUTE_PATH = POST_PATH;
 
 
 export const SCHEDULE_ABSOLUTE_DATH = SCHEDULE_PATH;

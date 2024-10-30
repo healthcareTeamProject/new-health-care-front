@@ -6,6 +6,7 @@ import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
 import { GetSignInResponseDto } from "./dto/response/customer";
 import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
+import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
@@ -22,9 +23,10 @@ const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 const POST_USER_MUSCLE_FAT = `${HEALTHCARE_API_DOMAIN}/api/v1/muscle-fat`
 const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
 
-const CUSTOMER_MODULE_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/customer`;
+const CUSTOMER_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
-const GET_SIGN_IN_API_URL = `{CUSTOMER_MODULE_URL}/sign-in`
+const GET_SIGN_IN_API_URL = `${CUSTOMER_MODULE_URL}/sign-in`;
+const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/`;
 
 
 // function: Authorizarion Bearer 헤더 //
@@ -98,6 +100,14 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
   const responseBody = await axios.post(SIGN_UP_API_URL, requestBody)
       .then(responseDataHandler<ResponseDto>)
       .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: get customer 요청 함수 //
+export const getCustomerRequest = async (userId: string, accessToken: string) => {
+  const responseBody = await axios.get(GET_CUSTOMER_API_URL(userId),bearerAuthorization(accessToken))
+  .then(responseDataHandler<GetCustomerResposeDto>)
+  .catch(responseErrorHandler);
   return responseBody;
 }
 

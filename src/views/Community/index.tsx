@@ -72,7 +72,7 @@ function CategoryPopularTag() {
                 <div id="search">
                     <input type="text" placeholder="검색어 입력" />
                     <button className='searchButton'>
-                        ''
+                        
                     </button>
                 </div>
             </div>
