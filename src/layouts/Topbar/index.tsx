@@ -3,7 +3,12 @@ import './style.css'
 
 import React, { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router';
-import { ACCESS_TOKEN, BOARD_LIST_PATH, CUSTOMER_MYPAGE_DETAIL_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH,ROOT_ABSOLUTE_PATH, SCHEDULE_PATH} from 'src/constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, CUSTOMER_MYPAGE_DETAIL_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH,ROOT_ABSOLUTE_PATH, ROOT_PATH, SCHEDULE_PATH} from 'src/constant';
+import { SignInCustomer } from 'src/types';
+import { getSignInRequest } from 'src/apis';
+import { GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { ResponseDto } from 'src/apis/dto/response';
+import { useSignInCustomerStroe } from 'src/stores';
 
 // component: 로그인 후 컴포넌트 //
 function LoginTop(){
@@ -12,13 +17,19 @@ function LoginTop(){
     const[cookies, setCookies, removeCookie] = useCookies();
     // state: 로그인 되지 않은 컴포넌트 상태 //
     const [loginstate, setLoginState] = useState<boolean>(false);
+    // state: 로그인 유저 정보 상태 //
+    const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
+    const [userId, setUserId] = useState<string>('');
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
     // event handler: 마이페이지 버튼 클릭 이벤트 처리 //
     const onMyPageButtonClickHandler = () => {
-        navigator(CUSTOMER_MYPAGE_DETAIL_PATH)
+        if (signInCustomer?.userId) {
+            navigator(CUSTOMER_MYPAGE_DETAIL_PATH(signInCustomer?.userId))
+        }
+        
     }
     
     // event handler: 로그아웃 버튼 클릭 이벤트 처리 //
@@ -26,6 +37,40 @@ function LoginTop(){
         removeCookie(ACCESS_TOKEN, {path: ROOT_ABSOLUTE_PATH});
         navigator(MAIN_ABSOLUTE_PATH);
     }
+
+    // function: get sign in 요청 함수 //
+    const getSignInResponse = (responseBody:  GetSignInResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+            responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+            
+    const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+    if(!isSuccessed) {
+        alert(message);
+        removeCookie(ACCESS_TOKEN, {path: ROOT_PATH});
+        navigator(MAIN_ABSOLUTE_PATH);
+        return;
+    }
+
+    const {userId, name, nickname} = responseBody as GetSignInResponseDto;
+    setSignInCustomer({userId, name, nickname});
+
+    setUserId(userId);
+
+    }
+
+    console.log(userId);
+    console.log(signInCustomer?.userId);
+
+    // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
+    useEffect(() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(accessToken) getSignInRequest(accessToken).then(getSignInResponse)
+        else setSignInCustomer(null);
+    }, [cookies[ACCESS_TOKEN]]);
 
     // effect: 마운트 시 경로 이동 effect //
     useEffect(()=> {
@@ -37,7 +82,7 @@ function LoginTop(){
     // render: 로그인 후 컴포넌트 렌더링 //
     return(
         <div className='logout-mypage-box'>
-            <div className='mypage-button'onClick={onMyPageButtonClickHandler}>{'홍길동'}님</div>
+            <div className='mypage-button'onClick={onMyPageButtonClickHandler}>{signInCustomer?.nickname}님</div>
             <div className='logout-button'onClick={onLogoutButtonClickHandler}>{'로그아웃'}</div>
         </div>
     )

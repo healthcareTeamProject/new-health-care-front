@@ -96,7 +96,9 @@ export default function Healthcare() {
 
     const {userId, name, nickname} = responseBody as GetSignInResponseDto;
     setSignInCustomer({userId, name, nickname});
+
   }
+
   // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
   useEffect(() => {
     const accessToken = cookies[ACCESS_TOKEN];

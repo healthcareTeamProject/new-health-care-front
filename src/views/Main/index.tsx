@@ -22,8 +22,6 @@ function CustomerComponent(){
     const [cookies] = useCookies();
     // state: customer 아이디 상태 //
     const {userId} = useParams();
-
-    console.log(userId);
     // state: 로그인 유저 상태 //
     const {signInCustomer} = useSignInCustomerStroe();
     // state: 고객 정보 상태 //
