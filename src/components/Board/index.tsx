@@ -1,6 +1,8 @@
 import React from 'react';
 import { Board } from 'src/types';
 import './style.css'
+import { useNavigate } from 'react-router';
+import { BOARD_LIST_ABSOLUTE_PATH } from 'src/constant';
 
 const posts: Board[] = [
     { boardNumber: 187, boardTitle: '턱걸이 어꺠 뚜둑 소리', nickname: '마라닭가슴살', boardUploadDate: '2024-10-11 17:15', boardViewCount: 826 },
@@ -29,11 +31,18 @@ function TableRow({ board }: TableRowProps) {
 }
 
 function CommunityBoard() {
+
+    const navigator = useNavigate();
+
+    const onViewMoreButtonClickHandler = () => {
+        navigator(BOARD_LIST_ABSOLUTE_PATH);
+    }
+
     return (
         <div id='community-board'>
             <div className='board-head'>
                 <h2>커뮤니티 게시판</h2>
-                <button className='view-more'>
+                <button className='view-more' onClick={onViewMoreButtonClickHandler}>
                     더보기
                     <span className="arrow">▶</span>
                 </button>
