@@ -8,17 +8,22 @@ import { getCustomerMyPageRequest } from 'src/apis';
 import { ACCESS_TOKEN } from 'src/constant';
 import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
+import { useSignInCustomerStroe } from 'src/stores';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
 // component: 개인정보 컴포넌트 //
 function Personal() {
 
+
     // state: cookie 상태 //
     const [cookies] = useCookies();
 
     // state: customer 아이디 상태 //
     const {userId} = useParams();
+
+    // state: 로그인 유저 상태 //
+    const {signInCustomer} = useSignInCustomerStroe();
 
     // state: 사용자 정보 상태 //
     const [profileImage, setProfileImage] = useState<string>('');
@@ -41,17 +46,20 @@ function Personal() {
         if(!isSuccessed) {
             alert(message);
             return;
-    }
+        }
 
-    const { profileImage, name, nickname, height, personalGoals } = responseBody as  GetCustomerResponseDto;
-    setProfileImage(profileImage);
-    setName(name);
-    setNickname(nickname);
-    setHeight(height);
-    setPersonalGoals(personalGoals);
-};
+        const { profileImage, name, nickname, height, personalGoals } = responseBody as  GetCustomerResponseDto;
+        setProfileImage(profileImage);
+        setName(name);
+        setNickname(nickname);
+        setHeight(height);
+        setPersonalGoals(personalGoals);
 
-console.log(name);
+        console.log(name);
+    };
+
+    console.log(cookies);
+    console.log(userId);
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
@@ -86,7 +94,7 @@ console.log(name);
                     <div className='personal-goals-box-icon'></div>
                     <div className='personal-goals-box-buttom'>
                         <div className='personal-goals-box-buttom-title'>개인목표</div>
-                        <input className='personal-goals-box-buttom-content' value={personalGoals} placeholder='개인목표' />
+                        <input className='personal-goals-box-buttom-content' placeholder='개인목표' />
                     </div>
                 </div>
             </div>
