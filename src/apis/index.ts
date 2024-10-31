@@ -111,7 +111,7 @@ export const getCustomerRequest = async (userId: string, accessToken: string) =>
   return responseBody;
 }
 
-// function: get customer 요청 함수 //
+// function: get customer mypage 요청 함수 //
 export const getCustomerMyPageRequest = async (userId: string, accessToken: string) => {
   const responseBody = await axios.get(GET_CUSTOMER_API_URL(userId),bearerAuthorization(accessToken))
   .then(responseDataHandler<GetCustomerMyPageResponseDto>)
