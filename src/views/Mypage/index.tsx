@@ -6,7 +6,7 @@ import { useCookies } from 'react-cookie';
 import { useParams } from 'react-router';
 import { getCustomerMyPageRequest } from 'src/apis';
 import { ACCESS_TOKEN } from 'src/constant';
-import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { GetCustomerMyPageResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 
@@ -22,6 +22,8 @@ function Personal() {
     // state: customer 아이디 상태 //
     const {userId} = useParams();
 
+    console.log(userId);
+
     // state: 로그인 유저 상태 //
     const {signInCustomer} = useSignInCustomerStroe();
 
@@ -34,7 +36,7 @@ function Personal() {
 
 
     // function: get customer response 처리 함수 //
-    const getCustomerResponse = (responseBody: GetCustomerResponseDto | ResponseDto | null) => {
+    const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
         const message = 
         !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
         responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
@@ -48,18 +50,15 @@ function Personal() {
             return;
         }
 
-        const { profileImage, name, nickname, height, personalGoals } = responseBody as  GetCustomerResponseDto;
+        const { profileImage, name, nickname, height, personalGoals, weight, skeletalMuscleMass, bodyFatMass, deadlift, benchPress, squat } = responseBody as  GetCustomerMyPageResponseDto;
         setProfileImage(profileImage);
         setName(name);
         setNickname(nickname);
         setHeight(height);
         setPersonalGoals(personalGoals);
 
-        console.log(name);
     };
 
-    console.log(cookies);
-    console.log(userId);
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
@@ -106,6 +105,49 @@ function Personal() {
 
 // component: 신체정보 컴포넌트 //
 function UserMucleFat() {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+
+    const [weight, setWeight] = useState<string>('');
+    const [skeletalMuscleMass, setSkeletalMuscleMass] = useState<string>('');
+    const [bodyFatMass, setBodyFatMass] = useState<string>('');
+
+    // function: get customer response 처리 함수 //
+    const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { weight, skeletalMuscleMass, bodyFatMass } = responseBody as  GetCustomerMyPageResponseDto;
+        setWeight(weight);
+        setSkeletalMuscleMass(skeletalMuscleMass);
+        setBodyFatMass(bodyFatMass);
+
+    };
+
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
+    }, [userId])
+
     const originalData = {
         labels: ['몸무게', '골격근량', '체지방량'],
         values: [70, 30, 15], // 원래 데이터
@@ -179,6 +221,49 @@ function UserMucleFat() {
 
 // component: 3대측정 컴포넌트 //
 function ThreeMajorLift() {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+
+    const [deadlift, setDeadlift] = useState<string>('');
+    const [benchPress, setBenchPress] = useState<string>('');
+    const [squat, setSquat] = useState<string>('');
+
+    // function: get customer response 처리 함수 //
+    const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { deadlift, benchPress, squat } = responseBody as  GetCustomerMyPageResponseDto;
+        
+        setDeadlift(deadlift);
+        setBenchPress(benchPress);
+        setSquat(squat);
+
+    };
+
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
+    }, [userId])
 
     // render: 3대측정 컴포넌트 렌더딩 //
     return (

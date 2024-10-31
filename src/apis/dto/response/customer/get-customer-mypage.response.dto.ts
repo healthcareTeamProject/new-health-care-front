@@ -8,4 +8,10 @@ export default interface GetCustomerMyPageResponseDto extends ResponseDto {
     profileImage: string;
     personalGoals: string;
     height: string;
+    weight: string;
+    deadlift: string;
+    benchPress: string;
+    squat: string;
+    skeletalMuscleMass: string;
+    bodyFatMass: string;
 }
