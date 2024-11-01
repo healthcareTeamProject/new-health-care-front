@@ -14,6 +14,7 @@ import { ResponseDto } from './apis/dto/response';
 import { getSignInRequest } from './apis';
 import Mypage from './views/Mypage';
 import Post from './views/Community/Post';
+import { Dayjs } from 'dayjs';
 
 // component: root path 컴포넌트 //
 function Index(){
@@ -26,8 +27,7 @@ function Index(){
 
   // effect: 마운트 시 경로 이동 effect //
   useEffect(()=> {
-      if(cookies.accessToken) navigator(MAIN_ABSOLUTE_PATH);
-      else navigator(SIGN_UP_ABSOLUTE_PATH);
+      navigator(MAIN_ABSOLUTE_PATH);
   }, []);
 
   // render: root path 컴포넌트 렌더링 //
@@ -64,6 +64,7 @@ function SnsSuccess(){
   // render: Sns success 컴포넌트 렌더링 //
   return <></>
 }
+
 
 // component: Healthcare 컴포넌트 //
 export default function Healthcare() {
@@ -109,7 +110,7 @@ export default function Healthcare() {
   return (
     <Routes>
       <Route index element={<Index />} />
-      <Route path={MAIN_PATH} element={<Main />} />
+      <Route path={MAIN_PATH} element={<Main/>} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH(':userId')} element={<Mypage />} />
       <Route path={BOARD_LIST_PATH} element={<Community />} />

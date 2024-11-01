@@ -75,7 +75,7 @@ function CustomerComponent({customer}: SignInCustomerProps){
             <div className='login-customer-box'>
                 <div className='login-customer-left-box'>
                     <div className="login-customer-image-box">
-                        <img src={profileImage} className="login-customer-image" />
+                        <div className='login-customer-image' style={{ backgroundImage: `url(${customer.profileImage})` }}></div>
                     </div>
                     <div className='login-customer-big-detail-box'>
                         <div className="login-customer-detail-box">
