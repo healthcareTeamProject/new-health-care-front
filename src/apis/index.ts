@@ -4,7 +4,7 @@ import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto, TelAuthCheckRequ
 import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.dto";
 import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
-import { GetSignInResponseDto } from "./dto/response/customer";
+import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from "./dto/response/customer";
 import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
 import { GetBoardListResponseDto } from "./dto/response/board";
@@ -27,7 +27,7 @@ const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
 const CUSTOMER_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
 const GET_SIGN_IN_API_URL = `${CUSTOMER_MODULE_URL}/sign-in`;
-const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/`;
+const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}`;
 
 const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
 
@@ -112,6 +112,14 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
 export const getCustomerRequest = async (userId: string, accessToken: string) => {
   const responseBody = await axios.get(GET_CUSTOMER_API_URL(userId),bearerAuthorization(accessToken))
   .then(responseDataHandler<GetCustomerResposeDto>)
+  .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: get customer mypage 요청 함수 //
+export const getCustomerMyPageRequest = async (userId: string, accessToken: string) => {
+  const responseBody = await axios.get(GET_CUSTOMER_API_URL(userId),bearerAuthorization(accessToken))
+  .then(responseDataHandler<GetCustomerMyPageResponseDto>)
   .catch(responseErrorHandler);
   return responseBody;
 }

@@ -1,10 +1,10 @@
 import React, { useMemo, useState } from "react";
-
+import './style.css'
 import dayjs, { Dayjs } from "dayjs";
 import weekday from 'dayjs/plugin/weekday';
 import isoWeek from 'dayjs/plugin/isoWeek';
 import weekOfYear from 'dayjs/plugin/weekOfYear';
-
+import {MdArrowBackIos, MdArrowForwardIos} from 'react-icons/md';
 
 
 // interface: 캘린더 Props //
@@ -47,11 +47,57 @@ export default function Calendar({selectDate, setSelectDate}:CalendarProps) {
     } 
     
     // render: 캘린더 컴포넌트 렌더링 //
-    return <div className="calendar-container">
+    return (
+            <div className="calendar-container">
                 <div className="calendar-header">
                     <button onClick={() => onCalendarMonthChangeClickButtonHandler(viewDate, 'subtract')}>
-
+                        <MdArrowBackIos />
+                    </button>
+                    <span onClick={() => onCalendarMonthChangeClickButtonHandler(viewDate, 'today')}>{viewDate.format('M')}월</span>
+                    <button onClick={() => onCalendarMonthChangeClickButtonHandler(viewDate, 'add')}>
+                        <MdArrowForwardIos />
                     </button>
                 </div>
-            </div>;
+                <div className="calendar-content">
+                    <div className="week-header">
+                        {weekDays.map((day, i) => (
+                            <div key={i} className={`day-header ${i === 0 ? 'sunday' : ''}`}>
+                                {day}
+                            </div>
+                        ))}
+                    </div>
+                    <div className="dates">
+                    {Array.from({ length: endWeek - startWeek + 1 }, (_, index) => startWeek + index).map((week) => (
+                        <div key={week} className="week">
+                        {Array(7)
+                            .fill(0)
+                            .map((_, i) => {
+                            // 나타낼 날짜
+                            const current = viewDate.week(week).startOf('week').add(i, 'day');
+                            // 선택됐는지 여부
+                            const isSelected = selectDate.format('YYYYMMDD') === current.format('YYYYMMDD') ? 'selected' : '';
+                            // 오늘 날짜 여부
+                            const isToday = dayjs().format('YYYYMMDD') === current.format('YYYYMMDD') ? 'today' : '';
+                            // 보여질 날짜가 아닌 경우 (다른 달의 날짜인 경우)
+                            const isNone = current.format('MM') === viewDate.format('MM') ? '' : 'none';
+                            
+                            return (
+                                <div key={`${week}_${i}`} className={`day-cell ${isSelected} ${isToday} ${isNone}`}>
+                                <div
+                                    className="date-box"
+                                    onClick={() => {
+                                    setSelectDate(current);
+                                    }}
+                                >
+                                    {current.format('D')}
+                                </div>
+                                </div>
+                            );
+                            })}
+                        </div>
+                    ))}
+                    </div>
+                </div>
+            </div>
+    );
 }

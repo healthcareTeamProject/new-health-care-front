@@ -1,14 +1,14 @@
 export default interface Customer {
-    profilImage: string | null;
+    // profilImage: string;
     name: string;
-    userId: String;
+    userId: string;
     nickname: string;
     height: number ;
     weight: number;
-    skeletalMuscleMass: number | null;
-    bodyFatMass : number | null;
-    deadlift: number | null;
-    benchPress : number | null;
-    squat: number | null;
-    personalGoal : number | null;
+    skeletalMuscleMass?: number;
+    bodyFatMass?: number;
+    deadlift?: number;
+    benchPress?: number;
+    squat?: number;
+    personalGoal?: number;
 }

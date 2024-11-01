@@ -4,7 +4,8 @@ import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
-import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH, POST_PATH, GE_PATH } from './constant';
+import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH, SIGN_UP_ABSOLUTE_PATH, POST_PATH } from './constant';
+
 import { useCookies } from 'react-cookie';
 import { useSignInCustomerStroe } from './stores';
 import { GetSignInResponseDto } from './apis/dto/response/customer';
@@ -25,8 +26,7 @@ function Index(){
 
   // effect: 마운트 시 경로 이동 effect //
   useEffect(()=> {
-      if(cookies.accessToken) navigator(MAIN_PATH);
-      else navigator(MAIN_ABSOLUTE_PATH);
+      navigator(MAIN_ABSOLUTE_PATH);
   }, []);
 
   // render: root path 컴포넌트 렌더링 //
@@ -56,14 +56,14 @@ function SnsSuccess(){
       setCookies(ACCESS_TOKEN, accessToken, {path: ROOT_PATH, expires});
 
       navigator(MAIN_ABSOLUTE_PATH);
-      return;
     }
-
+      else navigator(SIGN_UP_ABSOLUTE_PATH);
   }, []);
 
   // render: Sns success 컴포넌트 렌더링 //
   return <></>
 }
+
 
 // component: Healthcare 컴포넌트 //
 export default function Healthcare() {
@@ -94,9 +94,11 @@ export default function Healthcare() {
       return;
     }
 
-    const {userId, name, nickname} = responseBody as GetSignInResponseDto;
-    setSignInCustomer({userId, name, nickname});
+    const {userId, name, nickname, profileImage, personalGoals} = responseBody as GetSignInResponseDto;
+    setSignInCustomer({userId, name, nickname, profileImage, personalGoals});
+
   }
+
   // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
   useEffect(() => {
     const accessToken = cookies[ACCESS_TOKEN];
@@ -106,13 +108,12 @@ export default function Healthcare() {
 
   return (
     <Routes>
-      <Route index element={<Index/>} />
-      <Route path={MAIN_PATH} element={<Main />} />
+      <Route index element={<Index />} />
+      <Route path={MAIN_PATH} element={<Main/>} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
-      <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH} element={<Mypage />} />
+      <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH(':userId')} element={<Mypage />} />
       <Route path={BOARD_LIST_PATH} element={<Community />} />
       <Route path={POST_PATH} element={<Post />} />
-      <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />
       <Route path={OTHERS_PATH} element={<Index />} />
     </Routes>

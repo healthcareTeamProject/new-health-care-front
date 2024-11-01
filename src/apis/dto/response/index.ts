@@ -1,3 +1,5 @@
 import ResponseDto from "./response.dto";
 
-export type { ResponseDto };
+export type { 
+    ResponseDto 
+};
