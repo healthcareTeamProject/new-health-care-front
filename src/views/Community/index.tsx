@@ -4,7 +4,7 @@ import Pagination from 'src/components/Pagination';
 import { usePagination } from 'src/hooks';
 import { useLocation, useNavigate } from 'react-router';
 import { Board } from 'src/types';
-import { ACCESS_TOKEN, BC_ABSOLUTE_PATH, BC_PATH, BE_ABSOLUTE_PATH, BE_PATH, BOARD_DETAIL_ABSOLUTE_PATH, BP_ABSOLUTE_PATH, BP_PATH, CH_ABSOLUTE_PATH, CH_PATH, CM_ABSOLUTE_PATH, CM_PATH, CO_ABSOLUTE_PATH, CO_PATH, DM_ABSOLUTE_PATH, DM_PATH, ED_ABSOLUTE_PATH, ED_PATH, FE_ABSOLUTE_PATH, FE_PATH, GE_ABSOLUTE_PATH, GE_PATH, GM_ABSOLUTE_PATH, GM_PATH, HT_ABSOLUTE_PATH, HT_PATH, IR_ABSOLUTE_PATH, IR_PATH, LB_ABSOLUTE_PATH, LB_PATH, MA_ABSOLUTE_PATH, MA_PATH, NM_ABSOLUTE_PATH, NM_PATH, NS_ABSOLUTE_PATH, NS_PATH, POST_ABSOLUTE_PATH, PT_ABSOLUTE_PATH, PT_PATH, RM_ABSOLUTE_PATH, RM_PATH, SD_ABSOLUTE_PATH, SD_PATH, SM_ABSOLUTE_PATH, SM_PATH, UB_ABSOLUTE_PATH, UB_PATH, WI_ABSOLUTE_PATH, WI_PATH, WL_ABSOLUTE_PATH, WL_PATH } from 'src/constant';
+import { ACCESS_TOKEN, BOARD_DETAIL_ABSOLUTE_PATH, POST_ABSOLUTE_PATH } from 'src/constant';
 import { useCookies } from 'react-cookie';
 import { getBoardListRequest } from 'src/apis';
 import { GetBoardListResponseDto } from 'src/apis/dto/response/board';
@@ -40,10 +40,7 @@ function CategoryNavigation() {
 
     const { pathname } = useLocation();
 
-    const isMa = pathname.startsWith(MA_PATH);
-    const isHt = pathname.startsWith(HT_PATH);
-    const isGe = pathname.startsWith(GE_PATH);
-    const isGm = pathname.startsWith(GM_PATH);
+    
 
     const navigator = useNavigate();
 
@@ -53,16 +50,16 @@ function CategoryNavigation() {
 
     return (
         <div className='categories'>
-            <div className={`category-navigation-item ${isMa ? 'active' : ''}`} onClick={() => onItemClickHandler(MA_ABSOLUTE_PATH)}>
+            <div className={`category-navigation-item`}>
                 <div className='category-item-text'>식단</div>
             </div>
-            <div className={`category-navigation-item ${isHt ? 'active' : ''}`} onClick={() => onItemClickHandler(HT_ABSOLUTE_PATH)}>
+            <div className={`category-navigation-item`}>
                 <div className='category-item-text'>홈 트레이닝</div>
             </div>
-            <div className={`category-navigation-item ${isGe ? 'active' : ''}`} onClick={() => onItemClickHandler(GE_ABSOLUTE_PATH)}>
+            <div className={`category-navigation-item`}>
                 <div className='category-item-text'>운동기구</div>
             </div>
-            <div className={`category-navigation-item ${isGm ? 'active' : ''}`} onClick={() => onItemClickHandler(GM_ABSOLUTE_PATH)}>
+            <div className={`category-navigation-item`}>
                 <div className='category-item-text'>헬스장</div>
             </div>
         </div>
@@ -75,16 +72,7 @@ function PopularTagNavigation1() {
 
     const { pathname } = useLocation();
 
-    const isEd = pathname.startsWith(ED_PATH);
-    const isNm = pathname.startsWith(NM_PATH);
-    const isUb = pathname.startsWith(UB_PATH);
-    const isSd = pathname.startsWith(SD_PATH);
-    const isLb = pathname.startsWith(LB_PATH);
-    const isBc = pathname.startsWith(BC_PATH);
-    const isWi = pathname.startsWith(WI_PATH);
-    const isCh = pathname.startsWith(CH_PATH);
-    const isWl = pathname.startsWith(WL_PATH);
-    const isSm = pathname.startsWith(SM_PATH);
+    
 
     const navigator = useNavigate();
 
@@ -94,34 +82,34 @@ function PopularTagNavigation1() {
 
     return (
         <div className='popularTags'>
-            <div className={`popularTag-navigation-item ${isEd ? 'active' : ''}`} onClick={() => onItemClickHandler(ED_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#운동일지</div>
             </div>
-            <div className={`popularTag-navigation-item ${isNm ? 'active' : ''}`} onClick={() => onItemClickHandler(NM_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#영양식단</div>
             </div>
-            <div className={`popularTag-navigation-item ${isUb ? 'active' : ''}`} onClick={() => onItemClickHandler(UB_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#상체</div>
             </div>
-            <div className={`popularTag-navigation-item ${isSd ? 'active' : ''}`} onClick={() => onItemClickHandler(SD_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#어꺠</div>
             </div>
-            <div className={`popularTag-navigation-item ${isLb ? 'active' : ''}`} onClick={() => onItemClickHandler(LB_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#하체</div>
             </div>
-            <div className={`popularTag-navigation-item ${isBc ? 'active' : ''}`} onClick={() => onItemClickHandler(BC_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#등</div>
             </div>
-            <div className={`popularTag-navigation-item ${isWi ? 'active' : ''}`} onClick={() => onItemClickHandler(WI_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#허리</div>
             </div>
-            <div className={`popularTag-navigation-item ${isCh ? 'active' : ''}`} onClick={() => onItemClickHandler(CH_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#가슴</div>
             </div>
-            <div className={`popularTag-navigation-item ${isWl ? 'active' : ''}`} onClick={() => onItemClickHandler(WL_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#체중감량</div>
             </div>
-            <div className={`popularTag-navigation-item ${isSm ? 'active' : ''}`} onClick={() => onItemClickHandler(SM_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#보충제</div>
             </div>
         </div>
@@ -134,16 +122,7 @@ function PopularTagNavigation2() {
 
     const { pathname } = useLocation();
 
-    const isCm = pathname.startsWith(CM_PATH);
-    const isRm = pathname.startsWith(RM_PATH);
-    const isPt = pathname.startsWith(PT_PATH);
-    const isIr = pathname.startsWith(IR_PATH);
-    const isCo = pathname.startsWith(CO_PATH);
-    const isBe = pathname.startsWith(BE_PATH);
-    const isFe = pathname.startsWith(FE_PATH);
-    const isDm = pathname.startsWith(DM_PATH);
-    const isNs = pathname.startsWith(NS_PATH);
-    const isBp = pathname.startsWith(BP_PATH);
+
 
     const navigator = useNavigate();
 
@@ -153,34 +132,34 @@ function PopularTagNavigation2() {
 
     return (
         <div className='popularTags'>
-            <div className={`popularTag-navigation-item ${isCm ? 'active' : ''}`} onClick={() => onItemClickHandler(CM_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#대회식단</div>
             </div>
-            <div className={`popularTag-navigation-item ${isRm ? 'active' : ''}`} onClick={() => onItemClickHandler(RM_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#일반식단</div>
             </div>
-            <div className={`popularTag-navigation-item ${isPt ? 'active' : ''}`} onClick={() => onItemClickHandler(PT_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#단백질</div>
             </div>
-            <div className={`popularTag-navigation-item ${isIr ? 'active' : ''}`} onClick={() => onItemClickHandler(IR_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#부상/재활</div>
             </div>
-            <div className={`popularTag-navigation-item ${isCo ? 'active' : ''}`} onClick={() => onItemClickHandler(CO_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#유산소</div>
             </div>
-            <div className={`popularTag-navigation-item ${isBe ? 'active' : ''}`} onClick={() => onItemClickHandler(BE_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#맨몸운동</div>
             </div>
-            <div className={`popularTag-navigation-item ${isFe ? 'active' : ''}`} onClick={() => onItemClickHandler(FE_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#전신운동</div>
             </div>
-            <div className={`popularTag-navigation-item ${isDm ? 'active' : ''}`} onClick={() => onItemClickHandler(DM_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#다이어트 식단</div>
             </div>
-            <div className={`popularTag-navigation-item ${isNs ? 'active' : ''}`} onClick={() => onItemClickHandler(NS_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#영양제</div>
             </div>
-            <div className={`popularTag-navigation-item ${isBp ? 'active' : ''}`} onClick={() => onItemClickHandler(BP_ABSOLUTE_PATH)}>
+            <div className={`popularTag-navigation-item`}>
                 <div className='item-text'>#바디프로필</div>
             </div>
         </div>
