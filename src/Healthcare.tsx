@@ -4,7 +4,6 @@ import { Route, Routes, useNavigate, useSearchParams } from 'react-router-dom';
 import Main from 'src/views/Main';
 import Community from './views/Community';
 import SignUp from './views/SignUp';
-
 import { ACCESS_TOKEN, BOARD_LIST_PATH, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_PATH, SNS_SUCCESS_PATH, OTHERS_PATH, CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH, POST_PATH, GE_PATH } from './constant';
 import { useCookies } from 'react-cookie';
 import { useSignInCustomerStroe } from './stores';
@@ -13,7 +12,7 @@ import { ResponseDto } from './apis/dto/response';
 import { getSignInRequest } from './apis';
 import Mypage from './views/Mypage';
 import Post from './views/Community/Post';
-import GE from './views/Community/category/GE';
+import { Dayjs } from 'dayjs';
 
 // component: root path 컴포넌트 //
 function Index(){
@@ -111,9 +110,7 @@ export default function Healthcare() {
       <Route path={MAIN_PATH} element={<Main />} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH} element={<Mypage />} />
-      <Route path={BOARD_LIST_PATH} element={<Community />} >
-          <Route path={GE_PATH} element={<GE />} />
-      </Route>
+      <Route path={BOARD_LIST_PATH} element={<Community />} />
       <Route path={POST_PATH} element={<Post />} />
       <Route path={SIGN_UP_PATH} element={<SignUp />} />
       <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />
