@@ -3,7 +3,7 @@ import './style.css'
 import InputBox from 'src/components/InputBox'
 import { ResponseDto } from 'src/apis/dto/response';
 import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthRequestDto } from 'src/apis/dto/request/auth';
-import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, postThreeMajorLiftRequest, postUserMuscleFatRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
+import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
 import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { MAIN_ABSOLUTE_PATH } from 'src/constant';
