@@ -14,16 +14,21 @@ import MainInputBox from 'src/components/MainInputBox';
 import { GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
 import { useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
+import { SignInCustomer } from 'src/types';
+import Calendar from 'src/components/Calender';
 
+interface SignInCustomerProps{
+    customer: SignInCustomer;
+}
 // component: 로그인 후 개인 정보 박스 컴포넌트 //
-function CustomerComponent(){
+function CustomerComponent({customer}: SignInCustomerProps){
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
     // state: customer 아이디 상태 //
     const {userId} = useParams();
-    // state: 로그인 유저 상태 //
-    const {signInCustomer} = useSignInCustomerStroe();
+    // state: 로그인 유저 정보 상태 //
+    const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
     // state: 고객 정보 상태 //
     const [profileImage, setProfileImage] = useState<string>('');
     const [name, setName] = useState<string>('');
@@ -44,50 +49,42 @@ function CustomerComponent(){
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if(!isSuccessed) {
             alert(message);
+            setSignInCustomer(null);
             navigator(MAIN_ABSOLUTE_PATH);
             return;
     }
-        if(!userId) return;
-        const accessToken = cookies[ACCESS_TOKEN];
-        if(!accessToken) return;
-        
-
-    const { profileImage, name, nickname, personalGoals } = responseBody as  GetSignInResponseDto;
-    setProfileImage(profileImage);
-    setName(name);
-    setNickname(nickname);
-    setPersonalGoals(personalGoals);
-};
+        const { userId, profileImage, name, nickname, personalGoals } = responseBody as  GetSignInResponseDto;
+        setSignInCustomer({userId, profileImage, name, nickname, personalGoals})
+    };
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
-    useEffect(()=>{
-        if(!userId) return;
+    useEffect(() => {
+        if(!userId)return;
         const accessToken = cookies[ACCESS_TOKEN];
-        if (!accessToken) return;
+        if(!accessToken) return;
 
         getCustomerRequest(userId, accessToken).then(getSignInCustomerResponse);
-    }, [userId])
-
+    }, [userId, cookies])
 
     // render: 로그인 후 메인 개인정보 박스 컴포넌트 렌더링 //
     return (
         <div className='login-box'>
             <div className='login-logo-image-box'>
-                <div className='login-logo-image'>{profileImage}</div>
+                <div className='login-logo-image'></div>
             </div>
             <div className='login-customer-box'>
                 <div className='login-customer-left-box'>
                     <div className="login-customer-image-box">
-                        <div className="login-customer-image"></div>
+                        <img src={profileImage} className="login-customer-image" />
                     </div>
                     <div className='login-customer-big-detail-box'>
                         <div className="login-customer-detail-box">
                             <div className="login-customer-name">이름</div>
-                            <div className="login-customer-detail-name">{name}</div>
+                            <div className="login-customer-detail-name">{customer.name}</div>
                         </div>
                         <div className="login-customer-detail-box">
                             <div className="login-customer-nickname">닉네임</div>
-                            <div className="login-customer-detail-nickname">{nickname}</div>
+                            <div className="login-customer-detail-nickname">{customer.nickname}</div>
                         </div>
                     </div>
                 </div>
@@ -98,7 +95,7 @@ function CustomerComponent(){
                         </div>
                     </div>
                         <div className="login-customer-personal-goals-detail-box">
-                            <div className="login-customer-personal-goals-detail">{personalGoals}</div>
+                            <div className="login-customer-personal-goals-detail">{customer.personalGoals}</div>
                         </div>
                     
                 </div>
@@ -227,9 +224,43 @@ function SignInComponent(){
 // component: 로그인 전 메인 화면 컴포넌트 //
 export default function Main() {
 
+    // state: 쿠키 상태 //
     const [cookies] = useCookies();
+    // state: 로그인 유저 정보 상태 //
+    const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
 
-    const isLoggedIn = !!cookies[ACCESS_TOKEN];
+    // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
+    const isLoggedIn = !!signInCustomer;
+
+    // function: 네비게이터 함수 //
+    const navigator = useNavigate();
+
+    // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
+    useEffect(() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(accessToken) {
+            getSignInRequest(accessToken).then((responseBody: GetSignInResponseDto | ResponseDto | null) => {
+                const message = 
+                    !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+                    responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+                    responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+                    
+                const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+                if(!isSuccessed) {
+                    alert(message);
+                    navigator(MAIN_ABSOLUTE_PATH);
+                    return;
+                }
+
+                const {userId, name, nickname, profileImage, personalGoals} = responseBody as GetSignInResponseDto;
+                setSignInCustomer({userId, name, nickname, profileImage, personalGoals});
+            });
+        } else {
+            setSignInCustomer(null);
+        }
+    }, [cookies[ACCESS_TOKEN]]);
 
 
     // render: 로그인 전 메인 화면 컴포넌트 //
@@ -239,7 +270,7 @@ export default function Main() {
                 <div className='main-top-detail-box'>
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
-                        {isLoggedIn ? <CustomerComponent/> : <SignInComponent />}
+                        {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
                         <div className='scadul-mini-box'></div>
                     </div>
                 </div>

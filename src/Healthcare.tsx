@@ -94,8 +94,8 @@ export default function Healthcare() {
       return;
     }
 
-    const {userId, name, nickname} = responseBody as GetSignInResponseDto;
-    setSignInCustomer({userId, name, nickname});
+    const {userId, name, nickname, profileImage, personalGoals} = responseBody as GetSignInResponseDto;
+    setSignInCustomer({userId, name, nickname, profileImage, personalGoals});
 
   }
 

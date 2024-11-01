@@ -21,7 +21,6 @@ export default function MainInputBox({
     value, 
     message,
     messageError,
-    buttonName, 
     onChange
 }: Props) {
     return (
