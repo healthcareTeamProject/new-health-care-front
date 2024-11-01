@@ -118,6 +118,8 @@
     height: 100px;
     margin-bottom: 10px;
 
+    resize: none;
+
     background: none;
     border: none;
     outline: none;
