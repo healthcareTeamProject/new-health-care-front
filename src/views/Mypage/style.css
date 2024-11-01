@@ -312,20 +312,119 @@
 
 
 .pop-up {
-    display: none; /* 기본적으로 숨김 */
-    position: fixed; /* 화면 고정 */
-    top: 50%; /* 화면 중앙 위치 */
-    left: 50%; /* 화면 중앙 위치 */
-    transform: translate(-50%, -50%); /* 중앙 정렬을 위한 변환 */
-    background-color: white; /* 배경색 */
-    border: 1px solid #ccc; /* 테두리 */
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2); /* 그림자 */
-    z-index: 1000; /* 다른 요소 위에 표시 */
-    padding: 20px; /* 내부 여백 */
-    border-radius: 8px; /* 모서리 둥글게 */
+    position: fixed;
+    top: 0;
+    left: 0;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* 팝업이 보일 때 */
 .pop-up.active {
     display: block; /* 보이게 설정 */
+}
+
+.personal-pop-up {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+
+    gap: 10px;
+
+    box-sizing: border-box;
+    border: 1px solid rgba(238, 238, 238, 1);
+    border-radius: 8px;
+
+    top: 25%;
+    left: 25%;
+
+    width: 800px;
+    height: 500px;
+
+    background-color: rgba(255, 255, 255, 1);
+}
+
+.personal-pop-up .personal-pop-up-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+
+    width: 600px;
+    height: 250px;
+}
+
+.personal-pop-up .profile-image {
+    display: flex;
+
+    width: 200px;
+    height: 200px;
+
+    pointer-events: none;
+    cursor: default;
+}
+
+.personal-pop-up .personal-information {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: space-between;
+
+    width: 350px;
+    height: 250px;
+
+}
+
+.personal-pop-up .personal-goals-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    gap: 20px;
+
+    width: 600px;
+    height: 140px;
+
+}
+
+.personal-pop-up .personal-goals-box .personal-goals-box-title {
+    height: 30px;
+
+    padding-left: 10px;
+
+    font-size: 20px;
+}
+
+.personal-pop-up .personal-goals-box .personal-goals-box-content {
+    width: 350px;
+    height: 120px;
+
+    resize: none;
+
+    padding: 10px;
+
+    font-size: 16px;
+
+    border: none;
+    border: 1px solid var(--gray-default-color);
+    border-radius: 8px;
+}
+
+.pop-up-exit {
+
+    width: 25px;
+    height: 25px;
+
+    background-image: url('/public/images/Exit.png');
+    background-size: cover;
+    background-position: center;
 }

@@ -9,6 +9,7 @@ import { ACCESS_TOKEN } from 'src/constant';
 import { GetCustomerMyPageResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
+import InputBox from 'src/components/InputBox';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 
@@ -155,35 +156,31 @@ function PersonalChage() {
 
     // render: 개인정보 컴포넌트 렌더딩 //
     return (
-        <div className='popup'>
-            <div className='personal'>
-                <div className='personal-logo'></div>
-                <div className='personal-buttom'>
+            <div className='personal-pop-up'>
+                <div className='pop-up-exit'></div>
+                <div className='personal-pop-up-top'>
                     <div className='profile-image' style={{ backgroundImage: `url(${profileImage})` }}></div>
                     <div className='personal-information'>
                         <div className='name'>
-                            <div className='name-title'>이름</div>
-                            <div className='name-value'>{name}</div>
+                            <InputBox label='이름' type='text' value={''} placeholder={name} />
                         </div>
                         <div className='nickname'>
-                            <div className='nickname-title'>닉네임</div>
-                            <div className='nickname-value'>{nickname}</div>
+                            <InputBox label='닉네임' type='text' value={''} placeholder={nickname} buttonName='중복 확인'/>
                         </div>
                         <div className='height'>
-                            <div className='height-title'>키</div>
-                            <div className='height-value'>{height}</div>
-                        </div>
-                    </div>
-                    <div className='personal-goals-box'>
-                        <div className='personal-goals-box-icon'></div>
-                        <div className='personal-goals-box-buttom'>
-                            <div className='personal-goals-box-buttom-title'>개인목표</div>
-                            <input className='personal-goals-box-buttom-content' value={personalGoals} onChange={(e) => setPersonalGoals(e.target.value)} placeholder='개인목표' disabled />
+                            <InputBox label='키' type='text' value={''} placeholder={height} />
                         </div>
                     </div>
                 </div>
+                <div className='personal-goals-box'>
+                    <div className='personal-goals-box-title'>개인목표</div>
+                    <textarea 
+                        className='personal-goals-box-content' 
+                        placeholder={personalGoals}
+                    />
+                </div>
+                <div className='pop-up-update'>저장</div>
             </div>
-        </div>
     )
 
 }

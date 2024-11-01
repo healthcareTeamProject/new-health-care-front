@@ -4,7 +4,7 @@ import './style.css'
 interface Props {
     label: string;
     type: 'text' | 'password';
-    placeholder: string;
+    placeholder?: string;
     value: string;
     message?: string;
     messageError?: boolean;
