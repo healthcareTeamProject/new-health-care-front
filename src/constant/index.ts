@@ -12,31 +12,32 @@ export const MY_PAGE_PATH = '/my-page';
 export const BOARD_LIST_PATH = '/board';
 export const BOARD_DETAIL_PATH = (boardNumber: number | string) => `/board/detail/${boardNumber}`;
 export const BOARD_UPDATE_PATH =  (boardNumber: number | string) => `/board/detail/${boardNumber}/update`;
-export const MA_PATH = '/Ma';
-export const HT_PATH = '/Ht';
-export const GE_PATH = '/Ge';
-export const GM_PATH = '/Gm';
 
-export const ED_PATH = '/Ed';
-export const NM_PATH = '/Nm';
-export const UB_PATH = '/Ub';
-export const SD_PATH = '/Sd';
-export const LB_PATH = '/Lb';
-export const BC_PATH = '/Bc';
-export const WI_PATH = '/Wi';
-export const CH_PATH = '/Ch';
-export const WL_PATH = '/Wl';
-export const SM_PATH = '/Sm';
-export const CM_PATH = '/Cm';
-export const RM_PATH = '/Rm';
-export const PT_PATH = '/Pt';
-export const IR_PATH = '/Ir';
-export const CO_PATH = '/Co';
-export const BE_PATH = '/Be';
-export const FE_PATH = '/Fe';
-export const DM_PATH = '/Dm';
-export const NS_PATH = '/Ns';
-export const BP_PATH = '/Bp';
+export const MA_PATH = '/board/ma';
+export const HT_PATH = '/board/ht';
+export const GE_PATH = '/board/ge';
+export const GM_PATH = '/board/gm';
+
+export const ED_PATH = '/board/ed';
+export const NM_PATH = '/board/nm';
+export const UB_PATH = '/board/ub';
+export const SD_PATH = '/board/sd';
+export const LB_PATH = '/board/lb';
+export const BC_PATH = '/board/bc';
+export const WI_PATH = '/board/wi';
+export const CH_PATH = '/board/ch';
+export const WL_PATH = '/board/wl';
+export const SM_PATH = '/board/sm';
+export const CM_PATH = '/board/cm';
+export const RM_PATH = '/board/rm';
+export const PT_PATH = '/board/pt';
+export const IR_PATH = '/board/ir';
+export const CO_PATH = '/board/co';
+export const BE_PATH = '/board/be';
+export const FE_PATH = '/board/fe';
+export const DM_PATH = '/board/dm';
+export const NS_PATH = '/board/ns';
+export const BP_PATH = '/board/bp';
 
 
 
