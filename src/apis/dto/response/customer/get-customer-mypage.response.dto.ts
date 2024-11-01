@@ -5,6 +5,7 @@ export default interface GetCustomerMyPageResponseDto extends ResponseDto {
     userId: string;
     name: string;
     nickname: string;
+    telNumber: string;
     profileImage: string;
     personalGoals: string;
     height: string;

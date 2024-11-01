@@ -26,7 +26,7 @@ const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
 const CUSTOMER_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
 const GET_SIGN_IN_API_URL = `${CUSTOMER_MODULE_URL}/sign-in`;
-const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/`;
+const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}`;
 
 
 // function: Authorizarion Bearer 헤더 //
