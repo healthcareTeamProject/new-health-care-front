@@ -1,8 +1,8 @@
 // interface: patch customer request body dto //
 export default interface PatchCustomerRequestDto {
-  profileImage: string | null;
+  profileImage: string;
   name: string;
   nickname: string;
   height: string;
-  personalGoal: string | null;
+  personalGoals: string;
 }
