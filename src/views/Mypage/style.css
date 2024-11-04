@@ -112,13 +112,15 @@
     background-image: url('/public/images/Registration.png');
     background-size: cover;
     background-position: center;
+
+    cursor: pointer;
 }
 
 .personal-goals-box .personal-goals-box-buttom {
     width: 220px;
     height: 190px;
 
-    border: 1px solid rgba(0, 0, 0, 1);
+    border: 1px solid var(--gray-default-color);
     border-radius: 8px;
 }
 
@@ -178,6 +180,8 @@
     background-image: url('/public/images/Registration.png');
     background-size: cover;
     background-position: center;
+
+    cursor: pointer;
 }
 
 .user-muscle-fat .chart-container {
@@ -240,6 +244,8 @@
     background-image: url('/public/images/Registration.png');
     background-size: cover;
     background-position: center;
+
+    cursor: pointer;
 }
 
 .three-major-lift-buttom {
@@ -328,9 +334,9 @@
     background-color: rgba(0, 0, 0, 0.3);
 }
 
-/* 팝업이 보일 때 */
+
 .pop-up.active {
-    display: block; /* 보이게 설정 */
+    display: block;
 }
 
 .personal-pop-up {
