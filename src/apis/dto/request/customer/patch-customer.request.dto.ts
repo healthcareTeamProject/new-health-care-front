@@ -1,14 +1,8 @@
 // interface: patch customer request body dto //
 export default interface PatchCustomerRequestDto {
+  profileImage: string | null;
   name: string;
   nickname: string;
-  profileImage: string | null;
+  height: string;
   personalGoal: string | null;
-  weight: number;
-  height: number;
-  skeletalMuscleMass: number | null;
-  bodyFatMass: number | null;
-  deadlift: number | null;
-  benchPress: number | null;
-  squat: number | null;
 }

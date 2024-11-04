@@ -5,7 +5,7 @@ import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.d
 import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
 import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from "./dto/response/customer";
-import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
+import { PatchCustomerRequestDto, PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
 import { GetBoardListResponseDto } from "./dto/response/board";
 
@@ -26,8 +26,11 @@ const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
 
 const CUSTOMER_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
+const PATCH_CUSTOMER_URL = `${CUSTOMER_MODULE_URL}`
+
 const GET_SIGN_IN_API_URL = `${CUSTOMER_MODULE_URL}/sign-in`;
 const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}`;
+
 
 const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
 
@@ -121,6 +124,14 @@ export const getCustomerMyPageRequest = async (userId: string, accessToken: stri
   const responseBody = await axios.get(GET_CUSTOMER_API_URL(userId),bearerAuthorization(accessToken))
   .then(responseDataHandler<GetCustomerMyPageResponseDto>)
   .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: patch customer 요청 함수 //
+export const patchCustomerRequest = async (requsetBody: PatchCustomerRequestDto, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_CUSTOMER_URL, requsetBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
   return responseBody;
 }
 

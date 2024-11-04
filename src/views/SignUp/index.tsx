@@ -92,7 +92,7 @@ function SignUpFirst({
         const message = 
             !responseBody ? '서버에 문제가 있습니다' : 
             responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
-            responseBody.code === 'DI' ? '이미 사용중인 닉네임 입니다' : 
+            responseBody.code === 'DN' ? '이미 사용중인 닉네임 입니다' : 
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
             responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
 
