@@ -1,17 +1,21 @@
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
 import { useParams } from 'react-router';
-import { getCustomerMyPageRequest } from 'src/apis';
+import { getCustomerMyPageRequest, nicknameCheckRequest } from 'src/apis';
 import { ACCESS_TOKEN } from 'src/constant';
 import { GetCustomerMyPageResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 import InputBox from 'src/components/InputBox';
+import { NicknameCheckRequestDto } from 'src/apis/dto/request/auth';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+// variable: 기본 프로필 이미지 URL //
+const defaultProfileImageUrl = 'https://blog.kakaocdn.net/dn/4CElL/btrQw18lZMc/Q0oOxqQNdL6kZp0iSKLbV1/img.png';
 
 // component: 개인정보 컴포넌트 //
 function Personal() {
@@ -91,7 +95,7 @@ function Personal() {
                     <div className='personal-goals-box-icon'></div>
                     <div className='personal-goals-box-buttom'>
                         <div className='personal-goals-box-buttom-title'>개인목표</div>
-                        <input className='personal-goals-box-buttom-content' value={personalGoals} onChange={(e) => setPersonalGoals(e.target.value)} placeholder='개인목표' disabled />
+                        <textarea className='personal-goals-box-buttom-content' value={personalGoals} onChange={(e) => setPersonalGoals(e.target.value)} placeholder='개인목표' disabled />
                     </div>
                 </div>
             </div>
@@ -99,6 +103,8 @@ function Personal() {
     )
 
 }
+
+
 
 // component: 개인정보 변경 팝업 컴포넌트 //
 function PersonalChage() {
@@ -118,6 +124,31 @@ function PersonalChage() {
     const [nickname, setNickname] = useState<string>('');
     const [height, setHeight] = useState<string>('');
     const [personalGoals, setPersonalGoals] = useState<string>('');
+
+    // state: 변경할 정보 입력 상태 //
+    const [changeProfileImage, setChangeProfileImage] = useState<File|null>(null);
+    const [changeName, setChangeName] = useState<string>('');
+    const [changeNickname, setChangeNickname] = useState<string>('');
+    const [changeHeight, setChangeHeight] = useState<string>('');
+    const [changePersonalGoals, setChangePersonalGoals] = useState<string>('');
+
+    // state: 사용자 입력 메시지 상태 //
+    const [nicknameMessage, setNicknameMessage] = useState<string>('');
+    const [heightMessage, setHeightMessage] = useState<string>('키를 입력해주세요');
+
+    // state: 사용자 정보 메시지 에러 상태 //
+    const [nicknameMessageError, setNicknameMessageError] = useState<boolean>(false);
+
+    // state: 입력값 검증 상태 //
+    const [isCheckedNickname, setCheckedNickname] = useState<boolean>(false);
+
+    // state: 이미지 입력 참조 //
+    const imageInputRef = useRef<HTMLInputElement|null>(null);
+
+    // state: 프로필 미리보기 URL 상태 //
+    const [previewUrl, setPreviewUrl] = useState<string>(defaultProfileImageUrl);
+
+    
 
 
     // function: get customer response 처리 함수 //
@@ -144,6 +175,93 @@ function PersonalChage() {
 
     };
 
+    // function: 닉네임 중복 확인 Response 처리 함수 //
+    const nicknameCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DI' ? '이미 사용중인 닉네임 입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setNicknameMessage(message);
+        setNicknameMessageError(!isSuccessed);
+        setCheckedNickname(isSuccessed);
+
+    }
+
+    // event handler: 프로필 이미지 클릭 이벤트 처리 //
+    const onProfileImageClickHandler = () => {
+        const { current } = imageInputRef;
+        if (!current) return;
+        current.click();
+    }
+
+    // event handler: 이미지 변경 이벤트 처리 //
+    const onImageInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { files } = event.target;
+        if (!files || !files.length) return;
+
+        const file = files[0];
+        setChangeProfileImage(file);
+
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onloadend = () => {
+            setPreviewUrl(fileReader.result as string);
+        }
+    }
+
+    // event handler: 이름 변경 이벤트 처리 //
+    const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setChangeName(value);
+    };
+
+    // event handler: 닉네임 변경 이벤트 처리 //
+    const onNicknameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setChangeNickname(value);
+        setCheckedNickname(false);
+        setNicknameMessage('');
+    };
+
+    // event handler: 키 변경 이벤트 처리 //
+    const onHeightChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeHeight(value);
+        }
+
+        const message = (!value || !isMatched) ? '키를 입력해주세요' : '';
+        setHeightMessage(message);
+    };
+
+    // event handler: 개인 목표 변경 이벤트 처리 //
+    const onUserGoalsChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const { value } = event.target;
+
+        if (value.length <= 50) {
+            setChangePersonalGoals(value);
+        }
+    };
+
+    // event handler: 닉네임 중복 확인 버튼 클릭 이벤트 처리 //
+    const onNicknameCheckClickHandler = () => {
+        if (!nickname) return;
+
+        const requestBody: NicknameCheckRequestDto = {
+            nickname: nickname
+        }
+
+        nicknameCheckRequest(requestBody).then(nicknameCheckResponse);
+
+    }
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
@@ -161,15 +279,16 @@ function PersonalChage() {
                 <div className='personal-pop-up-top'>
                     <div className='profile-image' style={{ backgroundImage: `url(${profileImage})` }}></div>
                     <div className='personal-information'>
-                        <div className='name'>
-                            <InputBox label='이름' type='text' value={''} placeholder={name} />
-                        </div>
-                        <div className='nickname'>
-                            <InputBox label='닉네임' type='text' value={''} placeholder={nickname} buttonName='중복 확인'/>
-                        </div>
-                        <div className='height'>
+                        {/* <div className='name'>
+                            <InputBox label='이름' type='text' placeholder={name} value={changeName} onChange={onNameChangeHandler} />
+                        </div> */}
+                        {/* <div className='nickname'>
+                            <InputBox label='닉네임' type='text' placeholder={nickname} value={changeNickname} messageError={nicknameMessageError} message={nicknameMessage} buttonName='중복 확인' onChange={onNicknameChangeHandler} onButtonClick={onNicknameCheckClickHandler}/>
+                        </div> */}
+                        {/* <div className='height'>
                             <InputBox label='키' type='text' value={''} placeholder={height} />
-                        </div>
+                        </div> */}
+                        <InputBox label='test' type='text' value='' />
                     </div>
                 </div>
                 <div className='personal-goals-box'>
@@ -201,10 +320,13 @@ function UserMucleFat() {
     const [bodyFatMass, setBodyFatMass] = useState<string>('');
 
     // state: 차트 데이터 설정 //
+    const dataValues = [weight, skeletalMuscleMass, bodyFatMass].map(Number);
+    const maxValue = Math.max(...dataValues);
+    const stepSize = maxValue ? maxValue * 0.2 : 1; // 최대값의 20% 설정
     const chartData = {
         labels: ['몸무게', '골격근량', '체지방량'],
         datasets: [{
-            data: [weight, skeletalMuscleMass, bodyFatMass].map(Number), // 숫자로 변환
+            data: dataValues,
             backgroundColor: 'rgba(75, 192, 192, 0.6)',
         }],
     };
@@ -227,11 +349,12 @@ function UserMucleFat() {
             x: {
                 beginAtZero: true,
                 ticks: {
-                    stepSize: 20,
+                    stepSize: stepSize, // 최대값의 20%로 설정
                     font: {
                         size: 14,
                     },
                     color: 'black',
+                    callback: (value: string | number) => Math.floor(Number(value)), // 소수점 아래를 없애고 정수로 표시
                 },
             },
         },

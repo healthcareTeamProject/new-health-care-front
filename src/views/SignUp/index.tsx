@@ -294,7 +294,7 @@ function SignUpFirst({
 
     }
 
-    // event handler: 홈 로고 클릭 이벤트 처리 //
+    // event handler: 홈 버튼 클릭 이벤트 처리 //
     const onHomeClickHandler = () => {
         navigator(MAIN_PATH);
     };
@@ -488,7 +488,7 @@ function SignUpSecond({
     };
 
     // event handler: 개인 목표 변경 이벤트 처리 //
-    const onNameChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+    const onUserGoalsChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = event.target;
 
         if (value.length <= 50) {
@@ -521,7 +521,7 @@ function SignUpSecond({
                     <InputBox label='벤치프레스(kg)' type='text' placeholder='중량을(kg)을 입력해주세요' value={benchPress} unit='kg' onChange={onBenchPressChangeHandler} />
                     <InputBox label='데드리프트(kg)' type='text' placeholder='중량을(kg)을 입력해주세요' value={deadlift} unit='kg' onChange={onDeadliftChangeHandler} />
                     <InputBox label='스쿼트(kg)' type='text' placeholder='중량을(kg)을 입력해주세요' value={squat} unit='kg' onChange={onSquatChangeHandler} />
-                    <textarea className='user-goal' value={personalGoals} placeholder='개인 목표를 입력해 주세요' onChange={onNameChangeHandler} />
+                    <textarea className='user-goal' value={personalGoals} placeholder='개인 목표를 입력해 주세요' onChange={onUserGoalsChangeHandler} />
                 </div>
             </div>
         </div>
