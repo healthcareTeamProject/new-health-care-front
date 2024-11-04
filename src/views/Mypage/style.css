@@ -339,7 +339,8 @@
     display: block;
 }
 
-.personal-pop-up {
+.personal-pop-up,
+.mucleFat-pop-up {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -424,6 +425,21 @@
     border: none;
     border: 1px solid var(--gray-default-color);
     border-radius: 8px;
+}
+
+.mucleFat-pop-up .mucleFat-pop-up-top {
+    display: flex;
+    justify-content: center;
+
+    gap: 40px;
+}
+
+.pop-up-mucleFat-title {
+    font-size: 24px;
+}
+
+.pop-up-mucleFat-information {
+    width: 245px;
 }
 
 .pop-up-exit {
