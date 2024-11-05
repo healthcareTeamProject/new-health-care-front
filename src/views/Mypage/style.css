@@ -106,8 +106,8 @@
 .personal-goals-box .personal-goals-box-icon {
     margin-left: 200px;
 
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
 
     background-image: url('/public/images/Registration.png');
     background-size: cover;
@@ -174,8 +174,8 @@
 .chart-top .chart-icon {
     margin-left: 10px;
 
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
 
     background-image: url('/public/images/Registration.png');
     background-size: cover;
@@ -238,8 +238,8 @@
 .three-major-lift-top-icon {
     margin-left: 15px;
 
-    width: 30px;
-    height: 30px;
+    width: 25px;
+    height: 25px;
 
     background-image: url('/public/images/Registration.png');
     background-size: cover;
@@ -340,7 +340,8 @@
 }
 
 .personal-pop-up,
-.mucleFat-pop-up {
+.mucleFat-pop-up,
+.threeMajorLift-pop-up {
     display: flex;
     justify-content: center;
     flex-direction: column;
@@ -427,18 +428,21 @@
     border-radius: 8px;
 }
 
-.mucleFat-pop-up .mucleFat-pop-up-top {
+.mucleFat-pop-up .mucleFat-pop-up-top,
+.threeMajorLift-pop-up .threeMajorLift-pop-up-top {
     display: flex;
     justify-content: center;
 
     gap: 40px;
 }
 
-.pop-up-mucleFat-title {
+.pop-up-mucleFat-title,
+.pop-up-threeMajorLift-title {
     font-size: 24px;
 }
 
-.pop-up-mucleFat-information {
+.pop-up-mucleFat-information,
+.pop-up-threeMajorLift-information {
     width: 245px;
 }
 
