@@ -2,11 +2,11 @@ import { ChangeEvent, useEffect, useState } from 'react';
 import './style.css';
 import Pagination from 'src/components/Pagination';
 import { usePagination } from 'src/hooks';
-import { useLocation, useNavigate } from 'react-router';
+import { useLocation, useNavigate, useParams } from 'react-router';
 import { Board } from 'src/types';
 import { ACCESS_TOKEN, BOARD_DETAIL_ABSOLUTE_PATH, POST_ABSOLUTE_PATH } from 'src/constant';
 import { useCookies } from 'react-cookie';
-import { getBoardListRequest } from 'src/apis';
+import { getBoardRequest } from 'src/apis';
 import { GetBoardListResponseDto } from 'src/apis/dto/response/board';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSearchParams } from 'react-router-dom';
@@ -18,6 +18,7 @@ interface TableRowProps {
 
 // component: 게시글 리스트 컴포넌트 //
 function TableRow({ board, getBoardList }: TableRowProps) {
+
 
     const navigator = useNavigate();
 
@@ -211,6 +212,8 @@ export default function Community() {
     // state: cookie 상태 //
     const [cookies] = useCookies();
 
+    const {boardNumber} = useParams();
+
     // state: 검색어 상태 //
     const [searchWord, setSearchWord] = useState<string>('');
 
@@ -228,7 +231,9 @@ export default function Community() {
 
     // function: board list 불러오기 함수 //
     const getBoardList = () => {
-        getBoardListRequest().then(getBoardListResponse)
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (accessToken || !accessToken) {
+        getBoardRequest(accessToken).then(getBoardListResponse) }
     };
 
     // function: get board list response 처리 함수 //
@@ -268,7 +273,7 @@ export default function Community() {
     }
 
     // effect: 컴포넌트 로드시 고객 리스트 불러오기 함수 //
-    useEffect(getBoardList, []);
+    
 
     // render: 커뮤니티 화면 컴포넌트 렌더링 //
     return (
