@@ -71,8 +71,6 @@ function Personal({ onPersonalChange }: changePersonalProps) {
         setHeight(height);
         setPersonalGoals(personalGoals);
 
-
-
     };
 
 
@@ -622,7 +620,6 @@ function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
     )
 
 }
-
 
 // component: 3대측정 컴포넌트 //
 function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
