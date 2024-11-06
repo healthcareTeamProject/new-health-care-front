@@ -7,8 +7,8 @@
     flex-direction: row;
     align-items: center;
 
-    width: 100%;
-    min-width: 1920px;
+    width: 1920px;
+    /* min-width: 1920px; */
     height: 80px;
     padding: 0 20px;
     gap: 262px;
