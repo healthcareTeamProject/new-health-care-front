@@ -1,19 +1,36 @@
-import React, { useEffect, useState } from 'react'
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react'
 import './style.css'
-import { Bar } from 'react-chartjs-2';
-import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
+import { Bar, Line } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
-import { useParams } from 'react-router';
-import { getCustomerMyPageRequest } from 'src/apis';
+import { useNavigate, useParams } from 'react-router';
+import { fileUploadRequest, getCustomerMyPageRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
 import { ACCESS_TOKEN } from 'src/constant';
 import { GetCustomerMyPageResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
+import InputBox from 'src/components/InputBox';
+import { NicknameCheckRequestDto } from 'src/apis/dto/request/auth';
+import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PatchUserThreeMajorLiftRequestDto } from 'src/apis/dto/request/customer';
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
+
+interface changePersonalProps {
+    onPersonalChange: () => void;
+}
+
+interface changeMucleFatProps {
+    onMucleFatChange: () => void;
+}
+
+interface changeThreeMajorLiftProps {
+    onThreeMajorLiftChange: () => void;
+}
+
 
 // component: 개인정보 컴포넌트 //
-function Personal() {
+function Personal({ onPersonalChange }: changePersonalProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -64,7 +81,7 @@ function Personal() {
         if (!accessToken) return;
 
         getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
-    }, [userId]);
+    }, [userId, cookies]);
 
     // render: 개인정보 컴포넌트 렌더딩 //
     return (
@@ -87,10 +104,10 @@ function Personal() {
                     </div>
                 </div>
                 <div className='personal-goals-box'>
-                    <div className='personal-goals-box-icon'></div>
+                    <div className='personal-goals-box-icon' onClick={onPersonalChange}></div>
                     <div className='personal-goals-box-buttom'>
                         <div className='personal-goals-box-buttom-title'>개인목표</div>
-                        <input className='personal-goals-box-buttom-content' value={personalGoals} onChange={(e) => setPersonalGoals(e.target.value)} placeholder='개인목표' disabled />
+                        <textarea className='personal-goals-box-buttom-content' value={personalGoals} onChange={(e) => setPersonalGoals(e.target.value)} placeholder='개인목표' disabled />
                     </div>
                 </div>
             </div>
@@ -100,7 +117,7 @@ function Personal() {
 }
 
 // component: 개인정보 변경 팝업 컴포넌트 //
-function PersonalChage() {
+function PersonalChange({ onPersonalChange }: changePersonalProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -118,6 +135,27 @@ function PersonalChage() {
     const [height, setHeight] = useState<string>('');
     const [personalGoals, setPersonalGoals] = useState<string>('');
 
+    // state: 변경할 정보 입력 상태 //
+    const [changeProfileImage, setChangeProfileImage] = useState<File|null>(null);
+    const [changeName, setChangeName] = useState<string>('');
+    const [changeNickname, setChangeNickname] = useState<string>('');
+    const [changeHeight, setChangeHeight] = useState<string>('');
+    const [changePersonalGoals, setChangePersonalGoals] = useState<string>('');
+
+    // state: 사용자 입력 메시지 상태 //
+    const [nicknameMessage, setNicknameMessage] = useState<string>('');
+
+    // state: 사용자 정보 메시지 에러 상태 //
+    const [nicknameMessageError, setNicknameMessageError] = useState<boolean>(false);
+
+    // state: 입력값 검증 상태 //
+    const [isCheckedNickname, setCheckedNickname] = useState<boolean>(false);
+
+    // state: 이미지 입력 참조 //
+    const imageInputRef = useRef<HTMLInputElement|null>(null);
+
+    // state: 프로필 미리보기 URL 상태 //
+    const [previewUrl, setPreviewUrl] = useState<string>('');
 
     // function: get customer response 처리 함수 //
     const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
@@ -143,6 +181,148 @@ function PersonalChage() {
 
     };
 
+    // function: 닉네임 중복 확인 Response 처리 함수 //
+    const nicknameCheckResponse = (responseBody: ResponseDto | null) => {
+
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
+            responseBody.code === 'DN' ? '이미 사용중인 닉네임 입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        setNicknameMessage(message);
+        setNicknameMessageError(!isSuccessed);
+        setCheckedNickname(isSuccessed);
+
+    }
+
+    // function: patch customer response 처리 함수 //
+    const patchCustomerResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+        onPersonalChange();
+    }
+
+    // event handler: 프로필 이미지 클릭 이벤트 처리 //
+    const onProfileImageClickHandler = () => {
+        const { current } = imageInputRef;
+        if (!current) return;
+        current.click();
+    }
+
+    // event handler: 이미지 변경 이벤트 처리 //
+    const onImageInputChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { files } = event.target;
+        if (!files || !files.length) return;
+
+        const file = files[0];
+        setChangeProfileImage(file);
+
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(file);
+        fileReader.onloadend = () => {
+            setPreviewUrl(fileReader.result as string);
+        }
+    }
+
+    // event handler: 이름 변경 이벤트 처리 //
+    const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setChangeName(value);
+    };
+
+    // event handler: 닉네임 변경 이벤트 처리 //
+    const onNicknameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setChangeNickname(value);
+        setCheckedNickname(false);
+        setNicknameMessage('');
+    };
+
+    // event handler: 키 변경 이벤트 처리 //
+    const onHeightChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeHeight(value);
+        }
+
+    };
+
+    // event handler: 개인 목표 변경 이벤트 처리 //
+    const onUserGoalsChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
+        const { value } = event.target;
+
+        if (value.length <= 50) {
+            setChangePersonalGoals(value);
+        }
+        console.log(changePersonalGoals);
+    };
+
+    // event handler: 닉네임 중복 확인 버튼 클릭 이벤트 처리 //
+    const onNicknameCheckClickHandler = () => {
+        if (!nickname) return;
+
+        const requestBody: NicknameCheckRequestDto = {
+            nickname: changeNickname
+        }
+
+        nicknameCheckRequest(requestBody).then(nicknameCheckResponse);
+
+    }
+
+    // event handler: 저장 버튼 클릭 이벤트 처리 //
+    const onUpdateButtonClickHandler = async () => {
+
+        if(!previewUrl && !changeName && !changeNickname && !changeHeight && !changePersonalGoals) {
+            alert('변경된 값이 없습니다')
+            return;
+        }
+
+        if (changeNickname) {
+            if (!isCheckedNickname) return;
+        }
+
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        let url: string | null = null;
+        if (changeProfileImage) {
+            const formData = new FormData();
+            formData.append('file', changeProfileImage);
+            url = await fileUploadRequest(formData);
+        }
+        url = url ? url : profileImage;
+
+        const requestBody: PatchCustomerRequestDto = {
+            profileImage: url,
+            name: changeName ? changeName : name, 
+            nickname: changeNickname ? changeNickname : nickname, 
+            height: changeHeight ? changeHeight : height, 
+            personalGoals: changePersonalGoals ? changePersonalGoals : personalGoals
+        }
+        patchCustomerRequest(requestBody, accessToken).then(patchCustomerResponse);
+
+        // 완료 후 새로고침
+        window.location.reload();
+    }
+
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
@@ -153,44 +333,43 @@ function PersonalChage() {
         getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
     }, [userId]);
 
-    // render: 개인정보 컴포넌트 렌더딩 //
+    // render: 개인정보 변경 팝업 컴포넌트 렌더딩 //
     return (
-        <div className='popup'>
-            <div className='personal'>
-                <div className='personal-logo'></div>
-                <div className='personal-buttom'>
-                    <div className='profile-image' style={{ backgroundImage: `url(${profileImage})` }}></div>
+            <div className='personal-pop-up'>
+                <div className='pop-up-exit' onClick={onPersonalChange}></div>
+                <div className='personal-pop-up-top'>
+                    <div className='profile-image' style={{ backgroundImage: previewUrl ? `url(${previewUrl})` : `url(${profileImage})` }} onClick={onProfileImageClickHandler}>
+                        <input ref={imageInputRef} style={{ display: 'none' }} type='file' accept='image/*' onChange={onImageInputChangeHandler} />
+                    </div>
                     <div className='personal-information'>
                         <div className='name'>
-                            <div className='name-title'>이름</div>
-                            <div className='name-value'>{name}</div>
+                            <InputBox label='이름' type='text' placeholder={name} value={changeName} onChange={onNameChangeHandler} />
                         </div>
                         <div className='nickname'>
-                            <div className='nickname-title'>닉네임</div>
-                            <div className='nickname-value'>{nickname}</div>
+                            <InputBox label='닉네임' type='text' placeholder={nickname} value={changeNickname} messageError={nicknameMessageError} message={nicknameMessage} buttonName='중복 확인' onChange={onNicknameChangeHandler} onButtonClick={onNicknameCheckClickHandler}/>
                         </div>
                         <div className='height'>
-                            <div className='height-title'>키</div>
-                            <div className='height-value'>{height}</div>
-                        </div>
-                    </div>
-                    <div className='personal-goals-box'>
-                        <div className='personal-goals-box-icon'></div>
-                        <div className='personal-goals-box-buttom'>
-                            <div className='personal-goals-box-buttom-title'>개인목표</div>
-                            <input className='personal-goals-box-buttom-content' value={personalGoals} onChange={(e) => setPersonalGoals(e.target.value)} placeholder='개인목표' disabled />
+                            <InputBox label='키' type='text' placeholder={height} value={changeHeight} onChange={onHeightChangeHandler} />
                         </div>
                     </div>
                 </div>
+                <div className='personal-goals-box'>
+                    <div className='personal-goals-box-title'>개인목표</div>
+                    <textarea 
+                        className='personal-goals-box-content' 
+                        placeholder={personalGoals} 
+                        value={changePersonalGoals} 
+                        onChange={onUserGoalsChangeHandler}
+                    />
+                </div>
+                <div className='pop-up-update' onClick={onUpdateButtonClickHandler}>저장</div>
             </div>
-        </div>
     )
 
 }
 
-
 // component: 신체정보 컴포넌트 //
-function UserMucleFat() {
+function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -204,11 +383,14 @@ function UserMucleFat() {
     const [bodyFatMass, setBodyFatMass] = useState<string>('');
 
     // state: 차트 데이터 설정 //
+    const dataValues = [weight, skeletalMuscleMass, bodyFatMass].map(Number);
+    const maxValue = Math.max(...dataValues);
+    const stepSize = maxValue ? maxValue * 0.2 : 1; // 최대값의 20% 설정
     const chartData = {
         labels: ['몸무게', '골격근량', '체지방량'],
         datasets: [{
-            data: [weight, skeletalMuscleMass, bodyFatMass].map(Number), // 숫자로 변환
-            backgroundColor: 'rgba(75, 192, 192, 0.6)',
+            data: dataValues,
+            backgroundColor: 'rgba(53, 162, 235, 0.6)',
         }],
     };
 
@@ -230,11 +412,12 @@ function UserMucleFat() {
             x: {
                 beginAtZero: true,
                 ticks: {
-                    stepSize: 20,
+                    stepSize: stepSize, // 최대값의 20%로 설정
                     font: {
                         size: 14,
                     },
                     color: 'black',
+                    callback: (value: string | number) => Math.floor(Number(value)), // 소수점 아래를 없애고 정수로 표시
                 },
             },
         },
@@ -282,7 +465,7 @@ function UserMucleFat() {
         <div className='user-muscle-fat'>
             <div className='chart-top'>
                 <div className='chart-title'>골격근 - 지방분석 </div>
-                <div className='chart-icon'></div>
+                <div className='chart-icon' onClick={onMucleFatChange}></div>
             </div>
             <div className='chart-container'>
                 <Bar data={chartData} options={options} />
@@ -291,9 +474,8 @@ function UserMucleFat() {
     );
 }
 
-
-// component: 3대측정 컴포넌트 //
-function ThreeMajorLift() {
+// component: 신체정보 변경 팝업 컴포넌트 //
+function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
@@ -302,8 +484,155 @@ function ThreeMajorLift() {
     const {userId} = useParams();
 
     // state: 사용자 정보 상태 //
-    const [deadlift, setDeadlift] = useState<string>('');
+    const [weight, setWeight] = useState<string>('');
+    const [skeletalMuscleMass, setSkeletalMuscleMass] = useState<string>('');
+    const [bodyFatMass, setBodyFatMass] = useState<string>('');
+
+    // state: 변경할 정보 상태 //
+    const [changeWeight, setChangeWeight] = useState<string>('');
+    const [changeSkeletalMuscleMass, setChangeSkeletalMuscleMass] = useState<string>('');
+    const [changeBodyFatMass, setChangeBodyFatMass] = useState<string>('');
+
+    // function: get customer response 처리 함수 //
+    const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            return;
+        };
+
+        const { weight, skeletalMuscleMass, bodyFatMass } = responseBody as  GetCustomerMyPageResponseDto;
+        setWeight(weight);
+        setSkeletalMuscleMass(skeletalMuscleMass);
+        setBodyFatMass(bodyFatMass);
+
+    };
+
+    // function: patch user muscle fat response 처리 함수 //
+    const patchUserMuscleFatResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+        onMucleFatChange();
+    }
+
+    // event handler: 몸무게 변경 이벤트 처리 //
+    const onWeightChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeWeight(value);
+        }
+
+    };
+
+    // event handler: 골격근량 변경 이벤트 처리 //
+    const onSkeletalMuscleMassChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeSkeletalMuscleMass(value);
+        }
+
+    };
+
+    // event handler: 체지방량 변경 이벤트 처리 //
+    const onBodyFatMassChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeBodyFatMass(value);
+        }
+
+    };
+
+    // event handler: 저장 버튼 클릭 이벤트 처리 //
+    const onUpdateButtonClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+        if (!userId) return;
+
+        const requestBody: PatchUserMuscleFatRequestDto = {
+            userId: userId,
+            weight: changeWeight ? changeWeight : weight, 
+            skeletalMuscleMass: changeSkeletalMuscleMass ? changeSkeletalMuscleMass : skeletalMuscleMass, 
+            bodyFatMass: changeBodyFatMass ? changeBodyFatMass : bodyFatMass, 
+        }
+        patchUserMuscleFatRequest(userId,requestBody, accessToken).then(patchUserMuscleFatResponse);
+
+        // 완료 후 새로고침
+        window.location.reload();
+    }
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
+    }, [userId]);
+
+    // render: 신체정보 변경 팝업 컴포넌트 렌더딩 //
+    return (
+        <div className='mucleFat-pop-up'>
+                <div className='pop-up-exit' onClick={onMucleFatChange}></div>
+                <div className='mucleFat-pop-up-top'>
+                    <div className='pop-up-mucleFat-title'>신체 정보</div>
+                    <div className='pop-up-mucleFat-information'>
+                        <div className='weight'>
+                            <InputBox label='몸무게' type='text' placeholder={weight} value={changeWeight} onChange={onWeightChangeHandler} />
+                        </div>
+                        <div className='skeletalMuscleMass'>
+                            <InputBox label='골격근량' type='text' placeholder={skeletalMuscleMass} value={changeSkeletalMuscleMass} onChange={onSkeletalMuscleMassChangeHandler} />
+                        </div>
+                        <div className='bodyFatMass'>
+                            <InputBox label='체지방량' type='text' placeholder={bodyFatMass} value={changeBodyFatMass} onChange={onBodyFatMassChangeHandler} />
+                        </div>
+                    </div>
+                </div>
+                <div className='pop-up-update' onClick={onUpdateButtonClickHandler}>저장</div>
+            </div>
+    )
+
+}
+
+// component: 3대측정 컴포넌트 //
+function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+
+    // state: 사용자 정보 상태 //
     const [benchPress, setBenchPress] = useState<string>('');
+    const [deadlift, setDeadlift] = useState<string>('');
     const [squat, setSquat] = useState<string>('');
 
     // function: get customer response 처리 함수 //
@@ -321,10 +650,10 @@ function ThreeMajorLift() {
             return;
         }
 
-        const { deadlift, benchPress, squat } = responseBody as  GetCustomerMyPageResponseDto;
+        const { benchPress, deadlift, squat } = responseBody as  GetCustomerMyPageResponseDto;
         
-        setDeadlift(deadlift);
         setBenchPress(benchPress);
+        setDeadlift(deadlift);
         setSquat(squat);
 
     };
@@ -344,7 +673,7 @@ function ThreeMajorLift() {
         <div className='three-major-lift'>
             <div className='three-major-lift-top'>
                 <div className='three-major-lift-top-title'>3대 측정</div>
-                <div className='three-major-lift-top-icon'></div>
+                <div className='three-major-lift-top-icon' onClick={onThreeMajorLiftChange}></div>
             </div>
             <div className='three-major-lift-buttom'>
                 <div className='three-major-lift-buttom-title'>
@@ -359,6 +688,155 @@ function ThreeMajorLift() {
                 </div>
             </div>
         </div>
+    )
+
+}
+
+// component: 3대측정 변경 팝업 컴포넌트 //
+function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+
+    // state: 사용자 정보 상태 //
+    const [benchPress, setBenchPress] = useState<string>('');
+    const [deadlift, setDeadlift] = useState<string>('');
+    const [squat, setSquat] = useState<string>('');
+
+    // state: 변경할 정보 상태 //
+    const [changeBenchPress, setChangeBenchPress] = useState<string>('');
+    const [changeDeadlift, setChangeDeadlift] = useState<string>('');
+    const [changeSquat, setChangeSquat] = useState<string>('');
+
+    // function: get customer response 처리 함수 //
+    const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { benchPress, deadlift, squat } = responseBody as  GetCustomerMyPageResponseDto;
+        
+        setBenchPress(benchPress);
+        setDeadlift(deadlift);
+        setSquat(squat);
+
+    };
+
+    // function: patch user muscle fat response 처리 함수 //
+    const patchUserThreeMajorLiftResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+        onThreeMajorLiftChange();
+    }
+
+    // event handler: 벤치프레스 변경 이벤트 처리 //
+    const onBenchPressChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeBenchPress(value);
+        }
+
+    };
+
+    // event handler: 데드리프트 변경 이벤트 처리 //
+    const onDeadliftChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeDeadlift(value);
+        }
+
+    };
+
+    // event handler: 스쿼트 변경 이벤트 처리 //
+    const onSquatChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        const pattern = /^\d*\.?\d*$/;
+        const isMatched = pattern.test(value);
+
+        if (isMatched) {
+            setChangeSquat(value);
+        }
+
+    };
+
+    // event handler: 저장 버튼 클릭 이벤트 처리 //
+    const onUpdateButtonClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+        if (!userId) return;
+
+        const requestBody: PatchUserThreeMajorLiftRequestDto = {
+            userId: userId,
+            benchPress: changeBenchPress ? changeBenchPress : benchPress, 
+            deadlift: changeDeadlift ? changeDeadlift : deadlift, 
+            squat: changeSquat ? changeSquat : squat, 
+            }
+
+        patchUserThreeMajorLiftRequest(userId, requestBody, accessToken).then(patchUserThreeMajorLiftResponse);
+
+        // 완료 후 새로고침
+        window.location.reload();
+    }
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
+    }, [userId]);
+
+    // render: 3대측정 변경 팝업 컴포넌트 렌더딩 //
+    return (
+        <div className='threeMajorLift-pop-up'>
+                <div className='pop-up-exit' onClick={onThreeMajorLiftChange}></div>
+                <div className='threeMajorLift-pop-up-top'>
+                    <div className='pop-up-threeMajorLift-title'>신체 정보</div>
+                    <div className='pop-up-threeMajorLift-information'>
+                        <div className='benchPress'>
+                            <InputBox label='벤치프레스' type='text' placeholder={benchPress} value={changeBenchPress} onChange={onBenchPressChangeHandler} />
+                        </div>
+                        <div className='deadlift'>
+                            <InputBox label='데드리프트' type='text' placeholder={deadlift} value={changeDeadlift} onChange={onDeadliftChangeHandler} />
+                        </div>
+                        <div className='Squat'>
+                            <InputBox label='스쿼트' type='text' placeholder={squat} value={changeSquat} onChange={onSquatChangeHandler} />
+                        </div>
+                    </div>
+                </div>
+                <div className='pop-up-update' onClick={onUpdateButtonClickHandler}>저장</div>
+            </div>
     )
 
 }
@@ -381,9 +859,67 @@ function Board() {
 // component: 신체정보 컴포넌트 //
 function Graph() {
 
+    const dataList1 = [10, 20, 30, 25, 40, 50, 60];
+    const dataList2 = [15, 25, 35, 30, 45, 55, 65];
+    const dataList3 = [5, 10, 15, 20, 30, 20, 50];
+
+    const data = {
+        labels: ['1일', '2일', '3일', '4일', '5일', '6일', '7일'],
+        datasets: [
+            {
+                label: '리스트 1',
+                data: dataList1,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: false,
+                tension: 0,
+                borderWidth: 2
+            },
+            {
+                label: '리스트 2',
+                data: dataList2,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: false,
+                tension: 0,
+                borderWidth: 2
+            },
+            {
+                label: '리스트 3',
+                data: dataList3,
+                borderColor: 'rgba(53, 162, 235, 1)',
+                backgroundColor: 'rgba(53, 162, 235, 0.2)',
+                fill: false,
+                tension: 0,
+                borderWidth: 2
+            }
+        ]
+    };
+
+    const options = {
+        responsive: true,
+        scales: {
+            x: {
+                title: {
+                    display: true,
+                    text: '일자'  // x축 제목
+                }
+            },
+            y: {
+                title: {
+                    display: true,
+                }
+            }
+        }
+    };
+
     // render: 신체정보 컴포넌트 렌더딩 //
     return (
-        <div className='graph'>그래프</div>
+        <div className='graph'>
+            <div className='graph-title'>그래프</div>
+            <Line data={data} options={options} />
+        </div>
+        
     )
 
 }
@@ -391,6 +927,36 @@ function Graph() {
 
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    const navigate = useNavigate();
+
+    // state: 팝업 상태창 상태 //
+    const [personalChangePopUp, setPersonalChangePopUp] = useState(false);
+    const [mucleFatChangePopUp, setMucleFatChangePopUp] = useState(false);
+    const [threeMajorLiftChangePopUp, setThreeMajorLiftChangePopUp] = useState(false);
+
+    const onPersonalChangePopUp = () => {
+        setPersonalChangePopUp(!personalChangePopUp);
+    }
+
+    const onMucleFatChangePopUp = () => {
+        setMucleFatChangePopUp(!mucleFatChangePopUp);
+    }
+
+    const onThreeMajorLiftChangePopUp = () => {
+        setThreeMajorLiftChangePopUp(!threeMajorLiftChangePopUp);
+    }
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            navigate('/');
+        }
+    }, [cookies, navigate]);
 
     // render: 마이페이지 컴포넌트 렌더딩 //
     return (
@@ -401,21 +967,35 @@ export default function Mypage() {
             </div>
             <div className='my-page-main'>
                 <div className='top'>
-                    <Personal />
-                    <UserMucleFat />
+                    <Personal onPersonalChange={onPersonalChangePopUp} />
+                    <MucleFat onMucleFatChange={onMucleFatChangePopUp}/>
                 </div>
                 <div className='buttom'>
                     <div className='buttom-left'>
-                        <ThreeMajorLift />
+                        <ThreeMajorLift onThreeMajorLiftChange={onThreeMajorLiftChangePopUp} />
                         <Board />
                     </div>
                     <Graph />
                 </div>
             </div>
-
+            {personalChangePopUp ? (
             <div className='pop-up active'>
-                <PersonalChage />
-            </div>
+                <PersonalChange onPersonalChange={onPersonalChangePopUp} />
+            </div>)
+            : (<div></div>)
+            }
+            {mucleFatChangePopUp ? (
+            <div className='pop-up active'>
+                <MucleFatChange onMucleFatChange={onMucleFatChangePopUp} />
+            </div>)
+            : (<div></div>)
+            }
+            {threeMajorLiftChangePopUp ? (
+            <div className='pop-up active'>
+                <ThreeMajorLiftChange onThreeMajorLiftChange={onThreeMajorLiftChangePopUp} />
+            </div>)
+            : (<div></div>)
+            }
 
         </div>
 

@@ -1,7 +1,7 @@
 // interface: 운동 정보 Request Body Dto //
-export default interface PostThreeMajorLiftRequestDto {
+export default interface PatchUserThreeMajorLiftRequestDto {
     userId: string;
-    deadlift: string;
     benchPress: string;
+    deadlift: string;
     squat: string;
 }
