@@ -4,9 +4,9 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useParams } from 'react-router';
-import { fileUploadRequest, getCustomerMyPageRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
+import { fileUploadRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
 import { ACCESS_TOKEN } from 'src/constant';
-import { GetCustomerMyPageResponseDto } from 'src/apis/dto/response/customer';
+import { GetCustomerMyPageResponseDto, GetUserMuscleFatListResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 import InputBox from 'src/components/InputBox';
@@ -73,7 +73,6 @@ function Personal({ onPersonalChange }: changePersonalProps) {
 
     };
 
-
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
         if(!userId) return;
@@ -115,6 +114,7 @@ function Personal({ onPersonalChange }: changePersonalProps) {
     )
 
 }
+
 
 // component: 개인정보 변경 팝업 컴포넌트 //
 function PersonalChange({ onPersonalChange }: changePersonalProps) {
@@ -368,6 +368,7 @@ function PersonalChange({ onPersonalChange }: changePersonalProps) {
 
 }
 
+
 // component: 신체정보 컴포넌트 //
 function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
 
@@ -473,6 +474,7 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
         </div>
     );
 }
+
 
 // component: 신체정보 변경 팝업 컴포넌트 //
 function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
@@ -621,6 +623,7 @@ function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
 
 }
 
+
 // component: 3대측정 컴포넌트 //
 function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
 
@@ -666,7 +669,7 @@ function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
         if (!accessToken) return;
 
         getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
-    }, [userId]);
+    }, [userId, cookies]);
 
     // render: 3대측정 컴포넌트 렌더딩 //
     return (
@@ -691,6 +694,7 @@ function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
     )
 
 }
+
 
 // component: 3대측정 변경 팝업 컴포넌트 //
 function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
@@ -859,16 +863,24 @@ function Board() {
 // component: 신체정보 컴포넌트 //
 function Graph() {
 
-    const dataList1 = [10, 20, 30, 25, 40, 50, 60];
-    const dataList2 = [15, 25, 35, 30, 45, 55, 65];
-    const dataList3 = [5, 10, 15, 20, 30, 20, 50];
+    // state: cookie 상태
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태
+    const { userId } = useParams();
+
+    // state: 신체 정보 리스트 상태 //
+    const [weightList, setWeightList] = useState<string[]>([]);
+    const [skeletalMuscleMassList, setSkeletalMuscleMassList] = useState<string[]>([]);
+    const [bodyFatMassList, setBodyFatMassList] = useState<string[]>([]);
+    const [userMuscleFatDate, setUserMuscleFatDate] = useState<string[]>([]);
 
     const data = {
-        labels: ['1일', '2일', '3일', '4일', '5일', '6일', '7일'],
+        labels: userMuscleFatDate,
         datasets: [
             {
-                label: '리스트 1',
-                data: dataList1,
+                label: '체중',
+                data: weightList,
                 borderColor: 'rgba(75, 192, 192, 1)',
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 fill: false,
@@ -876,8 +888,8 @@ function Graph() {
                 borderWidth: 2
             },
             {
-                label: '리스트 2',
-                data: dataList2,
+                label: '골격근량',
+                data: skeletalMuscleMassList,
                 borderColor: 'rgba(255, 99, 132, 1)',
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 fill: false,
@@ -885,8 +897,8 @@ function Graph() {
                 borderWidth: 2
             },
             {
-                label: '리스트 3',
-                data: dataList3,
+                label: '체지방량',
+                data: bodyFatMassList,
                 borderColor: 'rgba(53, 162, 235, 1)',
                 backgroundColor: 'rgba(53, 162, 235, 0.2)',
                 fill: false,
@@ -902,7 +914,7 @@ function Graph() {
             x: {
                 title: {
                     display: true,
-                    text: '일자'  // x축 제목
+                    text: '일자' // x축 제목
                 }
             },
             y: {
@@ -912,6 +924,101 @@ function Graph() {
             }
         }
     };
+
+    // function: get customer response 처리 함수
+    const getUserMuscleFatListResponse = (responseBody: GetUserMuscleFatListResponseDto | ResponseDto | null) => {
+        const message =
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' :
+            responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' : '';
+
+            const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        console.log('서버 응답:', responseBody);
+
+        // 서버에서 받은 여러 데이터로 상태 업데이트
+        const { userMuscleFatLists } = responseBody as GetUserMuscleFatListResponseDto;
+
+        if (userMuscleFatLists && Array.isArray(userMuscleFatLists) && userMuscleFatLists.length > 0) {
+            const weight: string[] = [];
+            const skeletalMuscleMass: string[] = [];
+            const bodyFatMass: string[] = [];
+            const muscleFatDate: string[] = [];
+
+            userMuscleFatLists.forEach((item) => {
+                weight.push(item.weight);
+                skeletalMuscleMass.push(item.skeletalMuscleMass);
+                bodyFatMass.push(item.bodyFatMass);
+                muscleFatDate.push(item.userMuscleFatDate);
+            });
+
+            // 데이터 포인트 제한 로직
+            const maxDataPoints = 6;  // 최대 데이터 포인트 수를 8로 설정
+
+            // 처음과 마지막 데이터 제외한 중간 값에서 선택할 데이터 개수
+            const middleDataCount = maxDataPoints - 2; // 처음과 마지막을 제외한 나머지
+
+            if (userMuscleFatLists.length > 2) {
+                const middleData = weight.slice(1, weight.length - 1); // 첫 번째와 마지막을 제외한 중간 데이터
+                const middleSkeletalMuscleMass = skeletalMuscleMass.slice(1, skeletalMuscleMass.length - 1);
+                const middleBodyFatMass = bodyFatMass.slice(1, bodyFatMass.length - 1);
+                const middleUserMuscleFatDate = muscleFatDate.slice(1, muscleFatDate.length - 1);
+
+                // 균등한 간격으로 중간 데이터 선택 (간격 계산)
+                const interval = Math.floor(middleData.length / middleDataCount);  // 간격 계산
+
+                let selectedMiddleData = [];
+                let selectedSkeletalMuscleMass = [];
+                let selectedBodyFatMass = [];
+                let selectedUserMuscleFatDate = [];
+
+                // 간격에 맞춰서 선택
+                for (let i = 0; i < middleDataCount; i++) {
+                    selectedMiddleData.push(middleData[i * interval]);  // 일정 간격으로 데이터 선택
+                    selectedSkeletalMuscleMass.push(middleSkeletalMuscleMass[i * interval]);
+                    selectedBodyFatMass.push(middleBodyFatMass[i * interval]);
+                    selectedUserMuscleFatDate.push(middleUserMuscleFatDate[i * interval]);
+                }
+
+                // 처음과 마지막 값 포함하여 최종 데이터 조합
+                const finalWeightList = [weight[0], ...selectedMiddleData, weight[weight.length - 1]];
+                const finalSkeletalMuscleMassList = [skeletalMuscleMass[0], ...selectedSkeletalMuscleMass, skeletalMuscleMass[skeletalMuscleMass.length - 1]];
+                const finalBodyFatMassList = [bodyFatMass[0], ...selectedBodyFatMass, bodyFatMass[bodyFatMass.length - 1]];
+                const finalUserMuscleFatDate = [muscleFatDate[0], ...selectedUserMuscleFatDate, muscleFatDate[muscleFatDate.length - 1]];
+
+                // 상태 업데이트
+                setWeightList(finalWeightList);
+                setSkeletalMuscleMassList(finalSkeletalMuscleMassList);
+                setBodyFatMassList(finalBodyFatMassList);
+                setUserMuscleFatDate(finalUserMuscleFatDate);
+            } else {
+                // 데이터가 2개 이하일 경우, 원본 데이터를 그대로 사용
+                setWeightList(weight);
+                setSkeletalMuscleMassList(skeletalMuscleMass);
+                setBodyFatMassList(bodyFatMass);
+                setUserMuscleFatDate(muscleFatDate);
+            }
+        }
+
+    };
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청
+    useEffect(() => {
+        if (!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getUserMuscleFatListRequest(userId, accessToken).then(getUserMuscleFatListResponse)
+
+    }, [userId, cookies]);
+
+
 
     // render: 신체정보 컴포넌트 렌더딩 //
     return (
