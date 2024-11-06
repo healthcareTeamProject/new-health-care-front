@@ -4,9 +4,9 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useParams } from 'react-router';
-import { fileUploadRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
+import { fileUploadRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
 import { ACCESS_TOKEN } from 'src/constant';
-import { GetCustomerMyPageResponseDto, GetUserMuscleFatListResponseDto } from 'src/apis/dto/response/customer';
+import { GetCustomerMyPageResponseDto, GetUserMuscleFatListResponseDto, GetUserThreeMajorLiftListResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 import InputBox from 'src/components/InputBox';
@@ -272,7 +272,6 @@ function PersonalChange({ onPersonalChange }: changePersonalProps) {
         if (value.length <= 50) {
             setChangePersonalGoals(value);
         }
-        console.log(changePersonalGoals);
     };
 
     // event handler: 닉네임 중복 확인 버튼 클릭 이벤트 처리 //
@@ -331,7 +330,7 @@ function PersonalChange({ onPersonalChange }: changePersonalProps) {
         if (!accessToken) return;
 
         getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
-    }, [userId]);
+    }, [userId, cookies]);
 
     // render: 개인정보 변경 팝업 컴포넌트 렌더딩 //
     return (
@@ -860,14 +859,17 @@ function Board() {
 }
 
 
-// component: 신체정보 컴포넌트 //
+// component: 리스트 그래프 컴포넌트 //
 function Graph() {
 
-    // state: cookie 상태
+    // state: cookie 상태 //
     const [cookies] = useCookies();
 
-    // state: customer 아이디 상태
+    // state: customer 아이디 상태 //
     const { userId } = useParams();
+
+    // state: 그래프 선택 상태 //
+    const [selectGraphs, setSelectGraphs] = useState<boolean>(true);
 
     // state: 신체 정보 리스트 상태 //
     const [weightList, setWeightList] = useState<string[]>([]);
@@ -875,7 +877,14 @@ function Graph() {
     const [bodyFatMassList, setBodyFatMassList] = useState<string[]>([]);
     const [userMuscleFatDate, setUserMuscleFatDate] = useState<string[]>([]);
 
-    const data = {
+    // state: 3대 측정 리스트 상태 //
+    const [benchPressList, setBenchPressList] = useState<string[]>([]);
+    const [deadliftList, setDeadliftList] = useState<string[]>([]);
+    const [squatList, setSquatList] = useState<string[]>([]);
+    const [userThreeMajorLiftDateList, setUserThreeMajorLiftDateList] = useState<string[]>([]);
+
+    // state: 신체 정보 리스트 차트 상태 //
+    const userMuscleFatData = {
         labels: userMuscleFatDate,
         datasets: [
             {
@@ -885,7 +894,7 @@ function Graph() {
                 backgroundColor: 'rgba(75, 192, 192, 0.2)',
                 fill: false,
                 tension: 0,
-                borderWidth: 2
+                borderWidth: 3
             },
             {
                 label: '골격근량',
@@ -894,7 +903,7 @@ function Graph() {
                 backgroundColor: 'rgba(255, 99, 132, 0.2)',
                 fill: false,
                 tension: 0,
-                borderWidth: 2
+                borderWidth: 3
             },
             {
                 label: '체지방량',
@@ -903,18 +912,52 @@ function Graph() {
                 backgroundColor: 'rgba(53, 162, 235, 0.2)',
                 fill: false,
                 tension: 0,
-                borderWidth: 2
+                borderWidth: 3
             }
         ]
     };
 
+    // state: 3대 측정 리스트 차트 상태 //
+    const userThreeMajorLiftData = {
+        labels: userThreeMajorLiftDateList,
+        datasets: [
+            {
+                label: '벤치프레스',
+                data: benchPressList,
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: false,
+                tension: 0,
+                borderWidth: 3
+            },
+            {
+                label: '데드리프트',
+                data: deadliftList,
+                borderColor: 'rgba(255, 99, 132, 1)',
+                backgroundColor: 'rgba(255, 99, 132, 0.2)',
+                fill: false,
+                tension: 0,
+                borderWidth: 3
+            },
+            {
+                label: '스쿼트',
+                data: squatList,
+                borderColor: 'rgba(53, 162, 235, 1)',
+                backgroundColor: 'rgba(53, 162, 235, 0.2)',
+                fill: false,
+                tension: 0,
+                borderWidth: 3
+            }
+        ]
+    };
+
+    // state: 그래프 스타일 상태 //
     const options = {
         responsive: true,
         scales: {
             x: {
                 title: {
                     display: true,
-                    text: '일자' // x축 제목
                 }
             },
             y: {
@@ -925,7 +968,7 @@ function Graph() {
         }
     };
 
-    // function: get customer response 처리 함수
+    // function: get user muscle fat list response 처리 함수
     const getUserMuscleFatListResponse = (responseBody: GetUserMuscleFatListResponseDto | ResponseDto | null) => {
         const message =
         !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' :
@@ -939,8 +982,6 @@ function Graph() {
             alert(message);
             return;
         }
-
-        console.log('서버 응답:', responseBody);
 
         // 서버에서 받은 여러 데이터로 상태 업데이트
         const { userMuscleFatLists } = responseBody as GetUserMuscleFatListResponseDto;
@@ -959,54 +1000,144 @@ function Graph() {
             });
 
             // 데이터 포인트 제한 로직
-            const maxDataPoints = 6;  // 최대 데이터 포인트 수를 8로 설정
+            const maxDataPoints = 6;  // 최대 데이터 포인트 수
 
-            // 처음과 마지막 데이터 제외한 중간 값에서 선택할 데이터 개수
-            const middleDataCount = maxDataPoints - 2; // 처음과 마지막을 제외한 나머지
-
-            if (userMuscleFatLists.length > 2) {
-                const middleData = weight.slice(1, weight.length - 1); // 첫 번째와 마지막을 제외한 중간 데이터
-                const middleSkeletalMuscleMass = skeletalMuscleMass.slice(1, skeletalMuscleMass.length - 1);
-                const middleBodyFatMass = bodyFatMass.slice(1, bodyFatMass.length - 1);
-                const middleUserMuscleFatDate = muscleFatDate.slice(1, muscleFatDate.length - 1);
-
-                // 균등한 간격으로 중간 데이터 선택 (간격 계산)
-                const interval = Math.floor(middleData.length / middleDataCount);  // 간격 계산
-
-                let selectedMiddleData = [];
-                let selectedSkeletalMuscleMass = [];
-                let selectedBodyFatMass = [];
-                let selectedUserMuscleFatDate = [];
-
-                // 간격에 맞춰서 선택
-                for (let i = 0; i < middleDataCount; i++) {
-                    selectedMiddleData.push(middleData[i * interval]);  // 일정 간격으로 데이터 선택
-                    selectedSkeletalMuscleMass.push(middleSkeletalMuscleMass[i * interval]);
-                    selectedBodyFatMass.push(middleBodyFatMass[i * interval]);
-                    selectedUserMuscleFatDate.push(middleUserMuscleFatDate[i * interval]);
-                }
-
-                // 처음과 마지막 값 포함하여 최종 데이터 조합
-                const finalWeightList = [weight[0], ...selectedMiddleData, weight[weight.length - 1]];
-                const finalSkeletalMuscleMassList = [skeletalMuscleMass[0], ...selectedSkeletalMuscleMass, skeletalMuscleMass[skeletalMuscleMass.length - 1]];
-                const finalBodyFatMassList = [bodyFatMass[0], ...selectedBodyFatMass, bodyFatMass[bodyFatMass.length - 1]];
-                const finalUserMuscleFatDate = [muscleFatDate[0], ...selectedUserMuscleFatDate, muscleFatDate[muscleFatDate.length - 1]];
-
-                // 상태 업데이트
-                setWeightList(finalWeightList);
-                setSkeletalMuscleMassList(finalSkeletalMuscleMassList);
-                setBodyFatMassList(finalBodyFatMassList);
-                setUserMuscleFatDate(finalUserMuscleFatDate);
-            } else {
-                // 데이터가 2개 이하일 경우, 원본 데이터를 그대로 사용
+            // 데이터가 6개 이하일 경우, 원본 데이터를 그대로 사용
+            if (userMuscleFatLists.length <= maxDataPoints) {
                 setWeightList(weight);
                 setSkeletalMuscleMassList(skeletalMuscleMass);
                 setBodyFatMassList(bodyFatMass);
                 setUserMuscleFatDate(muscleFatDate);
+            } else {
+                // 데이터가 6개 이상일 경우, 중간 값에서 균등 간격으로 6개로 조정
+                const middleDataCount = maxDataPoints - 2; // 처음과 마지막을 제외한 나머지 데이터 개수
+
+                // 첫 번째와 마지막을 제외한 중간 데이터
+                const middleWeight = weight.slice(1, weight.length - 1);
+                const middleSkeletalMuscleMass = skeletalMuscleMass.slice(1, skeletalMuscleMass.length - 1);
+                const middleBodyFatMass = bodyFatMass.slice(1, bodyFatMass.length - 1);
+                const middleMuscleFatDate = muscleFatDate.slice(1, muscleFatDate.length - 1);
+
+                // 균등한 간격으로 중간 데이터 선택 (간격 계산)
+                const interval = Math.floor(middleWeight.length / middleDataCount);  // 간격 계산
+
+                let selectedMiddleWeight: string[] = [];
+                let selectedMiddleSkeletalMuscleMass: string[] = [];
+                let selectedMiddleBodyFatMass: string[] = [];
+                let selectedMiddleMuscleFatDate: string[] = [];
+
+                // 간격에 맞춰서 선택
+                for (let i = 0; i < middleDataCount; i++) {
+                    selectedMiddleWeight.push(middleWeight[i * interval]);  // 일정 간격으로 데이터 선택
+                    selectedMiddleSkeletalMuscleMass.push(middleSkeletalMuscleMass[i * interval]);
+                    selectedMiddleBodyFatMass.push(middleBodyFatMass[i * interval]);
+                    selectedMiddleMuscleFatDate.push(middleMuscleFatDate[i * interval]);
+                }
+
+                // 처음과 마지막 값 포함하여 최종 데이터 조합
+                const finalWeightList = [weight[0], ...selectedMiddleWeight, weight[weight.length - 1]];
+                const finalSkeletalMuscleMassList = [skeletalMuscleMass[0], ...selectedMiddleSkeletalMuscleMass, skeletalMuscleMass[skeletalMuscleMass.length - 1]];
+                const finalBodyFatMassList = [bodyFatMass[0], ...selectedMiddleBodyFatMass, bodyFatMass[bodyFatMass.length - 1]];
+                const finalMuscleFatDateList = [muscleFatDate[0], ...selectedMiddleMuscleFatDate, muscleFatDate[muscleFatDate.length - 1]];
+
+                setWeightList(finalWeightList);
+                setSkeletalMuscleMassList(finalSkeletalMuscleMassList);
+                setBodyFatMassList(finalBodyFatMassList);
+                setUserMuscleFatDate(finalMuscleFatDateList);
             }
         }
 
     };
+
+    // function: get user three major lift list response 처리 함수
+    const getUserThreeMajorLiftListResponse = (responseBody: GetUserThreeMajorLiftListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' :
+            responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.' : '';
+    
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+    
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+    
+        // 서버에서 받은 여러 데이터로 상태 업데이트
+        const { userThreeMajorLiftLists } = responseBody as GetUserThreeMajorLiftListResponseDto;
+    
+        if (userThreeMajorLiftLists && Array.isArray(userThreeMajorLiftLists) && userThreeMajorLiftLists.length > 0) {
+            const benchPress: string[] = [];
+            const deadlift: string[] = [];
+            const squat: string[] = [];
+            const liftDates: string[] = [];
+    
+            userThreeMajorLiftLists.forEach((item) => {
+                benchPress.push(item.benchPress);
+                deadlift.push(item.deadlift);
+                squat.push(item.squat);
+                liftDates.push(item.userThreeMajorLiftDate);
+            });
+    
+            // 데이터 포인트 제한 로직
+            const maxDataPoints = 6;  // 최대 데이터 포인트 수를 6으로 설정
+
+            if (userThreeMajorLiftLists.length <= maxDataPoints) {
+                // 데이터가 6개 이하일 경우, 해당 개수만큼 원본 데이터를 그대로 사용
+                setBenchPressList(benchPress);
+                setDeadliftList(deadlift);
+                setSquatList(squat);
+                setUserThreeMajorLiftDateList(liftDates);
+            } else {
+                // 데이터가 6개 이상일 경우, 중간 값에서 균등 간격으로 6개로 조정
+                const middleDataCount = maxDataPoints - 2; // 처음과 마지막을 제외한 나머지
+
+                const middleBenchPress = benchPress.slice(1, benchPress.length - 1); // 첫 번째와 마지막을 제외한 중간 데이터
+                const middleDeadlift = deadlift.slice(1, deadlift.length - 1);
+                const middleSquat = squat.slice(1, squat.length - 1);
+                const middleLiftDates = liftDates.slice(1, liftDates.length - 1);
+
+                // 균등한 간격으로 중간 데이터 선택 (간격 계산)
+                const interval = Math.floor(middleBenchPress.length / middleDataCount);  // 간격 계산
+
+                let selectedMiddleBenchPress: string[] = [];
+                let selectedMiddleDeadlift: string[] = [];
+                let selectedMiddleSquat: string[] = [];
+                let selectedMiddleLiftDates: string[] = [];
+
+                // 간격에 맞춰서 선택
+                for (let i = 0; i < middleDataCount; i++) {
+                    selectedMiddleBenchPress.push(middleBenchPress[i * interval]);  // 일정 간격으로 데이터 선택
+                    selectedMiddleDeadlift.push(middleDeadlift[i * interval]);
+                    selectedMiddleSquat.push(middleSquat[i * interval]);
+                    selectedMiddleLiftDates.push(middleLiftDates[i * interval]);
+                }
+
+                // 처음과 마지막 값 포함하여 최종 데이터 조합
+                const finalBenchPressList = [benchPress[0], ...selectedMiddleBenchPress, benchPress[benchPress.length - 1]];
+                const finalDeadliftList = [deadlift[0], ...selectedMiddleDeadlift, deadlift[deadlift.length - 1]];
+                const finalSquatList = [squat[0], ...selectedMiddleSquat, squat[squat.length - 1]];
+                const finalLiftDateList = [liftDates[0], ...selectedMiddleLiftDates, liftDates[liftDates.length - 1]];
+
+                // 상태 업데이트
+                setBenchPressList(finalBenchPressList);
+                setDeadliftList(finalDeadliftList);
+                setSquatList(finalSquatList);
+                setUserThreeMajorLiftDateList(finalLiftDateList);
+            }
+        }
+    };
+
+    // event handler: 골격근/ 지방 그래프 선택 //
+    const onSelectMuscleFatClickHandler = () => {
+        setSelectGraphs(true);
+    }
+
+    // event handler: 골격근/ 지방 그래프 선택 //
+    const onSelectThreeMajorLiftClickHandler = () => {
+        setSelectGraphs(false);
+    }
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청
     useEffect(() => {
@@ -1014,17 +1145,29 @@ function Graph() {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
 
-        getUserMuscleFatListRequest(userId, accessToken).then(getUserMuscleFatListResponse)
+        getUserMuscleFatListRequest(userId, accessToken).then(getUserMuscleFatListResponse);
+        getUserThreeMajorLiftListRequest(userId, accessToken).then(getUserThreeMajorLiftListResponse);
 
     }, [userId, cookies]);
 
 
-
-    // render: 신체정보 컴포넌트 렌더딩 //
+    // render: 리스트 그래프 컴포넌트 렌더딩 //
     return (
         <div className='graph'>
-            <div className='graph-title'>그래프</div>
-            <Line data={data} options={options} />
+            <div className='graph-top'>
+                <div className='graph-title'>계측 변화 그래프</div>
+                <div className='graph-select-button-box'>
+                    <div className={`muscle-fat-button ${selectGraphs ? 'openGraphs' : ''}`} onClick={onSelectMuscleFatClickHandler}>골격근/지방</div>
+                    <div className={`three-major-lift-button ${selectGraphs ? '' : 'openGraphs'}`} onClick={onSelectThreeMajorLiftClickHandler}>3대 측정</div>
+                </div>
+            </div>
+            <div className='graph-bottom'>
+                { selectGraphs ? 
+                    <Line data={userMuscleFatData} options={options} style={{ width: '100%', height: '100%' }} /> : 
+                    <Line data={userThreeMajorLiftData} options={options} style={{ width: '100%', height: '100%' }} />
+                }
+                
+            </div>
         </div>
         
     )
