@@ -12,8 +12,6 @@ export const MY_PAGE_PATH = '/my-page';
 export const BOARD_LIST_PATH = '/board';
 export const BOARD_DETAIL_PATH = (boardNumber: number | string) => `/board/detail/${boardNumber}`;
 export const BOARD_UPDATE_PATH =  (boardNumber: number | string) => `/board/detail/${boardNumber}/update`;
-export const BOARD_CATEGORY_PATH = (categoryName : string) => `/board/${categoryName}`;
-export const BOARD_TAG_PATH = (tagName : string) => `/board/${tagName}`;
 
 export const POST_PATH = '/post';
 

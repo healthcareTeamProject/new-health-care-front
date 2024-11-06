@@ -7,6 +7,7 @@ import { SignInResponseDto } from "./dto/response/auth";
 import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from "./dto/response/customer";
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
+import { PostBoardRequestDto } from "./dto/request/board";
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
 
@@ -32,6 +33,8 @@ const PATCH_USER_MUSCLE_FAT_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${
 const PATCH_USER_THREE_MAJOR_LIFT_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/user-three-major-lift`
 
 const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
+
+const POST_BOARD_API_URL = `${BOARD_MODULE_URL}`;
 
 const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boardNumber}`
 
@@ -164,17 +167,17 @@ export const fileUploadRequest = async (requestBody: FormData) => {
     return url;
 }
 
-// function: get board list 요청 함수 //
-export const getBoardListRequest = async (accessToken: string) => {
-    const responseBody = await axios.get(GET_BOARD_LIST_API_URL, bearerAuthorization(accessToken))
-        .then(responseDataHandler<GetBoardListResponseDto>)
+// function: post board 요청 함수 //
+export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_BOARD_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
-}
+}  
 
 // function: get board 요청함수 //
 export const getBoardRequest = async (boardNumber: string) => {
-  const responseBody = await axios.get(GET_BOARD_NUMBER_URL(boardNumber))
+    const responseBody = await axios.get(GET_BOARD_NUMBER_URL(boardNumber))
         .then(responseDataHandler<GetBoardResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
