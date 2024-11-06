@@ -6,7 +6,7 @@ import { useNavigate, useParams } from 'react-router';
 import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
-import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
+import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SCHEDULE_ABSOLUTE_DATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
 import { getCustomerRequest, getSignInRequest, signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
@@ -15,7 +15,9 @@ import { GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/respo
 import { useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
+import dayjs, { Dayjs } from 'dayjs';
 import Calendar from 'src/components/Calender';
+
 
 interface SignInCustomerProps{
     customer: SignInCustomer;
@@ -228,12 +230,21 @@ export default function Main() {
     const [cookies] = useCookies();
     // state: 로그인 유저 정보 상태 //
     const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
+    // state: 달력 정보 상태 //
+    const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
+    const [schedules, setSchedules] = useState<{ date: string; title: string }[]>([]);
 
     // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
     const isLoggedIn = !!signInCustomer;
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
+
+    // event handler: 켈린더 버튼 클릭 이벤트 처리 //
+    const onCalendarButtonClickHandler = () => {
+        if(!signInCustomer) return;
+        navigator(SCHEDULE_ABSOLUTE_DATH);
+    }
 
     // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
     useEffect(() => {
@@ -271,7 +282,7 @@ export default function Main() {
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
                         {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
-                        <div className='scadul-mini-box'></div>
+                        <Calendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
                     </div>
                 </div>
                 <div className='main-under-detail-box'>

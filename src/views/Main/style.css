@@ -204,7 +204,7 @@
 
 .main-under-detail-box{
     display: flex;
-    justify-content: space-between;
+    gap: 40px;
 }
 
 .main-community-latest-box{
@@ -225,6 +225,7 @@
 
 .login-customer-box{
     display: flex;
+    justify-content: center;
 }
 
 .login-customer-left-box{
