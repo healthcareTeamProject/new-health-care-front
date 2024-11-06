@@ -8,6 +8,7 @@ import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from "./dto/respon
 import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
 import { GetBoardListResponseDto } from "./dto/response/board";
+import { PostBoardRequestDto } from "./dto/request/board";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
@@ -30,6 +31,8 @@ const GET_SIGN_IN_API_URL = `${CUSTOMER_MODULE_URL}/sign-in`;
 const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}`;
 
 const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
+
+const POST_BOARD_API_URL = `${BOARD_MODULE_URL}`;
 
 const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
 
@@ -153,9 +156,16 @@ export const fileUploadRequest = async (requestBody: FormData) => {
 }
 
 // function: get board list 요청 함수 //
-export const getBoardListRequest = async (accessToken: string) => {
-    const responseBody = await axios.get(GET_BOARD_LIST_API_URL, bearerAuthorization(accessToken))
+export const getBoardListRequest = async () => {
+    const responseBody = await axios.get(GET_BOARD_LIST_API_URL)
         .then(responseDataHandler<GetBoardListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_BOARD_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
