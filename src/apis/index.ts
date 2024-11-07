@@ -7,6 +7,8 @@ import { SignInResponseDto } from "./dto/response/auth";
 import { GetCustomerMyPageResponseDto, GetSignInResponseDto, GetUserMuscleFatListResponseDto, GetUserThreeMajorLiftListResponseDto } from "./dto/response/customer";
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
+import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
+import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "./dto/response/schedule";
 import { PostBoardRequestDto } from "./dto/request/board";
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
@@ -42,6 +44,14 @@ const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boa
 
 const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
 
+const HEALTH_SCHEDULE_API_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
+
+const POST_HEALTH_SCHEDULE_API_URL = `{HEALTH_SCHEDULE_API_URL}`;
+const GET_HEALTH_SCHEDULE_LIST_API_URL = `{HEALTH_SCHEDULE_API_URL}`;
+const GET_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
+const PATCH_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
+const DELETE_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
+
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({
@@ -67,7 +77,7 @@ export const idCheckRequest = async (requestBody: IdCheckRequestDto) => {
           .then(responseDataHandler<ResponseDto>)
           .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: nickname check api 요청 함수 //
 export const nicknameCheckRequest = async (requestBody: NicknameCheckRequestDto) => {
@@ -75,7 +85,7 @@ export const nicknameCheckRequest = async (requestBody: NicknameCheckRequestDto)
       .then(responseDataHandler<ResponseDto>)
       .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: tel auth api 요청 함수 //
 export const telAuthRequest = async (requestBody: TelAuthRequestDto) => {
@@ -83,7 +93,7 @@ export const telAuthRequest = async (requestBody: TelAuthRequestDto) => {
       .then(responseDataHandler<ResponseDto>)
       .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: tel auth check 요청 함수 //
 export const telAuthCheckRequest = async (requestBody: TelAuthCheckRequestDto) => {
@@ -99,7 +109,7 @@ export const signInRequest = async (requestBody: SignInRequestDto) => {
   .then(responseDataHandler<SignInResponseDto>)
   .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: get sign in 요청 함수 //
 export const getSignInRequest = async (accessToken: string) => {
@@ -107,7 +117,7 @@ export const getSignInRequest = async (accessToken: string) => {
   .then(responseDataHandler<GetSignInResponseDto>)
   .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: sign up 요청 함수 //
 export const signUpRequest = async (requestBody: SignUpRequestDto) => {
@@ -115,7 +125,7 @@ export const signUpRequest = async (requestBody: SignUpRequestDto) => {
       .then(responseDataHandler<ResponseDto>)
       .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: get customer 요청 함수 //
 export const getCustomerRequest = async (userId: string, accessToken: string) => {
@@ -123,7 +133,7 @@ export const getCustomerRequest = async (userId: string, accessToken: string) =>
   .then(responseDataHandler<GetCustomerResposeDto>)
   .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: get customer mypage 요청 함수 //
 export const getCustomerMyPageRequest = async (userId: string, accessToken: string) => {
@@ -131,7 +141,7 @@ export const getCustomerMyPageRequest = async (userId: string, accessToken: stri
   .then(responseDataHandler<GetCustomerMyPageResponseDto>)
   .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: get user muscle fat list 요청 함수 //
 export const getUserMuscleFatListRequest = async (userId: string, accessToken: string) => {
@@ -155,7 +165,7 @@ export const patchCustomerRequest = async (requsetBody: PatchCustomerRequestDto,
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler);
   return responseBody;
-}
+};
 
 // function: patch user muscle fat 요청 함수 //
 export const patchUserMuscleFatRequest = async (userId: string, requestBody: PatchUserMuscleFatRequestDto, accessToken: string) => {
@@ -183,6 +193,39 @@ export const fileUploadRequest = async (requestBody: FormData) => {
         .then(responseDataHandler<string>)
         .catch(error => null);
     return url;
+};
+
+// function: post health schedule 요청 함수 //
+export const postHealthScheduleRequest = async (requestBody: PostHealthScheduleRequestDto, accessToken: string) => {
+  const responseBody = await axios.post(POST_HEALTH_SCHEDULE_API_URL, requestBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+}
+;
+// function: get health schedule 요청 함수 //
+export const getHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
+  const responseBody = await axios.get(GET_HEALTH_SCHEDULE_API_URL(healthScheduleNumber), bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetHealthScheduleResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get health schedule list 요청 함수 //
+export const GetHealthScheduleListRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_HEALTH_SCHEDULE_LIST_API_URL, bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetHealthScheduleListResponseDto>)
+    .catch(responseErrorHandler)
+  return responseBody;
+};
+
+
+// function: delete health schedule 요청 함수 //
+export const deleteHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
+  const responseBody = await axios.delete(DELETE_HEALTH_SCHEDULE_API_URL(healthScheduleNumber), bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler)
+  return responseBody;
 }
 
 // function: post board 요청 함수 //
