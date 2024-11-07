@@ -6,7 +6,7 @@ import { IdCheckRequestDto, SignUpRequestDto, TelAuthCheckRequestDto, TelAuthReq
 import { fileUploadRequest, idCheckRequest, nicknameCheckRequest, signUpRequest, telAuthCheckRequest, telAuthRequest } from 'src/apis';
 import NicknameCheckRequestDto from 'src/apis/dto/request/auth/nickname-check.request.dto';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import { MAIN_ABSOLUTE_PATH } from 'src/constant';
+import { MAIN_ABSOLUTE_PATH, MAIN_PATH } from 'src/constant';
 
 interface SignUpFirstProps {
     onNext: () => void;
@@ -66,6 +66,8 @@ function SignUpFirst({
     const isComplete = name && id && isCheckedId && nickname && isCheckedNickname && password && passwordCheck && isMatchedPassword && isCheckedPassword
     && telNumber && isSend && authNumber && isCheckedAuthNumber;
 
+    // function: 네비게이터 함수 //
+    const navigator = useNavigate();
 
     // function: 아이디 중복 확인 Response 처리 함수 //
     const idCheckResponse = (responseBody: ResponseDto | null) => {
@@ -90,7 +92,7 @@ function SignUpFirst({
         const message = 
             !responseBody ? '서버에 문제가 있습니다' : 
             responseBody.code === 'VF' ? '올바른 데이터가 아닙니다' : 
-            responseBody.code === 'DI' ? '이미 사용중인 닉네임 입니다' : 
+            responseBody.code === 'DN' ? '이미 사용중인 닉네임 입니다' : 
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : 
             responseBody.code === 'SU' ? '사용 가능한 닉네임 입니다' : '';
 
@@ -292,6 +294,11 @@ function SignUpFirst({
 
     }
 
+    // event handler: 홈 버튼 클릭 이벤트 처리 //
+    const onHomeClickHandler = () => {
+        navigator(MAIN_PATH);
+    };
+
     // effect: 비밀번호 및 비밀번호 확인 변경 시 실행할 함수 //
     useEffect(() => {
         if (!password || !passwordCheck) return;
@@ -316,7 +323,7 @@ function SignUpFirst({
                 <InputBox label='인증번호' type='text' placeholder='인증번호를 입력해주세요' value={authNumber} messageError={authNumberMessageError} message={authNumberMessage} buttonName='인증 확인' onChange={onAuthNumberChangeHandler} onButtonClick={onAuthNumberCheckClickHandler} />
             </div>
             <div className='button-box'>
-                <div className='main-home-button'>홈</div>
+                <div className='main-home-button' onClick={onHomeClickHandler}>홈</div>
                 <div className={`next-button ${!isComplete ? 'disabled' : ''}`} 
                     onClick={() => {
                         if (isComplete) {
@@ -481,9 +488,12 @@ function SignUpSecond({
     };
 
     // event handler: 개인 목표 변경 이벤트 처리 //
-    const onNameChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+    const onUserGoalsChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
         const { value } = event.target;
-        setPersonalGoals(value);
+
+        if (value.length <= 50) {
+            setPersonalGoals(value);
+        }
     };
 
     // render: 회원가입 화면2 컴포넌트 렌더딩 //
@@ -511,7 +521,7 @@ function SignUpSecond({
                     <InputBox label='벤치프레스(kg)' type='text' placeholder='중량을(kg)을 입력해주세요' value={benchPress} unit='kg' onChange={onBenchPressChangeHandler} />
                     <InputBox label='데드리프트(kg)' type='text' placeholder='중량을(kg)을 입력해주세요' value={deadlift} unit='kg' onChange={onDeadliftChangeHandler} />
                     <InputBox label='스쿼트(kg)' type='text' placeholder='중량을(kg)을 입력해주세요' value={squat} unit='kg' onChange={onSquatChangeHandler} />
-                    <input className='user-goal' value={personalGoals} placeholder='개인 목표를 입력해 주세요' onChange={onNameChangeHandler} />
+                    <textarea className='user-goal' value={personalGoals} placeholder='개인 목표를 입력해 주세요' onChange={onUserGoalsChangeHandler} />
                 </div>
             </div>
         </div>

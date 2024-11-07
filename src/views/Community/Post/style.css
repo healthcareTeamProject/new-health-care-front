@@ -12,16 +12,16 @@
 #post .Top {
     width: 780px;
     height: 550px;
+    margin: auto;
     margin-top: 100px;
+    margin-bottom: 17px;
 }
 
 #post .category-tag {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
     width: 780px;
     height: 30px;
-    gap: 10px;
     margin-bottom: 10px;
 }
 
@@ -29,6 +29,8 @@
     width: 59px;
     height: 16px;
     font-size: 13px;
+    margin-right: 21px;
+    white-space: nowrap;
 }
 
 #post .categorySelectBar {
@@ -39,6 +41,7 @@
     border: 1px solid rgba(167, 167, 167, 1);
     text-align: center;
     line-height: 30px;
+    margin-right: 10px;
 }
 
 #post .tagSelectBar {
@@ -53,17 +56,19 @@
 
 #post .titleHead {
     display: flex;
-    justify-content: flex-start;
     align-items: center;
-    gap: 10px;
     width: 780px;
     height: 30px;
+    margin-bottom: 10px;
 }
 
-#post .title {
+#post .postTitle {
     width: 39px;
     height: 16px;
+    font-size: 13px;
+    margin-right: 41px;
 }
+    
 
 #post .titleInput {
     width: 700px;
@@ -76,77 +81,205 @@
     display: flex;
     width: 780px;
     height: 30px;
+    margin-bottom: 10px;
+    align-items: center;
 }
 
 #post .youtubeLink {
     width: 65px;
     height: 16px;
+    white-space: nowrap;
+    font-size: 13px;
+    margin-right: 15px;
 }
 
 #post .youtubeInput {
     width: 700px;
     height: 30px;
+    border-radius: 4px;
+    border: 1px solid rgba(167, 167, 167, 1);
 }
 
-#post .content {
+#post .postcontent {
+    display: flex;
     width: 780px;
     height: 250px;
+    white-space: nowrap;
+    margin-bottom: 16px;
 }
 
 #post .contentTitle {
     width: 35px;
     height: 16px;
+    margin-right: 45px;
+    font-size: 13px;
 }
 
 #post .contentInput {
     width: 700px;
     height: 250px;
+    border-radius: 4px;
+    border: solid 1px rgba(167, 167, 167, 1);
+    padding-top: 2px;
 }
 
 #post .attachment {
-    width: 500px;
+    width: 780px;
     height: 170px;
-    justify-content: flex-end;
 }
 
 #post .attachmentTitle {
-    width: 70px;
-    height: 30px;
+    width: 56px;
+    height: 18px;
+    margin-left: 287px;
+    font-size: 15px;
+    white-space: nowrap;
+    margin-top: 16px;
+    margin-bottom: 16px;
 }
 
 #post .attachmentBottom {
-    width: 500px;
+    width: 780px;
     height: 100px;
 }
 
 #post .fileSelectBox1 {
     display: flex;
+    width: 500px;
+    height: 30px;
+    margin-left: auto;
+    margin-bottom: 5px;
 }
+
+#post .fileSelectButton1 {
+    width: 70px;
+    height: 30px;
+    background-color: rgba(167, 167, 167, 1);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#post .fileSelectInput1 {
+    width: 360px;
+    height: 30px;
+    border-radius: 4px;
+    border: solid 1px rgba(167, 167, 167, 1);
+}
+
+#post .cancel1 {
+    width: 70px;
+    height: 30px;
+    background-color: rgba(167, 167, 167, 1);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
 
 #post .fileSelectBox2 {
     display: flex;
+    width: 500px;
+    height: 30px;
+    margin-left: auto;
+    margin-bottom: 5px;
+}
+
+#post .fileSelectButton2 {
+    width: 70px;
+    height: 30px;
+    background-color: rgba(167, 167, 167, 1);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#post .fileSelectInput2 {
+    width: 360px;
+    height: 30px;
+    border-radius: 4px;
+    border: solid 1px rgba(167, 167, 167, 1);
+}
+
+#post .cancel2 {
+    width: 70px;
+    height: 30px;
+    background-color: rgba(167, 167, 167, 1);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 13px;
+    cursor: pointer;
 }
 
 #post .fileSelectBox3 {
     display: flex;
+    width: 500px;
+    height: 30px;
+    margin-left: auto;
+}
+
+#post .fileSelectButton3 {
+    width: 70px;
+    height: 30px;
+    background-color: rgba(167, 167, 167, 1);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#post .fileSelectInput3 {
+    width: 360px;
+    height: 30px;
+    border-radius: 4px;
+    border: solid 1px rgba(167, 167, 167, 1);
+}
+
+#post .cancel3 {
+    width: 70px;
+    height: 30px;
+    background-color: rgba(167, 167, 167, 1);
+    border-radius: 4px;
+    text-align: center;
+    line-height: 30px;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+#post .attachmentTitle {
+    margin-bottom: 10px;
 }
 
 #post .attachmentText {
     width: 500px;
     height: 30px;
+    margin-left: auto;
+    color: rgba(151, 151, 151, 1);
+    align-items: center;
+    margin-top: 7px;
 }
 
 #post .Bottom {
-    display: inline-block;
+    width: 780px;
+    height: 30px;
+    margin: auto;
 }
 
 #post .bottomButton {
-    
     display: flex;
-    float: right;
     width: 210px;
     height: 30px;
     gap: 10px;
+    margin-left: auto;
+    text-align: center;
 }
 
 #post .uploadButton {
@@ -155,6 +288,7 @@
     background-color: rgba(167, 167, 167, 1);
     border-radius: 4px;
     line-height: 200%;
+    cursor: pointer;
 }
 
 #post .cancelButton {
@@ -163,6 +297,7 @@
     background-color: rgba(167, 167, 167, 1);
     border-radius: 4px;
     line-height: 200%;
+    cursor: pointer;
 }
 
 

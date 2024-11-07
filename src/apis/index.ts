@@ -4,11 +4,14 @@ import { IdCheckRequestDto, SignInRequestDto, SignUpRequestDto, TelAuthCheckRequ
 import NicknameCheckRequestDto from "./dto/request/auth/nickname-check.request.dto";
 import { ACCESS_TOKEN } from "src/constant";
 import { SignInResponseDto } from "./dto/response/auth";
-import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from "./dto/response/customer";
-import { PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
+import { GetCustomerMyPageResponseDto, GetSignInResponseDto, GetUserMuscleFatListResponseDto, GetUserThreeMajorLiftListResponseDto } from "./dto/response/customer";
+import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
 import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "./dto/response/schedule";
+import { PostBoardRequestDto } from "./dto/request/board";
+import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
+import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
@@ -22,13 +25,24 @@ const TEL_AUTH_CHECK_API_URL = `${AUTH_MODULE_URL}/tel-auth-check`;
 const SIGN_UP_API_URL = `${AUTH_MODULE_URL}/sign-up`;
 const SIGN_IN_API_URL = `${AUTH_MODULE_URL}/sign-in`;
 
-const POST_USER_MUSCLE_FAT = `${HEALTHCARE_API_DOMAIN}/api/v1/muscle-fat`
-const POST_THREE_MAJOR_LIFT = `${HEALTHCARE_API_DOMAIN}/api/v1/three-major-lift`
-
 const CUSTOMER_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/customer`;
 
 const GET_SIGN_IN_API_URL = `${CUSTOMER_MODULE_URL}/sign-in`;
 const GET_CUSTOMER_API_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}`;
+const GET_USER_MUSCLE_FAT_LIST_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/user-muscle-fat-list`
+const GET_USER_THREE_MAJOR_LIFT_LIST_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/user-three-major-lift-list`
+
+const PATCH_CUSTOMER_URL = `${CUSTOMER_MODULE_URL}`
+const PATCH_USER_MUSCLE_FAT_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/user-muscle-fat`
+const PATCH_USER_THREE_MAJOR_LIFT_URL = (userId: string) => `${CUSTOMER_MODULE_URL}/${userId}/user-three-major-lift`
+
+const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
+
+const POST_BOARD_API_URL = `${BOARD_MODULE_URL}`;
+
+const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boardNumber}`
+
+const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
 
 const HEALTH_SCHEDULE_API_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
 
@@ -129,19 +143,43 @@ export const getCustomerMyPageRequest = async (userId: string, accessToken: stri
   return responseBody;
 };
 
-// function: post user muscle fat 요청 함수 //
-export const postUserMuscleFatRequest = async (requestBody: PostUserMuscleFatRequestDto) => {
-  const responseBody = await axios.post(POST_USER_MUSCLE_FAT, requestBody)
-      .then(responseDataHandler<ResponseDto>)
-      .catch(responseErrorHandler);
+// function: get user muscle fat list 요청 함수 //
+export const getUserMuscleFatListRequest = async (userId: string, accessToken: string) => {
+  const responseBody = await axios.get(GET_USER_MUSCLE_FAT_LIST_URL(userId), bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetUserMuscleFatListResponseDto>)
+    .catch(responseErrorHandler);
   return responseBody;
 };
 
-// function: post three major lift 요청 함수 //
-export const postThreeMajorLiftRequest = async (requestBody: PostThreeMajorLiftRequestDto) => {
-  const responseBody = await axios.post(POST_THREE_MAJOR_LIFT, requestBody)
-      .then(responseDataHandler<ResponseDto>)
-      .catch(responseErrorHandler);
+// function: get user three major lift list 요청 함수 //
+export const getUserThreeMajorLiftListRequest = async (userId: string, accessToken: string) => {
+  const responseBody = await axios.get(GET_USER_THREE_MAJOR_LIFT_LIST_URL(userId), bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetUserThreeMajorLiftListResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: patch customer 요청 함수 //
+export const patchCustomerRequest = async (requsetBody: PatchCustomerRequestDto, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_CUSTOMER_URL, requsetBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: patch user muscle fat 요청 함수 //
+export const patchUserMuscleFatRequest = async (userId: string, requestBody: PatchUserMuscleFatRequestDto, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_USER_MUSCLE_FAT_URL(userId), requestBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: patch user-three-major-lift 요청 함수
+export const patchUserThreeMajorLiftRequest = async (userId: string, requestBody: PatchUserThreeMajorLiftRequestDto, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_USER_THREE_MAJOR_LIFT_URL(userId), requestBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
   return responseBody;
 };
 
@@ -181,10 +219,27 @@ export const GetHealthScheduleListRequest = async (accessToken: string) => {
   return responseBody;
 };
 
+
 // function: delete health schedule 요청 함수 //
 export const deleteHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
   const responseBody = await axios.delete(DELETE_HEALTH_SCHEDULE_API_URL(healthScheduleNumber), bearerAuthorization(accessToken))
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler)
   return responseBody;
+}
+
+// function: post board 요청 함수 //
+export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_BOARD_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}  
+
+// function: get board 요청함수 //
+export const getBoardRequest = async (boardNumber: string) => {
+    const responseBody = await axios.get(GET_BOARD_NUMBER_URL(boardNumber))
+        .then(responseDataHandler<GetBoardResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
 }

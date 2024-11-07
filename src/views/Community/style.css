@@ -1,6 +1,5 @@
 .categoryHead {
-    margin-top: 45px;
-    margin-left: 45px;
+    margin: 45px;
     align-items: center;
     justify-content: space-between;
 }
@@ -14,7 +13,8 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    margin-bottom: 10.53px;
+    margin-top: 15px;
 }
 
 
@@ -25,10 +25,9 @@
     gap: 25px;
     align-items: center;
     margin-left: 55px;
-    
 }
 
-.item-text {
+#cm-wrapper .category-navigation-item {
     width: 120px;
     height: 39.47px;
     background-color: rgba(255, 255, 255, 1);
@@ -39,6 +38,11 @@
     white-space: nowrap;
     text-align: center;
     line-height: 39.47px;
+}
+
+#cm-wrapper .category-navigation-item.active {
+    background-color: rgba(167, 167, 167, 1);
+    color: rgba(255, 255, 255, 1);
 }
 
 .search-bar button img {
@@ -59,7 +63,7 @@
     border-radius: 5px;
 }
 
-#search button {
+#searchbutton {
     position: absolute;
     top: 5px;
     bottom: 5px;
@@ -71,6 +75,7 @@
     justify-content: center;
     align-items: center;
     border: none;
+    cursor: pointer;
 }
 
 .mid {
@@ -86,7 +91,7 @@
     margin-left: 55px;
 }
 
-.popularTags1 {
+.popularTags {
     display: flex;
     width: 1830px;
     height: 30px;
@@ -97,34 +102,20 @@
     margin-right: 55px;
 }
 
-.popularTags2 {
-    display: flex;
-    width: 1830px;
-    height: 30px;
-    gap: 30px;
-    white-space: nowrap;
-    margin-top: 10px;
-    margin-left: 55px;
-    margin-right: 55px;
-}
-
-
-.popularTag-button1 {
+#cm-wrapper .popularTag-navigation-item {
     width: 145px;
     height: 30px;
     background-color: rgba(238, 238, 238, 0.2);
     border: 1px solid rgba(167, 167, 167, 1);
     border-radius: 8px;
     cursor: pointer;
+    text-align: center;
+    line-height: 30px;
 }
 
-.popularTag-button2 {
-    width: 145px;
-    height: 30px;
-    background-color: rgba(238, 238, 238, 0.2);
-    border: 1px solid rgba(167, 167, 167, 1);
-    border-radius: 8px;
-    cursor: pointer;
+#cm-wrapper .popularTag-navigation-item.active {
+    background-color: rgba(167, 167, 167, 1);
+    color: rgba(255, 255, 255, 1)
 }
 
 .board-table {
