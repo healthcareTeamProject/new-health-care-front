@@ -7,11 +7,11 @@ import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
-import { getCustomerRequest, getSignInRequest, signInRequest } from 'src/apis';
+import { getCustomerMyPageRequest, getCustomerRequest, getSignInRequest, signInRequest } from 'src/apis';
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
-import { GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
 import { useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
@@ -39,7 +39,7 @@ function CustomerComponent({customer}: SignInCustomerProps){
     const navigator = useNavigate();
 
     // function: get customer response 처리 함수 //
-    const getSignInCustomerResponse = (responseBody: GetCustomerResponseDto | ResponseDto | null) => {
+    const getSignInCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
         const message = 
         !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
         responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
@@ -53,18 +53,22 @@ function CustomerComponent({customer}: SignInCustomerProps){
             navigator(MAIN_ABSOLUTE_PATH);
             return;
     }
-        const { userId, profileImage, name, nickname, personalGoals } = responseBody as  GetSignInResponseDto;
-        setSignInCustomer({userId, profileImage, name, nickname, personalGoals})
+        const { profileImage, name, nickname, personalGoals } = responseBody as  GetCustomerMyPageResponseDto;
+        setProfileImage(profileImage);
+        setName(name);
+        setNickname(nickname);
+        setPersonalGoals(personalGoals);
     };
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(() => {
-        if(!userId)return;
+        if(!customer.userId)return;
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
 
-        getCustomerRequest(userId, accessToken).then(getSignInCustomerResponse);
-    }, [userId, cookies])
+        getCustomerMyPageRequest(customer.userId, accessToken).then(getSignInCustomerResponse);
+        
+    }, [customer.userId, cookies])
 
     // render: 로그인 후 메인 개인정보 박스 컴포넌트 렌더링 //
     return (
@@ -75,16 +79,16 @@ function CustomerComponent({customer}: SignInCustomerProps){
             <div className='login-customer-box'>
                 <div className='login-customer-left-box'>
                     <div className="login-customer-image-box">
-                        <div className='login-customer-image' style={{ backgroundImage: `url(${customer.profileImage})` }}></div>
+                        <div className='login-customer-image' style={{ backgroundImage: `url(${profileImage})` }}></div>
                     </div>
                     <div className='login-customer-big-detail-box'>
                         <div className="login-customer-detail-box">
                             <div className="login-customer-name">이름</div>
-                            <div className="login-customer-detail-name">{customer.name}</div>
+                            <div className="login-customer-detail-name">{name}</div>
                         </div>
                         <div className="login-customer-detail-box">
                             <div className="login-customer-nickname">닉네임</div>
-                            <div className="login-customer-detail-nickname">{customer.nickname}</div>
+                            <div className="login-customer-detail-nickname">{nickname}</div>
                         </div>
                     </div>
                 </div>
@@ -95,7 +99,7 @@ function CustomerComponent({customer}: SignInCustomerProps){
                         </div>
                     </div>
                         <div className="login-customer-personal-goals-detail-box">
-                            <div className="login-customer-personal-goals-detail">{customer.personalGoals}</div>
+                            <div className="login-customer-personal-goals-detail">{personalGoals}</div>
                         </div>
                     
                 </div>
