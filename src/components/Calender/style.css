@@ -82,6 +82,7 @@
     border-radius: 8px;
 } */
 .pop-up{
+    display: none;
     position: fixed;
 
     display: flex;
@@ -124,8 +125,8 @@
     display: flex;
     justify-content: center;
 
-    width: 400px;
-    height: 200px;
+    width: 517px;
+    height: 455px;
 }
 .pop-up-schedule{
     display: flex;

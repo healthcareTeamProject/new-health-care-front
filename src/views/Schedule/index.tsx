@@ -10,7 +10,7 @@ export default function Schedule() {
     const [schedules, setSchedules] = useState<{ date: string; title: string }[]>([]);
     return (
         <div id='schedule-wrapper'>
-            <Calendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+            <Calendar selectDate={selectDate} setSelectDate={setSelectDate}/>
         </div>
     )
 }
