@@ -19,6 +19,12 @@ export default function Schedule() {
                     <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate}/>
                 </div>
             </div>
+            <div className='schedule-detail-box'>
+                <div className='big-schedule-box'>
+
+                </div>
+                
+            </div>
         </div>
     )
 }

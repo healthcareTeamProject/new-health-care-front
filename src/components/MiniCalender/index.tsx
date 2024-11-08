@@ -17,22 +17,22 @@ interface CalendarProps {
     selectDate: Dayjs;
     setSelectDate: (date: Dayjs) => void;
 }
+
 // interface: 일정 팝업 Props //
 interface ScheduleProps{
     scheduleChange: () => void;
-    schedules: { date: string; title: string }[];
-    setSchedules: (schedules: { date: string; title: string }[]) => void;
+    schedules: { startDate: string; endDate: string; title: string }[];
+    setSchedules: (schedules: { startDate: string; endDate: string; title: string }[]) => void;
     popupDate: Dayjs | null;
     setPopupDate: (date: Dayjs | null) => void;
+    getScheduleList: () => void;
 }
 
 // component: 일정 팝업 컴포넌트 //
-function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setPopupDate}: ScheduleProps){
+function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setPopupDate, getScheduleList}: ScheduleProps){
 
     // state: 일정 상태 관리 //
     const [cookies] = useCookies();
-    // state: 로그인 사용자 상태 //
-    const {signInCustomer} = useSignInCustomerStroe();
     // state: 일정 인풋 상태 //
     const [healthTitle, setHealthTitle] = useState<string>('');
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
@@ -51,16 +51,20 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             alert(message);
             return;
         };
-        scheduleChange();
+        
+        getScheduleList();
     };
 
     // event handler: 일정 추가 이벤트 처리 //
     const handlerAddSchedule = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+
         if (healthScheduleStart && healthScheduleEnd && healthTitle){
             const newSchedules = [...schedules];
             let current = healthScheduleStart;
             while (current.isBefore(healthScheduleEnd) || current.isSame(healthScheduleEnd)){
-                newSchedules.push({date: current.format('YYY-MM-DD'), title: healthTitle});
+                newSchedules.push({startDate: current.format('YYY-MM-DD'), endDate: current.format('YYY-MM-DD'),  title: healthTitle});
                 current = current.add(1, 'day');
             };
         setSchedules(newSchedules);
@@ -118,7 +122,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             </div>
         </div>
     )
-}
+};
 // component: 캘린더 컴포넌트 //
 export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps) {
     dayjs.extend(weekday);
@@ -129,10 +133,12 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
     const [viewDate, setViewDate] = useState<Dayjs>(dayjs());
     // state: cookie 상태 //
     const [cookies] = useCookies();
+    // state: 로그인 사용자 상태 //
+    const {signInCustomer} = useSignInCustomerStroe();
     // state: 팝업에 표시할 날짜 상태 //
     const [popupDate, setPopupDate] = useState<Dayjs|null>(null);
     // state: 일정 상태 관리 //
-    const [schedules, setSchedules] = useState<{date: string, title: string}[]>([]);
+    const [schedules, setSchedules] = useState<{startDate: string, endDate: string, title: string}[]>([{startDate: '20241101', endDate: '20241103', title: '테스트'}, {startDate: '20241101', endDate: '20241108', title: '테스트2'}]);
     // state: 팝업 상태창 상태 //
     const [scheduleChangePopup, setSchedulesChangePopup] = useState(false);
     
@@ -145,6 +151,8 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
     // state: 일정 시작일과 종료일 상태 //
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
     const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
+
+    const isLoggIn = !!signInCustomer;
 
     // event handler: 달 변경 클릭 이벤트 처리 //
     const onCalendarMonthChangeClickButtonHandler = (date: Dayjs, changeString: 'add' | 'subtract' | 'today') => {
@@ -161,6 +169,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
 
     // event handler: 스케줄 팝업 이벤트 처리 //
     const onScheduleChangePopup = () => {
+        if(isLoggIn)
         setSchedulesChangePopup(!scheduleChangePopup);
     };
 
@@ -200,7 +209,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
                                     const isNone = current.format('MM') === viewDate.format('MM') ? '' : 'none';
 
                                     // 해당 날짜의 일정 필터링
-                                    const currentSchedules = schedules.filter(schedule => schedule.date === current.format('YYYY-MM-DD'));
+                                    const currentSchedules = schedules.filter(schedule => schedule.startDate <= current.format('YYYYMMDD') && schedule.endDate >= current.format('YYYYMMDD'));
 
                                     return (
                                         <div key={`${week}_${i}`} className={`day-cell ${isSelected} ${isToday} ${isNone}`}onClick={() =>{
@@ -220,7 +229,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
                                                 {current.format('D')}
                                                 <div className="schedule-titles">
                                                     {currentSchedules.map((schedule, idx) => (
-                                                        <div key={idx} className="schedule-title">{schedule.title}</div>
+                                                        <div key={idx} style={{ backgroundColor: 'red', width: '100%' }} className="schedule-title">{schedule.title}</div>
                                                     ))}
                                                 </div>
                                             </div>
@@ -231,7 +240,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
                     ))}
                 </div>
             </div>
-            {scheduleChangePopup ? (
+            {isLoggIn && scheduleChangePopup ? (
                 <div className="pop-up active">
                     <SchedulePopup 
                         scheduleChange={onScheduleChangePopup} 
@@ -239,6 +248,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
                         setSchedules={setSchedules} 
                         popupDate={popupDate}
                         setPopupDate={setPopupDate}
+                        getScheduleList={() => {}}
                     />
                 </div>
             ) : null}
