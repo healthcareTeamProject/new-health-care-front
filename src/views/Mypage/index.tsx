@@ -48,7 +48,6 @@ function Personal({ onPersonalChange }: changePersonalProps) {
     const [height, setHeight] = useState<string>('');
     const [personalGoals, setPersonalGoals] = useState<string>('');
 
-
     // function: get customer response 처리 함수 //
     const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
         const message = 
