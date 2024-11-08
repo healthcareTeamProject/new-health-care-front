@@ -4,6 +4,7 @@ import Calendar from '../../components/MiniCalender'
 import dayjs, { Dayjs } from 'dayjs'
 import CalendarProps from '../../components/MiniCalender'
 import MiniCalendar from '../../components/MiniCalender'
+import BigCalendar from 'src/components/BigCalender'
 
 export default function Schedule() {
 
@@ -18,6 +19,9 @@ export default function Schedule() {
                 <div className='calender-box'>
                     <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate}/>
                 </div>
+            </div>
+            <div>
+                <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate}/>
             </div>
         </div>
     )
