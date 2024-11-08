@@ -17,7 +17,7 @@ import { useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
-import Calendar from 'src/components/Calender';
+import Calendar from 'src/components/MiniCalender';
 
 
 interface SignInCustomerProps{
@@ -287,7 +287,9 @@ export default function Main() {
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
                         {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
-                        <Calendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                        <div className='calendar-box'>
+                            <Calendar selectDate={selectDate} setSelectDate={setSelectDate}/>
+                        </div>
                     </div>
                 </div>
                 <div className='main-under-detail-box'>

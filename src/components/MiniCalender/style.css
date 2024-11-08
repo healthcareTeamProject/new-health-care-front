@@ -46,8 +46,6 @@
 }
 .day-cell{
     display: flex;
-    height: 100px;
-    width: 100px;
 
     padding: 15px;
     position: relative;
@@ -100,14 +98,15 @@
     justify-content: center;
     align-items: center;
     flex-direction: column;
-    position: relative;
+    position: fixed;
 
     box-sizing: border-box;
     border: 1px solid rgba(238, 238, 238, 1);
     border-radius: 8px;
 
-    top: 25%;
-    left: 25%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
 
     width: 300px;
     height: 300px;
@@ -117,23 +116,27 @@
 .pop-up-schedule-date{
     display: block;
     justify-content: center;
+
     font-size: 15px;
     font-weight: bold;
-    margin-bottom: 10px;
+    margin-top: 30px;
 }
 .pop-up-schedule-box{
     display: flex;
     justify-content: center;
+    align-items: center;
 
     width: 517px;
     height: 455px;
 }
 .pop-up-schedule{
     display: flex;
+    height: 100px;
 
     resize: none;
     
     gap: 10px;
+    margin-top: 30px;
 
 }
 .pop-up-button-box{
@@ -142,4 +145,14 @@
 
     max-width: 200px;
     margin-top: 22px;
+}
+.pop-up-select-schedule-box{
+    display: flex;
+    flex-direction: column;
+}
+.day-select-start,
+.day-select-end{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
