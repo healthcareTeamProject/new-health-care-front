@@ -1,4 +1,39 @@
 #schedule-wrapper{
     display: flex;
 }
+.mini-planner-box{
+    display: flex;
+    width: 810px;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+.workout-planner-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
 
+    gap: 49px;
+    width: 420px;
+    height: 100px;
+    border: 1px solid black;
+    border-radius: 5px;
+}
+.days-workout{
+    font-size: 32px;
+    text-align: center;
+}
+.calender-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 420px;
+    height: 545px;
+}
+.schedule-detail-box{
+    display: flex;
+    height: 716px;
+}
+.big-schedule-box{
+    display: flex;
+}

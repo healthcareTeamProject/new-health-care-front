@@ -1,5 +1,6 @@
 #main-layout{
-    display: flex; 
+    display: flex;
+    width: 1920px;
 }
 
 #layout-top-logo{

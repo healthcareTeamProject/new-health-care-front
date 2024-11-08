@@ -97,18 +97,20 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
                 : popupDate?.format('YYYY-MM-DD')}
             </div>
             <div className="pop-up-schedule-box">
-                <input type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):''}
-                onChange={onStartDateChangeHandler}
-                />
-                <input 
-                    type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : ''} 
-                    onChange={onEndDateChangeHandler} 
-                />
-                <textarea className="pop-up-schedule"
-                    placeholder="일정을 입력하세요"
-                    value={healthTitle}
-                    onChange={onScheduleChangeHandler}
-                />
+                <div className="pop-up-select-schedule-box">
+                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):''}
+                    onChange={onStartDateChangeHandler}
+                    />
+                    <input className="day-select-end"
+                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : ''} 
+                        onChange={onEndDateChangeHandler} 
+                    />
+                    <textarea className="pop-up-schedule"
+                        placeholder="일정을 입력하세요"
+                        value={healthTitle}
+                        onChange={onScheduleChangeHandler}
+                    />
+                </div>
             </div>
             <div className="pop-up-button-box">
                 <button onClick={handlerAddSchedule}>추가</button>
@@ -118,7 +120,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
     )
 }
 // component: 캘린더 컴포넌트 //
-export default function Calendar({ selectDate, setSelectDate}: CalendarProps) {
+export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps) {
     dayjs.extend(weekday);
     dayjs.extend(isoWeek);
     dayjs.extend(weekOfYear);
