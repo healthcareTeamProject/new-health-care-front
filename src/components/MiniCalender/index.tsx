@@ -1,4 +1,4 @@
-import React, { ChangeEvent, useMemo, useState } from "react";
+import React, { ChangeEvent, useEffect, useMemo, useState } from "react";
 import './style.css'
 import dayjs, { Dayjs } from "dayjs";
 import weekday from 'dayjs/plugin/weekday';
@@ -11,11 +11,16 @@ import { ACCESS_TOKEN } from "src/constant";
 import { access } from "fs";
 import { useSignInCustomerStroe } from "src/stores";
 import { HealthSchedule } from "src/types";
+import { postHealthScheduleRequest } from "src/apis";
+import { PostHealthScheduleRequestDto } from "src/apis/dto/request/schedule";
 
 // interface: 캘린더 Props //
 interface CalendarProps {
     selectDate: Dayjs;
     setSelectDate: (date: Dayjs) => void;
+    schedules: { startDate: string; endDate: string; title: string }[];
+    setSchedules: (schedules: { startDate: string; endDate: string; title: string }[]) => void;
+
 }
 
 // interface: 일정 팝업 Props //
@@ -37,10 +42,13 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
     const [healthTitle, setHealthTitle] = useState<string>('');
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
     const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
-
+    // state: 팝업 상태창 상태 //
+    const [scheduleChangePopup, setSchedulesChangePopup] = useState(false);
+    // state: 수정 중인 일정 상태 //
+    const [editIndex, setEditIndex] = useState<number | null>(null);
 
     // function: post schedule response 처리 함수 //
-    const postSchedule = (responseBody: ResponseDto | null ) => {
+    const postHealthScheduleResponse= (responseBody: ResponseDto | null ) => {
         const message = 
             !responseBody ? '서버에 문제가 있습니다,' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' : 
@@ -50,29 +58,53 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         if(!isSuccessed) {
             alert(message);
             return;
-        };
-        
+        }; 
         getScheduleList();
     };
 
     // event handler: 일정 추가 이벤트 처리 //
-    const handlerAddSchedule = () => {
+    const handlerAddOrUpdateSchedule = () => {
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
 
-        if (healthScheduleStart && healthScheduleEnd && healthTitle){
+        if (healthScheduleStart && healthScheduleEnd && healthTitle) {
             const newSchedules = [...schedules];
-            let current = healthScheduleStart;
-            while (current.isBefore(healthScheduleEnd) || current.isSame(healthScheduleEnd)){
-                newSchedules.push({startDate: current.format('YYY-MM-DD'), endDate: current.format('YYY-MM-DD'),  title: healthTitle});
-                current = current.add(1, 'day');
-            };
-        setSchedules(newSchedules);
-        setHealthTitle('');
-        setPopupDate(null);
-        setHealthScheduleStart(null);
-        setHealthScheduleEnd(null);
-        }
+            if (editIndex !== null) {
+                // 일정 수정
+                newSchedules[editIndex] = {
+                    startDate: healthScheduleStart.format("YYYYMMDD"),
+                    endDate: healthScheduleEnd.format("YYYYMMDD"),
+                    title: healthTitle,
+                };
+            } else {
+                // 새로운 일정 추가
+                let current = healthScheduleStart;
+                while (current.isBefore(healthScheduleEnd) || current.isSame(healthScheduleEnd)) {
+                    newSchedules.push({
+                        startDate: current.format("YYYYMMDD"),
+                        endDate: current.format("YYYYMMDD"),
+                        title: healthTitle,
+                    });
+                    current = current.add(1, "day");
+                }
+            }
+            setSchedules(newSchedules);
+            setHealthTitle("");
+            setPopupDate(null);
+            setHealthScheduleStart(null);
+            setHealthScheduleEnd(null);
+            scheduleChange();
+        };
+        
+        const requestBody: PostHealthScheduleRequestDto = {
+            healthScheduleNumber: Number(),
+            userId: String(),
+            healthTitle: String(),
+            healthScheduleStart: String(),
+            healthScheduleEnd: String()
+        };
+        
+        postHealthScheduleRequest(requestBody, accessToken).then(postHealthScheduleResponse);
     };
 
     // event handler: 일정 변경 이벤트 처리 //
@@ -92,6 +124,29 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         const { value } = event.target;
         setHealthScheduleEnd(dayjs(value));
     };
+    // effect: 일정이 변경될 시 실행할 함수 //
+    useEffect(() => {
+        if (popupDate) {
+            const existingScheduleIndex = schedules.findIndex(
+                (schedule) =>
+                    dayjs(schedule.startDate).isSame(popupDate, "day") &&
+                    dayjs(schedule.endDate).isSame(popupDate, "day")
+            );
+
+            if (existingScheduleIndex !== -1) {
+                const existingSchedule = schedules[existingScheduleIndex];
+                setHealthTitle(existingSchedule.title);
+                setHealthScheduleStart(dayjs(existingSchedule.startDate));
+                setHealthScheduleEnd(dayjs(existingSchedule.endDate));
+                setEditIndex(existingScheduleIndex);
+            } else {
+                setHealthTitle("");
+                setHealthScheduleStart(popupDate);
+                setHealthScheduleEnd(popupDate);
+                setEditIndex(null);
+            }
+        }
+    }, [popupDate, schedules]);
     
     return(
         <div className="pop-up-content">
@@ -102,11 +157,11 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             </div>
             <div className="pop-up-schedule-box">
                 <div className="pop-up-select-schedule-box">
-                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):''}
+                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYYMMDD'):''}
                     onChange={onStartDateChangeHandler}
                     />
                     <input className="day-select-end"
-                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : ''} 
+                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYYMMDD') : ''} 
                         onChange={onEndDateChangeHandler} 
                     />
                     <textarea className="pop-up-schedule"
@@ -117,14 +172,14 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
                 </div>
             </div>
             <div className="pop-up-button-box">
-                <button onClick={handlerAddSchedule}>추가</button>
+                <button onClick={handlerAddOrUpdateSchedule}>{editIndex !== null ? "수정" : "추가"}</button>
                 <button onClick={scheduleChange}>취소</button>
             </div>
         </div>
     )
 };
 // component: 캘린더 컴포넌트 //
-export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps) {
+export default function MiniCalendar({ selectDate, setSelectDate, schedules, setSchedules}: CalendarProps) {
     dayjs.extend(weekday);
     dayjs.extend(isoWeek);
     dayjs.extend(weekOfYear);
@@ -137,8 +192,6 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
     const {signInCustomer} = useSignInCustomerStroe();
     // state: 팝업에 표시할 날짜 상태 //
     const [popupDate, setPopupDate] = useState<Dayjs|null>(null);
-    // state: 일정 상태 관리 //
-    const [schedules, setSchedules] = useState<{startDate: string, endDate: string, title: string}[]>([{startDate: '20241101', endDate: '20241103', title: '테스트'}, {startDate: '20241101', endDate: '20241108', title: '테스트2'}]);
     // state: 팝업 상태창 상태 //
     const [scheduleChangePopup, setSchedulesChangePopup] = useState(false);
     
@@ -229,7 +282,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
                                                 {current.format('D')}
                                                 <div className="schedule-titles">
                                                     {currentSchedules.map((schedule, idx) => (
-                                                        <div key={idx} style={{ backgroundColor: 'red', width: '100%' }} className="schedule-title">{schedule.title}</div>
+                                                        <div key={idx} style={{ backgroundColor: 'yellow', width: '100%' }} className="schedule-title">{schedule.title}</div>
                                                     ))}
                                                 </div>
                                             </div>
@@ -243,7 +296,7 @@ export default function MiniCalendar({ selectDate, setSelectDate}: CalendarProps
             {isLoggIn && scheduleChangePopup ? (
                 <div className="pop-up active">
                     <SchedulePopup 
-                        scheduleChange={onScheduleChangePopup} 
+                        scheduleChange={() => setSchedulesChangePopup(false)} 
                         schedules={schedules} 
                         setSchedules={setSchedules} 
                         popupDate={popupDate}
