@@ -9,7 +9,7 @@ import BigCalendar from 'src/components/BigCalender'
 export default function Schedule() {
 
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const [schedules, setSchedules] = useState<{ date: string; title: string }[]>([]);
+    const [schedules, setSchedules] = useState<{ startDate: string; endDate: string; title: string }[]>([]);
     return (
         <div id='schedule-wrapper'>
             <div className='mini-planner-box'>
@@ -17,9 +17,13 @@ export default function Schedule() {
                     <div className='days-workout'>30 DAYS WORKOUT PLANNER</div>
                 </div>
                 <div className='calender-box'>
-                    <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate}/>
+                    <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
                 </div>
             </div>
+            <div className='schedule-detail-box'>
+                <div className='big-schedule-box'>
+
+                </div>
             <div>
                 <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate}/>
             </div>

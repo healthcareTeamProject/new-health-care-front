@@ -18,6 +18,7 @@ import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
 import Calendar from 'src/components/MiniCalender';
+import MiniCalendar from 'src/components/MiniCalender';
 
 
 interface SignInCustomerProps{
@@ -237,7 +238,7 @@ export default function Main() {
     const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
     // state: 달력 정보 상태 //
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const [schedules, setSchedules] = useState<{ date: string; title: string }[]>([]);
+    const [schedules, setSchedules] = useState<{ startDate: string; endDate: string; title: string }[]>([]);
 
     // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
     const isLoggedIn = !!signInCustomer;
@@ -288,7 +289,7 @@ export default function Main() {
                     <div className='main-top-right-detail-box'>
                         {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
                         <div className='calendar-box'>
-                            <Calendar selectDate={selectDate} setSelectDate={setSelectDate}/>
+                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
                         </div>
                     </div>
                 </div>
