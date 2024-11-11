@@ -201,8 +201,7 @@ export const postHealthScheduleRequest = async (requestBody: PostHealthScheduleR
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler);
   return responseBody;
-}
-;
+};
 // function: get health schedule 요청 함수 //
 export const getHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
   const responseBody = await axios.get(GET_HEALTH_SCHEDULE_API_URL(healthScheduleNumber), bearerAuthorization(accessToken))
@@ -219,6 +218,8 @@ export const GetHealthScheduleListRequest = async (accessToken: string) => {
   return responseBody;
 };
 
+// // function: patch health schedule 요청 함수 //
+// export const PatchHealth
 
 // function: delete health schedule 요청 함수 //
 export const deleteHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
