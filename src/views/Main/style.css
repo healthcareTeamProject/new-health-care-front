@@ -411,3 +411,12 @@
     width: 600px;
     height: 490px;
 }
+
+.main-user-muscle-fat {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    /* align-items: center; */
+
+    padding: 15px;
+}
