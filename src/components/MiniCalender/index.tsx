@@ -13,6 +13,8 @@ import { useSignInCustomerStroe } from "src/stores";
 import { HealthSchedule } from "src/types";
 import { postHealthScheduleRequest } from "src/apis";
 import { PostHealthScheduleRequestDto } from "src/apis/dto/request/schedule";
+import { GetHealthScheduleResponseDto } from "src/apis/dto/response/schedule";
+import { useLocation } from "react-router";
 
 // interface: 캘린더 Props //
 interface CalendarProps {
@@ -47,6 +49,9 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
     // state: 수정 중인 일정 상태 //
     const [editIndex, setEditIndex] = useState<number | null>(null);
 
+    // function: useLocation 함수 //
+    const locationNow = useLocation();
+
     // function: post schedule response 처리 함수 //
     const postHealthScheduleResponse= (responseBody: ResponseDto | null ) => {
         const message = 
@@ -61,6 +66,54 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         }; 
         getScheduleList();
     };
+
+    // function: get schedule response 처리 함수 //
+    const getHealthScheduleResponse = (responseBody: GetHealthScheduleResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NS' ? '존재하지 않는 스케줄입니다' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+        
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed){
+            alert(message);
+            return;
+        }
+
+        const {healthTitle, healthScheduleStart, healthScheduleEnd} = responseBody as GetHealthScheduleResponseDto;
+        setHealthTitle(healthTitle);
+        setHealthScheduleStart(dayjs(healthScheduleStart));
+        setHealthScheduleEnd(dayjs(healthScheduleEnd));
+    };
+
+    // function: patch schedule 처리 함수 //
+    // const patch
+
+    // function: delete schedule response 처리 함수 //
+    const deleteHealthScheduleResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'NS' ? '존재하지 않는 스케줄입니다' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed){
+            alert(message);
+            return;
+        }
+        getScheduleList();
+    }
+
+    // event handler: 헤더 Hidden 처리 //
+    useEffect(() => {
+        if(locationNow.pathname === "/main"){
+            return;
+        }
+    })
 
     // event handler: 일정 추가 이벤트 처리 //
     const handlerAddOrUpdateSchedule = () => {
@@ -97,8 +150,6 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         };
         
         const requestBody: PostHealthScheduleRequestDto = {
-            healthScheduleNumber: Number(),
-            userId: String(),
             healthTitle: String(),
             healthScheduleStart: String(),
             healthScheduleEnd: String()
@@ -124,6 +175,8 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         const { value } = event.target;
         setHealthScheduleEnd(dayjs(value));
     };
+
+    
     // effect: 일정이 변경될 시 실행할 함수 //
     useEffect(() => {
         if (popupDate) {
@@ -205,7 +258,10 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
     const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
 
+    // function: 로그인 된 사용자 함수 //
     const isLoggIn = !!signInCustomer;
+    // function: useLocation 함수 //
+    const locationNow = useLocation();
 
     // event handler: 달 변경 클릭 이벤트 처리 //
     const onCalendarMonthChangeClickButtonHandler = (date: Dayjs, changeString: 'add' | 'subtract' | 'today') => {
@@ -222,8 +278,9 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
 
     // event handler: 스케줄 팝업 이벤트 처리 //
     const onScheduleChangePopup = () => {
-        if(isLoggIn)
-        setSchedulesChangePopup(!scheduleChangePopup);
+        if(isLoggIn && locationNow.pathname !== '/main'){
+            setSchedulesChangePopup(!scheduleChangePopup);
+        }
     };
 
     // render: 캘린더 컴포넌트 렌더링 //
