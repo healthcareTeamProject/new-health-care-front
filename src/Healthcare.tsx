@@ -116,9 +116,9 @@ export default function Healthcare() {
       <Route path={CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH(':userId')} element={<Mypage />} />
       <Route path={SCHEDULE_PATH} element={<Schedule/>} />
       <Route path={BOARD_LIST_PATH} element={<Community />} />
-          <Route path={POST_PATH} element={<Post />} />
-          <Route path={BOARD_DETAIL_PATH(':boardNumber')} element={<BoardDetail />} />
-        
+      <Route path={POST_PATH} element={<Post />} />
+      <Route path={BOARD_DETAIL_PATH(':boardNumber')} element={<BoardDetail />} />
+      
       <Route path={SNS_SUCCESS_PATH} element={<SnsSuccess/>} />
       <Route path={OTHERS_PATH} element={<Index />} />
     </Routes>

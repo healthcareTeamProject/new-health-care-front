@@ -1,7 +1,7 @@
 export default interface Board {
-  boardNumber: number;
+  boardNumber: string;
   boardTitle: string;
-  nickname: string;
+  userId: string;
   boardUploadDate: string;
   boardViewCount: number;
 }

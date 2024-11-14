@@ -1,0 +1,318 @@
+#dt {
+    width: 1830px;
+    height: 1687px;
+    margin: 45px;
+}
+
+#dt .topbox {
+    width: 1830px;
+    height: 90px;
+    justify-content: space-between;
+}
+
+#dt .category {
+    width: 95px;
+    height: 40px;
+    align-items: center;
+    line-height: 40px;
+    font-size: 20px;
+    margin-bottom: 10px;
+}
+
+#dt .category-search {
+    display: flex;
+    width: 1570px;
+    justify-content: space-between;
+    align-items: center;
+}
+
+#dt .categories {
+    display: flex;
+    width: 555px;
+    height: 45px;
+    gap: 25px;
+    align-items: center;
+}
+
+#dt .category-navigation-item {
+    width: 120px;
+    height: 39.47px;
+    background-color: rgba(255, 255, 255, 1);
+    border: 1px solid rgba(167, 167, 167, 1);
+    cursor: pointer;
+    border-radius: 8px;
+    font-size: 20px;
+    white-space: nowrap;
+    text-align: center;
+    line-height: 39.47px;
+}
+
+#dt .category-navigation-item.active {
+    background-color: rgba(167, 167, 167, 1);
+    color: rgba(255, 255, 255, 1);
+}
+
+#dt .search-bar button img {
+    width: 18px;
+    height: 18px;
+}
+
+#dt .search {
+    width: 278.26px;
+    height: 32.29px;
+    position: relative;
+    display: flex;
+}
+
+#dt .search input {
+    width: 100%;
+    border-radius: 5px;
+}
+
+#dt .searchbutton {
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    right: 5px;
+    width: 21px;
+    height: 21px;
+    background-image: url('/public/images/searchIcon.png');
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    cursor: pointer;
+}
+
+#dt .title {
+    width: 125px;
+    height: 39px;
+    font-size: 25px;
+    margin-left: 13px;
+    margin-top: 61px;
+    line-height: 39px;
+}
+
+#dt .postcontents {
+    width: 1556px;
+    height: 922px;
+}
+
+#dt .top-text {
+    display: flex;
+    justify-content: space-between;
+    width: 1552px;
+    height: 41px;
+    border-bottom: 3px solid rgba(218, 177, 177, 0.5);
+}
+
+#dt .nickname {
+    width: 99px;
+    height: 23px;
+    line-height: 23px;
+    font-size: 15px;
+    margin-left: 13px;
+    margin-top: 12px;
+}
+
+#dt .uploadeddate {
+    width: 153px;
+    height: 23px;
+    line-height: 23px;
+    font-size: 15px;
+    margin-top: 12px;
+}
+
+#dt .contents {
+    width: 879px;
+    max-height: none;
+    font-size: 20px;
+    margin: 0 auto;
+    margin-top: 50px;
+    margin-bottom: 100px;
+} 
+
+#dt .uploadedfile {
+    width: 1039px;
+    height: 593px;
+    margin: 0 auto;
+    background-image: url('/public/images/uploadedimage.png');
+}
+
+#dt .recommend-bar {
+    display: flex;
+    width: 1556px;
+    height: 83px;
+    justify-content: right;
+    gap: 5px;
+}
+
+#dt .tumbs-up {
+    width: 33px;
+    height: 33px;
+    background-image: url('/public/images/TumbsUp.png');
+    cursor: pointer;
+    border: none;
+    align-items: center;
+    background-size: 100% 100%;
+}
+
+#dt .recommend {
+    width: 66px;
+    height: 40px;
+    line-height: 40px;
+    font-size: 18px;
+}
+
+#dt .catalog {
+    display: flex;
+    align-items: center;
+    width: 1578px;
+    height: 87px;
+    border-top: 3px solid rgba(218, 177, 177, 0.5);
+    border-bottom: 3px solid rgba(218, 177, 177, 0.5);
+}
+
+#dt .comments-count {
+    margin-right: auto;
+    margin-left: 10px;
+}
+
+#dt .edit-button {
+    width: 86px;
+    height: 47px;
+    background-color: rgba(166, 166, 166, 1);
+    color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+    text-align: center;
+    line-height: 47px;
+    margin-right: 28px;
+    cursor: pointer;
+}
+
+#dt .delete-button {
+    width: 86px;
+    height: 47px;
+    background-color: rgba(255, 0, 0, 1);
+    color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+    text-align: center;
+    line-height: 47px;
+    margin-right: 28px;
+    cursor: pointer;
+}
+
+#dt .catalog-button {
+    width: 86px;
+    height: 47px;
+    background-color: rgba(0, 0, 0, 1);
+    color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+    text-align: center;
+    line-height: 47px;
+    margin-right: 25px;
+    cursor: pointer;
+}
+
+#dt .comments {
+    width: 1578px;
+    height: 100%;
+    max-height: none;
+    margin-top: 22px;
+    border-bottom: 3px solid rgba(218, 177, 177, 0.5);
+}
+
+#dt .comments-view {
+    display: flex;
+    width: 1544px;
+    height: 45px;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+#dt .author-contents {
+    display: flex;
+    align-items: center;
+    gap: 36px;
+    margin-top: 24px;
+} 
+
+#dt .author {
+    margin-left: 9px;
+    margin-bottom: 15px;
+    font-size: 15px;
+}
+
+#dt .uploaded-comments-contents {
+    width: 500px;
+    max-height: none;
+    font-size: 15px;
+}
+
+#dt .tunbs-up-recommend {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 24px;
+}
+
+#dt .comments-tumbs-up {
+    width: 33px;
+    height: 33px;
+    background-image: url('/public/images/TumbsUp.png');
+    cursor: pointer;
+    border: none;
+    background-size: 100% 100%;
+}
+
+#dt .comments-recommend {
+    margin-right: 74px;
+    font-size: 15px;
+}
+
+#dt .comments-uploaded-date {
+    margin-left: 9px;
+    margin-top: 24px;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+
+#dt .post-comments {
+    margin-left: auto;
+}
+
+#dt .comments-upload {
+    width: 1578px;
+    display: flex;
+    justify-content: right;
+}
+
+#dt .comments-upload-button {
+    width: 92px;
+    height: 51px;
+    margin-top: 29px;
+    margin-right: 22px;
+    background-color: rgba(0, 0, 0, 1);
+    color: rgba(255, 255, 255, 1);
+    border-radius: 8px;
+    text-align: center;
+    line-height: 51px;
+    cursor: pointer;
+}
+
+#dt .commentInputBox {
+    width: 1539px;
+    height: 146px;
+}
+
+#dt .commentContent {
+    width: 82px;
+    height: 37px;
+}
+
+#dt .commentInput {
+    width: 1539px;
+    height: 103px;
+    border: 1px solid rgba(0, 0, 0, 1);
+}
