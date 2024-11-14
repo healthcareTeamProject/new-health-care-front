@@ -12,7 +12,6 @@ import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } fr
 
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
 import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "./dto/response/schedule";
-import { PostBoardRequestDto } from "./dto/request/board";
 
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
