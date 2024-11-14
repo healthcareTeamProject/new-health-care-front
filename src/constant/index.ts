@@ -15,6 +15,7 @@ export const BOARD_UPDATE_PATH =  (boardNumber: number | string) => `/board/deta
 
 export const POST_PATH = '/post';
 
+
 export const SCHEDULE_PATH = '/schedul';
 
 export const SNS_SUCCESS_PATH = '/sns-success';
@@ -32,7 +33,7 @@ export const CUSTOMER_MYPAGE_DETAIL_ABSOLUTE_PATH = CUSTOMER_MYPAGE_DETAIL_PATH;
 export const MY_PAGE_ABSOLUTE_PATH = MY_PAGE_PATH;
 
 export const BOARD_LIST_ABSOLUTE_PATH = BOARD_LIST_PATH;
-export const BOARD_DETAIL_ABSOLUTE_PATH = (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_DETAIL_PATH(boardNumber)}`;
+export const BOARD_DETAIL_ABSOLUTE_PATH = BOARD_DETAIL_PATH;
 export const BOARD_UPDATE_ABSOLUTE_PATH =  (boardNumber: number | string) => `${BOARD_LIST_PATH}/${BOARD_UPDATE_PATH(boardNumber)}`;
 
 

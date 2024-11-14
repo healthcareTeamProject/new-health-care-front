@@ -33,6 +33,111 @@
     white-space: nowrap;
 }
 
+#post .selector {
+    display: flex;
+    align-items: center;
+
+    box-sizing: border-box;
+    border: 1px solid rgba(167, 167, 167, 1);
+    padding: 6px 6px;
+    width: 100px;
+}
+
+#post .selector.close {
+    border-radius: 6px;
+}
+
+#post .selector.open {
+    position: relative;
+
+    border-radius: 6px 6px 0 0;
+    border-bottom: none;
+}
+
+#post .selector .selected-item {
+    flex: 1;
+
+    color: rgba(64, 64, 64, 1);
+
+    font-family: Inter;
+    font-size: 13px;
+    line-height: 175%;
+    white-space: nowrap;
+}
+
+#post .selector .selector-box {
+    z-index: 9999;
+
+    position: absolute;
+    top: 44px;
+    left: -1px;
+
+    box-sizing: border-box;
+    border-radius: 0 0 6px 6px;
+    border: 1px solid rgba(167, 167, 167, 1);
+    border-top: none;
+    width: 100px;
+    max-height: 70px;
+
+    background-color: rgba(255, 255, 255, 1);
+    white-space: nowrap;
+
+    overflow-y: auto;
+}
+
+#post .selector .selector-box::-webkit-scrollbar {
+    width: 4px;
+    background: none;
+}
+
+#post .selector .selector-box::-webkit-scrollbar-thumb {
+    margin: 4px;
+    border-radius: 15px;
+    width: 4px;
+    background-color: rgba(138, 146, 166, 1);
+}
+
+#post .selector .selector-option {
+    border-top: 1px solid rgba(167, 167, 167, 1);
+    padding: 8px 16px;
+    white-space: nowrap;
+
+    color: rgba(64, 64, 64, 1);
+
+    font-family: Inter;
+    font-size: 13px;
+    line-height: 175%;
+    white-space: nowrap;
+
+    cursor: pointer;
+}
+
+#post .selected-item {
+    font-size: 13px;
+    white-space: nowrap;
+    margin-right: 5px;
+}
+
+#post .arrow-down-button {
+    width: 10px;
+    height: 8px;
+
+    background-image: url(/public/images/arrow-down.png);
+    background-size: 100% 100%;
+
+    cursor: pointer;
+}
+
+#post .arrow-up-button {
+    width: 10px;
+    height: 8px;
+
+    background-image:  url(/public/images/arrow-up.png);
+    background-size: 100% 100%;
+
+    cursor: pointer;
+}
+
 #post .categorySelectBar {
     width: 100px;
     height: 30px;

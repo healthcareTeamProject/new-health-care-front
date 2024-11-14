@@ -7,9 +7,11 @@ import { SignInResponseDto } from "./dto/response/auth";
 import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from "./dto/response/customer";
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
-import { PostBoardRequestDto } from "./dto/request/board";
+import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
+import GetCommentListResponseDto from "./dto/response/board/get-comment.response.dto";
+import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
@@ -35,11 +37,17 @@ const PATCH_USER_THREE_MAJOR_LIFT_URL = (userId: string) => `${CUSTOMER_MODULE_U
 const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
 
 const POST_BOARD_API_URL = `${BOARD_MODULE_URL}`;
+const DELETE_BOARD_API_URL = (boardNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}`;
 
-const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boardNumber}`
-
+const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boardNumber}`;
 const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
 
+const COMMENT_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/comment`;
+
+const POST_COMMENTS_API_URL = (boardNumber : string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comments`;
+const PATCH_COMMENTS_API_URL = (boardNumber : string | number, commentNumber : number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
+const GET_COMMENT_LIST_API_URL = (boardNumber: string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comment-list`;
+const DELETE_COMMENT_API_URL = (boardNumber: string | number, commentNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({
@@ -175,10 +183,66 @@ export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessT
     return responseBody;
 }  
 
+// function: get board 요청함수 List //
+export const getBoardListRequest = async () => {
+    const responseBody = await axios.get(GET_BOARD_LIST_API_URL)
+        .then(responseDataHandler<GetBoardListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
 // function: get board 요청함수 //
 export const getBoardRequest = async (boardNumber: string) => {
     const responseBody = await axios.get(GET_BOARD_NUMBER_URL(boardNumber))
         .then(responseDataHandler<GetBoardResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: delete board 요청 함수 //
+export const deleteBoardRequest = async (boardNumber: number | string, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_BOARD_API_URL(boardNumber), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+  }
+
+// function: get comment list 요청 함수 //
+export const getCommentListRequest = async (boardNumber: string | number) => {
+    const responseBody = await axios.get(GET_COMMENT_LIST_API_URL(boardNumber))
+        .then(responseDataHandler<GetCommentListResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// // function: get comment 요청 함수 //
+// export const getCommentRequest = async (commentNumber: number | string, accessToken: string) => {
+//     const responseBody = await axios.get(GET_COMMENT_API_URL(commentNumber), bearerAuthorization(accessToken))
+//         .then(responseDataHandler<GetCommentResponseDto>)
+//         .catch(responseErrorHandler);
+//     return responseBody;
+// };
+
+// function: post comments 요청 함수 //
+export const postCommentsRequest = async (requestBody: PostCommentRequestDto, boardNumber: string | number, accessToken: string) => {
+    const responseBody = await axios.post(POST_COMMENTS_API_URL(boardNumber), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+  }
+
+// function: patch comment 요청 함수 //
+export const patchCommentRequest = async (requestBody: PatchCommentRequestDto, commentNumber: number | string, boardNumber: string | number, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_COMMENTS_API_URL(boardNumber,commentNumber), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+  }
+
+// function: delete comment 요청 함수 //
+export const deleteCommentRequest = async (boardNumber: string | number, commentNumber: number | string, accessToken: string) => {
+    const responseBody = await axios.delete(DELETE_COMMENT_API_URL(boardNumber,commentNumber), bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
 }
