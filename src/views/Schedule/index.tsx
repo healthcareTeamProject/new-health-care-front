@@ -27,7 +27,7 @@ export default function Schedule() {
                     </div>
                 </div>
                 <div className='big-schedule-box'>
-                    <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate}/>
+                    <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
                 </div>
             </div>
         </div>

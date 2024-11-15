@@ -9,12 +9,12 @@ import { Cookies, useCookies } from "react-cookie";
 import { ResponseDto } from "src/apis/dto/response";
 import { ACCESS_TOKEN } from "src/constant";
 import { access } from "fs";
-import { useSignInCustomerStroe } from "src/stores";
+import { useSchechduleStore, useSignInCustomerStroe } from "src/stores";
 import { HealthSchedule } from "src/types";
-import { postHealthScheduleRequest } from "src/apis";
-import { PostHealthScheduleRequestDto } from "src/apis/dto/request/schedule";
+import { deleteHealthScheduleRequest, patchHealthScheduleRequest, postHealthScheduleRequest } from "src/apis";
+import { PatchHealthScheduleRequestDto, PostHealthScheduleRequestDto } from "src/apis/dto/request/schedule";
 import { GetHealthScheduleResponseDto } from "src/apis/dto/response/schedule";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 
 // interface: 캘린더 Props //
 interface CalendarProps {
@@ -33,6 +33,7 @@ interface ScheduleProps{
     popupDate: Dayjs | null;
     setPopupDate: (date: Dayjs | null) => void;
     getScheduleList: () => void;
+    
 }
 
 // component: 일정 팝업 컴포넌트 //
@@ -48,6 +49,8 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
     const [scheduleChangePopup, setSchedulesChangePopup] = useState(false);
     // state: 수정 중인 일정 상태 //
     const [editIndex, setEditIndex] = useState<number | null>(null);
+    // state: 헬스 일정 번호 상태 //
+    const{healthScheduleNumber} = useParams();
 
     // function: useLocation 함수 //
     const locationNow = useLocation();
@@ -89,7 +92,21 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
     };
 
     // function: patch schedule 처리 함수 //
-    // const patch
+    const patchHealthScheduleResponse = (responseBody: ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다.':
+            responseBody.code === 'VF' ? '잘못된 접근입니다.':
+            responseBody.code === 'NS' ? '존재하지 않는 스케줄입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.':
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed){
+            alert(message);
+            return;
+        }
+        getScheduleList();
+    }
 
     // function: delete schedule response 처리 함수 //
     const deleteHealthScheduleResponse = (responseBody: ResponseDto | null) => {
@@ -97,7 +114,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
             responseBody.code === 'NS' ? '존재하지 않는 스케줄입니다' :
-            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'AF' ? '인증이 실패하였습니다..' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
@@ -108,7 +125,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         getScheduleList();
     }
 
-    // event handler: 헤더 Hidden 처리 //
+    // effect: 헤더 Hidden 처리 함수 //
     useEffect(() => {
         if(locationNow.pathname === "/main"){
             return;
@@ -125,8 +142,8 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             if (editIndex !== null) {
                 // 일정 수정
                 newSchedules[editIndex] = {
-                    startDate: healthScheduleStart.format("YYYYMMDD"),
-                    endDate: healthScheduleEnd.format("YYYYMMDD"),
+                    startDate: healthScheduleStart.format("YYYY-MM-DD"),
+                    endDate: healthScheduleEnd.format("YYYY-MM-DD"),
                     title: healthTitle,
                 };
             } else {
@@ -134,8 +151,8 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
                 let current = healthScheduleStart;
                 while (current.isBefore(healthScheduleEnd) || current.isSame(healthScheduleEnd)) {
                     newSchedules.push({
-                        startDate: current.format("YYYYMMDD"),
-                        endDate: current.format("YYYYMMDD"),
+                        startDate: current.format("YYYY-MM-DD"),
+                        endDate: current.format("YYYY-MM-DD"),
                         title: healthTitle,
                     });
                     current = current.add(1, "day");
@@ -176,6 +193,34 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         setHealthScheduleEnd(dayjs(value));
     };
 
+    // event handler: 수정 버튼 클릭 이벤트 처리 함수 //
+    const onUpdateButtononClickHandler = () => {
+        if(!healthTitle || !healthScheduleStart || !healthScheduleEnd){
+            alert('모든값을 입력해주세요.');
+            return;
+        }
+
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+
+        const requestBody: PatchHealthScheduleRequestDto = {
+            healthTitle, 
+            healthScheduleStart: healthScheduleStart.format("YYYY-MM-DD"), 
+            healthScheduleEnd: healthScheduleEnd.format("YYYY-MM-DD")
+        };
+        if (!healthScheduleNumber) return;
+
+        patchHealthScheduleRequest( requestBody, healthScheduleNumber, accessToken).then(patchHealthScheduleResponse);
+    };
+    
+    //event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
+    const onDeletButtonClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+        if(!healthScheduleNumber) return;
+        deleteHealthScheduleRequest(healthScheduleNumber, accessToken)
+    }
+
     
     // effect: 일정이 변경될 시 실행할 함수 //
     useEffect(() => {
@@ -210,11 +255,11 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             </div>
             <div className="pop-up-schedule-box">
                 <div className="pop-up-select-schedule-box">
-                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYYMMDD'):''}
+                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):''}
                     onChange={onStartDateChangeHandler}
                     />
                     <input className="day-select-end"
-                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYYMMDD') : ''} 
+                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : ''} 
                         onChange={onEndDateChangeHandler} 
                     />
                     <textarea className="pop-up-schedule"
@@ -225,7 +270,14 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
                 </div>
             </div>
             <div className="pop-up-button-box">
-                <button onClick={handlerAddOrUpdateSchedule}>{editIndex !== null ? "수정" : "추가"}</button>
+                {editIndex !== null ? (
+                    <>
+                        <button onClick={onUpdateButtononClickHandler}>수정</button>
+                        <button onClick={onDeletButtonClickHandler}>삭제</button>
+                    </>
+                ) : (
+                    <button onClick={handlerAddOrUpdateSchedule}>추가</button>
+                )}
                 <button onClick={scheduleChange}>취소</button>
             </div>
         </div>
@@ -241,6 +293,8 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
     const [viewDate, setViewDate] = useState<Dayjs>(dayjs());
     // state: cookie 상태 //
     const [cookies] = useCookies();
+    // state: 스케쥴 리스트 상태 //
+    const {healthScheduleList} = useSchechduleStore();
     // state: 로그인 사용자 상태 //
     const {signInCustomer} = useSignInCustomerStroe();
     // state: 팝업에 표시할 날짜 상태 //
@@ -283,6 +337,7 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
         }
     };
 
+
     // render: 캘린더 컴포넌트 렌더링 //
     return (
         <div className="calendar-container">
@@ -312,14 +367,14 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
                                     // 나타낼 날짜
                                     const current = viewDate.week(week).startOf('week').add(i, 'day');
                                     // 선택됐는지 여부
-                                    const isSelected = selectDate.format('YYYYMMDD') === current.format('YYYYMMDD') ? 'selected' : '';
+                                    const isSelected = selectDate.format('YYYY-MM-DD') === current.format('YYYY-MM-DD') ? 'selected' : '';
                                     // 오늘 날짜 여부
-                                    const isToday = dayjs().format('YYYYMMDD') === current.format('YYYYMMDD') ? 'today' : '';
+                                    const isToday = dayjs().format('YYYY-MM-DD') === current.format('YYYY-MM-DD') ? 'today' : '';
                                     // 보여질 날짜가 아닌 경우 (다른 달의 날짜인 경우)
                                     const isNone = current.format('MM') === viewDate.format('MM') ? '' : 'none';
 
                                     // 해당 날짜의 일정 필터링
-                                    const currentSchedules = schedules.filter(schedule => schedule.startDate <= current.format('YYYYMMDD') && schedule.endDate >= current.format('YYYYMMDD'));
+                                    const isExisted = healthScheduleList.some(schedule => schedule.healthScheduleStart <= current.format('YYYY-MM-DD') && schedule.healthScheduleEnd >= current.format('YYYY-MM-DD'));
 
                                     return (
                                         <div key={`${week}_${i}`} className={`day-cell ${isSelected} ${isToday} ${isNone}`}onClick={() =>{
@@ -337,12 +392,12 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
                                         }}>
                                             <div className="date-box">
                                                 {current.format('D')}
-                                                <div className="schedule-titles">
-                                                    {currentSchedules.map((schedule, idx) => (
-                                                        <div key={idx} style={{ backgroundColor: 'yellow', width: '100%' }} className="schedule-title">{schedule.title}</div>
-                                                    ))}
-                                                </div>
                                             </div>
+                                            {isExisted && (
+                                                <div className="dot-box">
+                                                    <div className="yellow-dot"></div>
+                                                </div>
+                                            )}
                                         </div>
                                     );
                                 })}

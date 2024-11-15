@@ -81,12 +81,13 @@
 
 .big-day-cell {
     display: flex;
+    flex-direction: column;
 
-    padding: 15px;
-    height: 40px;
+    height: 70px;
 
     position: relative;
     cursor: pointer;
+    padding: 2px 4px;
 
     box-shadow: 0 0 0 0.5px rgba(200, 200, 200, 1);
 }
@@ -104,23 +105,27 @@
     color: #cccccc;
 }
 
-.big-date-box .date-number {
-    position: absolute;
+.big-date-box {
+    display: flex;
+    flex-direction: column;
+}
+.date-number {
+    text-align: left;
     top: 2px;
     left: 4px;
 }
 
-.schedule-titles{
-    position: absolute;
+.big-schedule-titles{
+    display: flex;
+    flex-direction: column;
     bottom: 1px;
     left: 5px;
     font-size: 10px;
     color: #666;
 }
 
-.big-date-box {
-    width: 12px;
-    height: 22px;
+.schedule-title{
+    display: flex;
 }
 
 /* .popup-content{
@@ -210,3 +215,7 @@
     justify-content: center;
     align-items: center;
 }
+/* .schedule-title-box{
+    display: flex;
+    flex-direction: column;
+} */

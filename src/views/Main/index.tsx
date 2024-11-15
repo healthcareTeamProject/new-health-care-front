@@ -70,6 +70,7 @@ function CustomerComponent({customer}: SignInCustomerProps){
         setPersonalGoals(personalGoals);
     };
 
+
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(() => {
         if(!customer.userId)return;
@@ -399,8 +400,8 @@ export default function Main() {
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
                         {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
-                        <div className='calendar-box'>
-                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                        <div className='calendar-box'onClick={onCalendarButtonClickHandler}>
+                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} />
                         </div>
                     </div>
                 </div>
