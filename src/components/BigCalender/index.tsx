@@ -221,7 +221,10 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         getHealthScheduleList(); // 최신 스케줄 리스트 가져오기
     };
     //event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
-    const onDeletButtonClickHandler = (healthScheduleNumber: number) => {
+    const onDeletButtonClickHandler = (healthScheduleNumber: number | null) => {
+        if(healthScheduleNumber === null) {
+            return;
+        }
 
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
@@ -291,7 +294,11 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
                     // 일정이 있을 때 - 수정 버튼과 삭제 버튼 표시
                     <>
                         <button onClick={onUpdateHealthScheduleClickHandler}>수정</button>
-                        <button onClick={() => onDeletButtonClickHandler}>삭제</button>
+                        <button onClick={()=>{
+                            if(healthScheduleNumber !== null){
+                                onDeletButtonClickHandler(healthScheduleNumber);
+                            }
+                        }}>삭제</button>
                     </>
                 ) : (
                     // 일정이 없을 때 - 추가 버튼만 표시
@@ -390,8 +397,8 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
             setHealthScheduleStart(dayjs(selectedSchedule.healthScheduleStart));
             setHealthScheduleEnd(dayjs(selectedSchedule.healthScheduleEnd));
             setEditIndex(healthScheduleList.findIndex(Schedule => Schedule.healthScheduleNumber === healthScheduleNumber));
+            setPopupDate(dayjs(selectedSchedule.healthScheduleStart));
         }
-        setHealthScheduleList(healthScheduleList);
         setSchedulesChangePopup(true);
     }
 
@@ -453,6 +460,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
                                                 onUpdateScheduleListClickHandler(healthScheduleNumber);
                                             } else {
                                                 // 새로운 일정을 추가하는 팝업을 띄움
+                                                setPopupDate(current);
                                                 setSchedulesChangePopup(true);
                                             }
                                         }}>
