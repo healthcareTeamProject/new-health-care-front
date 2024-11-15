@@ -29,17 +29,15 @@ interface CalendarProps {
 // interface: 일정 팝업 Props //
 interface ScheduleProps{
     scheduleChange: () => void;
-    schedules: { startDate: string; endDate: string; title: string }[];
-    setSchedules: (schedules: { startDate: string; endDate: string; title: string }[]) => void;
+    schedules: HealthSchedule[];
     popupDate: Dayjs | null;
-    setPopupDate: (date: Dayjs | null) => void;
     getHealthScheduleList: () => void;
     healthScheduleNumber: number | null;
     
 }
 
 // component: 일정 팝업 컴포넌트 //
-function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setPopupDate, getHealthScheduleList, healthScheduleNumber}: ScheduleProps){
+function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleList, healthScheduleNumber}: ScheduleProps){
 
     // state: 일정 상태 관리 //
     const [cookies] = useCookies();
@@ -47,8 +45,6 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
     const [healthTitle, setHealthTitle] = useState<string>('');
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
     const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
-    // state: 수정 중인 일정 상태 //
-    const [editIndex, setEditIndex] = useState<number | null>(null);
 
     // function: post schedule response 처리 함수 //
     const postHealthScheduleResponse= (responseBody: ResponseDto | null ) => {
@@ -100,6 +96,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             return;
         }
         getHealthScheduleList();
+        scheduleChange();
     }
 
     // event handler: 일정 추가 이벤트 처리 핸들러 //
@@ -109,7 +106,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
 
         // 하루에 3개 이상의 일정이 있는지 확인
         const scheduleCount = schedules.filter(
-            (schedule) => dayjs(schedule.startDate).isSame(healthScheduleStart, 'day')
+            (schedule) => dayjs(schedule.healthScheduleStart).isSame(healthScheduleStart, 'day')
         ).length;
         if (scheduleCount >= 3) {
             alert('하루에 최대 3개의 일정만 추가할 수 있습니다.');
@@ -117,20 +114,6 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         };
 
         if (healthScheduleStart && healthScheduleEnd && healthTitle) {
-            const newSchedules = [...schedules];
-            // 새로운 일정 추가
-            let current = healthScheduleStart;
-            while (current.isBefore(healthScheduleEnd) || current.isSame(healthScheduleEnd)) {
-                newSchedules.push({
-                    startDate: current.format("YYYY-MM-DD"),
-                    endDate: current.format("YYYY-MM-DD"),
-                    title: healthTitle,
-                });
-                current = current.add(1, "day");
-            }
-            setSchedules(newSchedules);
-            setPopupDate(null);
-            scheduleChange();
 
             const requestBody = {
                 healthTitle,
@@ -147,17 +130,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
 
-        if (healthScheduleStart && healthScheduleEnd && healthTitle && editIndex !== null) {
-            const newSchedules = [...schedules];
-            // 일정 수정
-            newSchedules[editIndex] = {
-                startDate: healthScheduleStart.format("YYYY-MM-DD"),
-                endDate: healthScheduleEnd.format("YYYY-MM-DD"),
-                title: healthTitle,
-            };
-            setSchedules(newSchedules);
-            setPopupDate(null);
-            scheduleChange();
+        if (healthScheduleStart && healthScheduleEnd && healthTitle && healthScheduleNumber) {
 
             const requestBody = {
                 healthTitle,
@@ -210,13 +183,12 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             alert(message);
             return;
         }
-        // 성공적으로 삭제된 경우 상태 업데이트
-        const updatedSchedules = schedules.filter(schedule => 
-            schedule.startDate !== healthScheduleStart?.format('YYYY-MM-DD') || 
-            schedule.endDate !== healthScheduleEnd?.format('YYYY-MM-DD')
-        );
-        setSchedules(updatedSchedules); // 상태 업데이트로 캘린더에서 삭제된 일정 반영
-        setPopupDate(null);
+        // // 성공적으로 삭제된 경우 상태 업데이트
+        // const updatedSchedules = schedules.filter(schedule => 
+        //     schedule.healthScheduleStart !== healthScheduleStart?.format('YYYY-MM-DD') || 
+        //     schedule.healthScheduleEnd !== healthScheduleEnd?.format('YYYY-MM-DD')
+        // );
+
         scheduleChange(); // 팝업 닫기
         getHealthScheduleList(); // 최신 스케줄 리스트 가져오기
     };
@@ -228,42 +200,20 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
 
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
-
-        if(healthScheduleNumber !== null){
-            const newSchedules = [...schedules];
-            newSchedules.splice(healthScheduleNumber, 1);
-            setSchedules(newSchedules);
-            scheduleChange();
         
-            if(healthScheduleNumber){
-                deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
-            }
-        }
+        deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
     };
     
     // effect: 일정이 변경될 시 실행할 함수 //
     useEffect(() => {
-        if (popupDate) {
-            const existingScheduleIndex = schedules.findIndex(
-                (schedule) =>
-                    dayjs(schedule.startDate).isSame(popupDate, "day") &&
-                    dayjs(schedule.endDate).isSame(popupDate, "day")
-            );
-
-            if (existingScheduleIndex !== -1) {
-                const existingSchedule = schedules[existingScheduleIndex];
-                setHealthTitle(existingSchedule.title);
-                setHealthScheduleStart(dayjs(existingSchedule.startDate));
-                setHealthScheduleEnd(dayjs(existingSchedule.endDate));
-                setEditIndex(existingScheduleIndex);
-            } else {
-                setHealthTitle("");
-                setHealthScheduleStart(popupDate);
-                setHealthScheduleEnd(popupDate);
-                setEditIndex(null);
-            }
+        if (healthScheduleNumber) {
+            const schedule = schedules.find(item => item.healthScheduleNumber === healthScheduleNumber);
+            if (!schedule) return;
+            setHealthTitle(schedule.healthTitle);
+            setHealthScheduleStart(dayjs(schedule.healthScheduleStart));
+            setHealthScheduleEnd(dayjs(schedule.healthScheduleEnd));
         }
-    }, [popupDate, schedules]);
+    }, [healthScheduleNumber]);
 
     // render: 일정 추가 컴포넌트 렌더링 //
     return(
@@ -290,7 +240,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
                 </div>
             </div>
             <div className="pop-up-button-box">
-                {editIndex !== null ? (
+                {healthScheduleNumber !== null ? (
                     // 일정이 있을 때 - 수정 버튼과 삭제 버튼 표시
                     <>
                         <button onClick={onUpdateHealthScheduleClickHandler}>수정</button>
@@ -328,7 +278,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
     // state: 원본 리스트 상태 //
     const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
     // state: 헬스 일정 번호 경로 변수 상태 //
-    const {healthScheduleNumber} = useParams();
+    const [healthScheduleNumber, setHealthScheduleNumber] = useState<number | null>(null);
     // state: 보여질 날짜가 속한 달의 첫 주차 계산 상태 //
     const startWeek = viewDate.startOf('month').week();
     // state: 해당 달의 마지막 주차 상태 //
@@ -439,12 +389,12 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
                                 .map((_, i) => {
                                     // 나타낼 날짜
                                     const current = viewDate.week(week).startOf('week').add(i, 'day');
-                                    // 선택됐는지 여부
-                                    const isSelected = selectDate.format('YYYY-MM-DD') === current.format('YYYY-MM-DD') ? 'selected' : '';
-                                    // 오늘 날짜 여부
-                                    const isToday = dayjs().format('YYYY-MM-DD') === current.format('YYYY-MM-DD') ? 'today' : '';
-                                    // 보여질 날짜가 아닌 경우 (다른 달의 날짜인 경우)
-                                    const isNone = current.format('MM') === viewDate.format('MM') ? '' : 'none';
+                                    // // 선택됐는지 여부
+                                    // const isSelected = selectDate.format('YYYY-MM-DD') === current.format('YYYY-MM-DD') ? 'selected' : '';
+                                    // // 오늘 날짜 여부
+                                    // const isToday = dayjs().format('YYYY-MM-DD') === current.format('YYYY-MM-DD') ? 'today' : '';
+                                    // // 보여질 날짜가 아닌 경우 (다른 달의 날짜인 경우)
+                                    // const isNone = current.format('MM') === viewDate.format('MM') ? '' : 'none';
 
                                     // 해당 날짜의 일정 필터링
                                     const currentSchedules = healthScheduleList.filter(schedule => schedule.healthScheduleStart <= current.format('YYYY-MM-DD') && schedule.healthScheduleEnd >= current.format('YYYY-MM-DD'));
@@ -479,6 +429,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
                                                                     setEditIndex(healthScheduleList.findIndex(s => s.healthScheduleNumber === schedule.healthScheduleNumber));
                                                                     setPopupDate(current);
                                                                     setSchedulesChangePopup(true);
+                                                                    setHealthScheduleNumber(schedule.healthScheduleNumber)
                                                                 }}>
                                                                 {schedule.healthTitle}
                                                             </div>
@@ -498,12 +449,10 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
                 <div className="pop-up active">
                     <SchedulePopup 
                         scheduleChange={() => setSchedulesChangePopup(false)}
-                        schedules={schedules}
-                        setSchedules={setSchedules}
+                        schedules={healthScheduleList}
                         popupDate={popupDate}
-                        setPopupDate={setPopupDate}
                         getHealthScheduleList={getHealthScheduleList} 
-                        healthScheduleNumber={null} />
+                        healthScheduleNumber={healthScheduleNumber} />
                 </div>
             ) : null}
         </div>
