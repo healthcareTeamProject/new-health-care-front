@@ -120,8 +120,10 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
                 healthScheduleStart: healthScheduleStart.format("YYYY-MM-DD"),
                 healthScheduleEnd: healthScheduleEnd.format("YYYY-MM-DD")
             };
+            
             postHealthScheduleRequest(requestBody, accessToken).then(postHealthScheduleResponse);
         }
+        window.location.reload();
     };
 
     // event handler: 일정 수정 이벤트 처리 핸들러//
@@ -141,6 +143,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
                 patchHealthScheduleRequest(requestBody, healthScheduleNumber, accessToken).then(patchHealthScheduleResponse);
             }
         }
+        window.location.reload();
     };
 
 
@@ -202,6 +205,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         if(!accessToken) return;
         
         deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
+        window.location.reload();
     };
     
     // effect: 일정이 변경될 시 실행할 함수 //
@@ -223,6 +227,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
                 ? `${healthScheduleStart.format('YYYY-MM-DD')} ~ ${healthScheduleEnd.format('YYYY-MM-DD')} 일정`
                 : popupDate?.format('YYYY-MM-DD')}
             </div>
+            
             <div className="pop-up-schedule-box">
                 <div className="pop-up-select-schedule-box">
                     <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):''}
@@ -337,6 +342,9 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
         if(isLoggIn){
             setSchedulesChangePopup(!scheduleChangePopup);
         }
+        if(scheduleChangePopup === true) {
+            window.location.reload();
+        }
     };
 
     // event handler: 일정 수정 클릭 이벤트 처리 //
@@ -448,7 +456,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
             {isLoggIn && scheduleChangePopup ? (
                 <div className="pop-up active">
                     <SchedulePopup 
-                        scheduleChange={() => setSchedulesChangePopup(false)}
+                        scheduleChange={onScheduleChangePopup}
                         schedules={healthScheduleList}
                         popupDate={popupDate}
                         getHealthScheduleList={getHealthScheduleList} 
