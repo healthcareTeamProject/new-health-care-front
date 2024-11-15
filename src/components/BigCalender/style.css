@@ -126,6 +126,10 @@
 
 .schedule-title{
     display: flex;
+
+    background-color: #F5DEB3;
+
+    border: 0.25px solid white;
 }
 
 /* .popup-content{
