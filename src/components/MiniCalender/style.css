@@ -46,20 +46,27 @@
 }
 .day-cell{
     display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    gap: 3px;
 
     padding: 15px;
     position: relative;
     cursor: pointer;
+    border: 1px solid white;
 }
 .day-cell.selected{
-    background-color: #fffbdd;
+    border: 1px solid white;
+    text-align: center;
     cursor: pointer;
 }
 .day-cell.today{
-    border: 1px solid #666;
+    border: 1px solid #cccccc;
     
 }
 .day-cell.none{
+    border: 1px solid white;
     color: #cccccc;
 }
 .schedule-titles{
@@ -79,9 +86,7 @@
     border: 1px solid rgba(238, 238, 238, 0);
     border-radius: 8px;
 } */
-.date-box{
-    display: flex;
-}
+
 .pop-up{
     display: none;
     position: fixed;
@@ -159,6 +164,34 @@
 .day-select-start,
 .day-select-end{
     display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.dot-box{
+    display: flex;
+    flex-direction: column;
+    
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.yellow-dot{
+    display: flex;
+    width: 10px;
+    height: 10px;
+    background-color: antiquewhite;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 50%;
+}
+.date-box{
+    display: flex;
+    text-align: center;
+    background-color: white;
     justify-content: center;
     align-items: center;
 }

@@ -12,6 +12,7 @@ import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "
 import { PostBoardRequestDto } from "./dto/request/board";
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
+import { PatchHealthScheduleRequestDto } from "./dto/request/schedule";
 
 // variable: API URL 상수 //
 const HEALTHCARE_API_DOMAIN = `http://localhost:4000`;
@@ -44,12 +45,12 @@ const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boa
 
 const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
 
-const HEALTH_SCHEDULE_API_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
+const HEALTH_SCHEDULE_API_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/schedule/health-schedule`;
 
-const POST_HEALTH_SCHEDULE_API_URL = `{HEALTH_SCHEDULE_API_URL}`;
-const GET_HEALTH_SCHEDULE_LIST_API_URL = `{HEALTH_SCHEDULE_API_URL}`;
+const POST_HEALTH_SCHEDULE_API_URL = `${HEALTH_SCHEDULE_API_URL}`;
+const GET_HEALTH_SCHEDULE_LIST_API_URL = `${HEALTH_SCHEDULE_API_URL}`;
 const GET_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
-const PATCH_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
+const PATCH_HEALTH_SCHEDULE_API_URL = (healthScheduleNumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthScheduleNumber}`;
 const DELETE_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
 
 
@@ -202,6 +203,7 @@ export const postHealthScheduleRequest = async (requestBody: PostHealthScheduleR
     .catch(responseErrorHandler);
   return responseBody;
 };
+
 // function: get health schedule 요청 함수 //
 export const getHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
   const responseBody = await axios.get(GET_HEALTH_SCHEDULE_API_URL(healthScheduleNumber), bearerAuthorization(accessToken))
@@ -211,15 +213,20 @@ export const getHealthScheduleRequest = async (healthScheduleNumber: number | st
 };
 
 // function: get health schedule list 요청 함수 //
-export const GetHealthScheduleListRequest = async (accessToken: string) => {
+export const getHealthScheduleListRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_HEALTH_SCHEDULE_LIST_API_URL, bearerAuthorization(accessToken))
     .then(responseDataHandler<GetHealthScheduleListResponseDto>)
     .catch(responseErrorHandler)
   return responseBody;
 };
 
-// // function: patch health schedule 요청 함수 //
-// export const PatchHealth
+// function: patch health schedule 요청 함수 //
+export const patchHealthScheduleRequest = async(requestBody: PatchHealthScheduleRequestDto, healthScheduleNumber: number | string, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_HEALTH_SCHEDULE_API_URL(healthScheduleNumber), requestBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+}
 
 // function: delete health schedule 요청 함수 //
 export const deleteHealthScheduleRequest = async (healthScheduleNumber: number | string, accessToken: string) => {
