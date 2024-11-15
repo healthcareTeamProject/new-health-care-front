@@ -13,7 +13,6 @@ import InputBox from 'src/components/InputBox';
 import { NicknameCheckRequestDto } from 'src/apis/dto/request/auth';
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PatchUserThreeMajorLiftRequestDto } from 'src/apis/dto/request/customer';
 
-
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 interface changePersonalProps {
@@ -27,7 +26,6 @@ interface changeMucleFatProps {
 interface changeThreeMajorLiftProps {
     onThreeMajorLiftChange: () => void;
 }
-
 
 // component: 개인정보 컴포넌트 //
 function Personal({ onPersonalChange }: changePersonalProps) {
@@ -113,7 +111,6 @@ function Personal({ onPersonalChange }: changePersonalProps) {
     )
 
 }
-
 
 // component: 개인정보 변경 팝업 컴포넌트 //
 function PersonalChange({ onPersonalChange }: changePersonalProps) {
@@ -366,7 +363,6 @@ function PersonalChange({ onPersonalChange }: changePersonalProps) {
 
 }
 
-
 // component: 신체정보 컴포넌트 //
 function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
 
@@ -472,7 +468,6 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
         </div>
     );
 }
-
 
 // component: 신체정보 변경 팝업 컴포넌트 //
 function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
@@ -621,7 +616,6 @@ function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
 
 }
 
-
 // component: 3대측정 컴포넌트 //
 function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
 
@@ -692,7 +686,6 @@ function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
     )
 
 }
-
 
 // component: 3대측정 변경 팝업 컴포넌트 //
 function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
@@ -843,7 +836,6 @@ function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftPr
 
 }
 
-
 // component: 내 게시물 컴포넌트 //
 function Board() {
 
@@ -856,7 +848,6 @@ function Board() {
     )
 
 }
-
 
 // component: 리스트 그래프 컴포넌트 //
 function Graph() {
@@ -1173,7 +1164,6 @@ function Graph() {
 
 }
 
-
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
 
@@ -1210,7 +1200,6 @@ export default function Mypage() {
     // render: 마이페이지 컴포넌트 렌더딩 //
     return (
         <div id='my-wrapper'>
-            
             <div className='my-page-left'>
                 <div className='my-page-title'>마이페이지</div>
             </div>
@@ -1245,8 +1234,6 @@ export default function Mypage() {
             </div>)
             : (<div></div>)
             }
-
         </div>
-
     )
 }
