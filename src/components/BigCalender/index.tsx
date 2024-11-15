@@ -113,6 +113,14 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             return;
         };
 
+        if(!healthScheduleStart) return;
+        if(!healthScheduleEnd) return;
+
+        if(healthScheduleStart > healthScheduleEnd) {
+            alert('종료날짜가 시작날짜 보다 작을수 없습니다.')
+            return;
+        }
+
         if (healthScheduleStart && healthScheduleEnd && healthTitle) {
 
             const requestBody = {
@@ -156,6 +164,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     // event handler: 시작 날짜 선택 이벤트 처리 //
     const onStartDateChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
+        console.log(value);
         setHealthScheduleStart(dayjs(value));
     };
 
@@ -203,8 +212,9 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
 
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
-        
+
         deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
+
         window.location.reload();
     };
     
@@ -217,7 +227,12 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             setHealthScheduleStart(dayjs(schedule.healthScheduleStart));
             setHealthScheduleEnd(dayjs(schedule.healthScheduleEnd));
         }
-    }, [healthScheduleNumber]);
+        if (popupDate) {
+            // popupDate가 설정되면 이를 시작일과 종료일로 사용
+            setHealthScheduleStart(popupDate);
+            setHealthScheduleEnd(popupDate); // 종료일도 동일하게 설정 (원하는 대로 조정 가능)
+        }
+    }, [healthScheduleNumber, popupDate]);
 
     // render: 일정 추가 컴포넌트 렌더링 //
     return(
@@ -230,11 +245,11 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             
             <div className="pop-up-schedule-box">
                 <div className="pop-up-select-schedule-box">
-                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):''}
+                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):popupDate?.format('YYYY-MM-DD')}
                     onChange={onStartDateChangeHandler}
                     />
                     <input className="day-select-end"
-                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : ''} 
+                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : popupDate?.format('YYYY-MM-DD')} 
                         onChange={onEndDateChangeHandler} 
                     />
                     <textarea className="pop-up-schedule"
