@@ -1,3 +1,6 @@
 export default interface PostCommentRequestDto {
-  commentContents: string;
+    userId: string;
+    commentContents: string;
+    commentLikeCount: number;
+    commentDate: string;
 }

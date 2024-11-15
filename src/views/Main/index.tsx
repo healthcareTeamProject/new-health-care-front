@@ -7,7 +7,7 @@ import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SCHEDULE_ABSOLUTE_DATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
-import { getCustomerMyPageRequest, getCustomerRequest, getSignInRequest, signInRequest } from 'src/apis';
+import { getCustomerMyPageRequest, getCustomerRequest, getSignInRequest, patchUserMuscleFatRequest, signInRequest } from 'src/apis';
 
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
@@ -19,11 +19,17 @@ import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
 import Calendar from 'src/components/MiniCalender';
 import MiniCalendar from 'src/components/MiniCalender';
+import { PatchUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
+import { Bar } from 'react-chartjs-2';
+import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 
 interface SignInCustomerProps{
     customer: SignInCustomer;
 }
+
 // component: 로그인 후 개인 정보 박스 컴포넌트 //
 function CustomerComponent({customer}: SignInCustomerProps){
 
@@ -230,6 +236,111 @@ function SignInComponent(){
     )
 
 };
+
+// component: 신체정보 컴포넌트 //
+function MucleFat({ userId }: { userId?: string }) {
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: 사용자 정보 상태 //
+    const [weight, setWeight] = useState<string>('');
+    const [skeletalMuscleMass, setSkeletalMuscleMass] = useState<string>('');
+    const [bodyFatMass, setBodyFatMass] = useState<string>('');
+
+    // state: 차트 데이터 설정 //
+    const dataValues = [weight, skeletalMuscleMass, bodyFatMass].map(Number);
+    const maxValue = Math.max(...dataValues);
+    const stepSize = maxValue ? maxValue * 0.2 : 1; // 최대값의 20% 설정
+    const chartData = {
+        labels: ['몸무게', '골격근량', '체지방량'],
+        datasets: [{
+            data: dataValues,
+            backgroundColor: 'rgba(53, 162, 235, 0.6)',
+        }],
+    };
+
+    // state: 차트 옵션 설정 //
+    const options = {
+        responsive: true,
+        maintainAspectRatio: false,
+        indexAxis: 'y' as const,
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    font: {
+                        size: 14,
+                    },
+                    color: 'black',
+                },
+            },
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: stepSize, // 최대값의 20%로 설정
+                    font: {
+                        size: 14,
+                    },
+                    color: 'black',
+                    callback: (value: string | number) => Math.floor(Number(value)), // 소수점 아래를 없애고 정수로 표시
+                },
+            },
+        },
+        plugins: {
+            legend: {
+                display: false,
+            },
+        },
+    };
+
+    // function: get customer response 처리 함수 //
+    const getCustomerResponse = (responseBody: GetCustomerMyPageResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
+        responseBody.code === 'NI' ? '로그인 유저 정보가 존재하지 않습니다.':
+        responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+        responseBody.code === 'DBE' ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+
+        if(!isSuccessed) {
+            alert(message);
+            return;
+        };
+
+        const { weight, skeletalMuscleMass, bodyFatMass } = responseBody as  GetCustomerMyPageResponseDto;
+        setWeight(weight);
+        console.log(weight);
+        setSkeletalMuscleMass(skeletalMuscleMass);
+        setBodyFatMass(bodyFatMass);
+
+    };
+
+
+    // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
+    useEffect(()=>{
+        console.log(userId);
+        if(!userId) return;
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+
+        getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
+    }, [userId]);
+
+    // render: 신체정보 컴포넌트 렌더딩 //
+    return (
+        <div className='main-user-muscle-fat'>
+            <div className='chart-top'>
+                <div className='chart-title'>골격근 - 지방분석 </div>
+            </div>
+            <div className='chart-container'>
+                <Bar data={chartData} options={options} style={{width:'860px', height:'300px'}}/>
+            </div>
+        </div>
+    );
+}
+
 // component: 로그인 전 메인 화면 컴포넌트 //
 export default function Main() {
 
@@ -296,7 +407,9 @@ export default function Main() {
                 </div>
                 <div className='main-under-detail-box'>
                     <CommunityBoard />
-                    <div className='main-user-detail-grap-box'></div>
+                    <div className='main-user-detail-grap-box'>
+                        <MucleFat userId={signInCustomer?.userId}/>
+                    </div>
                 </div>
             </div>
         </div>

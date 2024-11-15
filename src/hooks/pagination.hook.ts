@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 
 // variable: 페이지 당 아이템 수 //
-const ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE = 6;
 
 // variable: 섹션 당 페이지 수 //
-const PAGES_PER_SECTION = 5;
+const PAGES_PER_SECTION = 6;
 
 const usePagination = <B>() => {
   // state: 게시글 리스트 상태 //
