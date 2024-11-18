@@ -23,7 +23,7 @@ interface CalendarProps {
     setSelectDate: (date: Dayjs) => void;
     schedules: HealthSchedule[];
     setSchedules: (schedules: HealthSchedule[]) => void;
-
+    resetScheduleInputs: () => void;
 }
 
 // interface: 일정 팝업 Props //
@@ -33,11 +33,12 @@ interface ScheduleProps{
     popupDate: Dayjs | null;
     getHealthScheduleList: () => void;
     healthScheduleNumber: number | null;
+    resetScheduleInputs: () => void;
     
 }
 
 // component: 일정 팝업 컴포넌트 //
-function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleList, healthScheduleNumber}: ScheduleProps){
+function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleList, healthScheduleNumber, resetScheduleInputs}: ScheduleProps){
 
     // state: 일정 상태 관리 //
     const [cookies] = useCookies();
@@ -61,6 +62,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             return;
         }; 
         getHealthScheduleList();
+        scheduleChange();
+        resetScheduleInputs();
     };
 
     // function: get schedule response 처리 함수 //
@@ -151,6 +154,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         }
 
         getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
+        resetScheduleInputs();
+        scheduleChange();
     };
 
     // event handler: 일정 수정 이벤트 처리 핸들러//
@@ -171,6 +176,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             }
         }
         getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
+        resetScheduleInputs();
     };
 
 
@@ -221,6 +227,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         // );
 
         scheduleChange(); // 팝업 닫기
+        resetScheduleInputs();
         getHealthScheduleList(); // 최신 스케줄 리스트 가져오기
     };
     //event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
@@ -233,6 +240,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         if(!accessToken) return;
 
         deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
+        resetScheduleInputs();
     };
     
     // effect: 일정이 변경될 시 실행할 함수 //
@@ -331,12 +339,14 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
 
     // function: 로그인 된 사용자 함수 //
     const isLoggIn = !!signInCustomer;
+    
 
     // function: Health schedule list 불러오기 함수 //
     const getHealthScheduleList = () => {
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
         getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
+        resetScheduleInputs();
     }
 
     // function: get health schedule list response 처리 함수 //
@@ -353,7 +363,16 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
         }
         const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto; 
         setHealthScheduleList(healthSchedulelist);
+        resetScheduleInputs();
     }
+
+    // function: 일정 입력 초기화 함수 //
+    const resetScheduleInputs = () => {
+        setHealthTitle('');
+        setHealthScheduleStart(null);
+        setHealthScheduleEnd(null);
+        setHealthScheduleNumber(null);
+    };
 
     
     // event handler: 달 변경 클릭 이벤트 처리 //
@@ -374,8 +393,10 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
         if(isLoggIn){
             setSchedulesChangePopup(!scheduleChangePopup);
         }
-        if(scheduleChangePopup === true) {
-            window.location.reload();
+        if(scheduleChangePopup) {
+            const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+            getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse)
         }
     };
 
@@ -390,6 +411,8 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
             setPopupDate(dayjs(selectedSchedule.healthScheduleStart));
         }
         setSchedulesChangePopup(true);
+        resetScheduleInputs();
+        
     }
 
     // effect: 컴포넌트 로드시 헬스 스케줄 불러오기 함수//
@@ -398,8 +421,6 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
         if(!accessToken) return;
         getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse)
     },[healthScheduleNumber])
-
-
 
     // render: 큰 캘린더 상세 컴포넌트 렌더링 //
     return (
@@ -492,9 +513,11 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
                         schedules={healthScheduleList}
                         popupDate={popupDate}
                         getHealthScheduleList={getHealthScheduleList} 
-                        healthScheduleNumber={healthScheduleNumber} />
+                        healthScheduleNumber={healthScheduleNumber} 
+                        resetScheduleInputs={resetScheduleInputs}/>
                 </div>
             ) : null}
+            
         </div>
     );
 }

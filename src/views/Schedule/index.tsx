@@ -6,7 +6,7 @@ import SchedulePopup from '../../components/MiniCalender'
 import MiniCalendar from '../../components/MiniCalender'
 import BigCalendar from 'src/components/BigCalender'
 import { useCookies } from 'react-cookie'
-import { useSignInCustomerStroe } from 'src/stores'
+import { useSchechduleStore, useSignInCustomerStroe } from 'src/stores'
 import { useNavigate } from 'react-router'
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from 'src/constant'
 import { HealthSchedule } from 'src/types'
@@ -25,10 +25,16 @@ export default function Schedule() {
 
     // state: 캘린더 선택 상태 //
     const [selectCalendar, setSelectCalendar] = useState<boolean>(true);
+     // state: 원본 리스트 상태 //
+    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
+    // function: 일정 입력 초기화 함수 //
+    const resetScheduleInputs = () => {
+        setHealthScheduleList(healthScheduleList);
+    }
     // event handler: 운동, 식단 선택 //
     const onSelectHealthCalendarClickHandler = () => {
         setSelectCalendar(true);
@@ -64,7 +70,7 @@ export default function Schedule() {
                         <button className='meal-schedule-button'>식단</button>
                     </div>
                     <div className='big-schedule-box'>
-                        <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                        <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} resetScheduleInputs={resetScheduleInputs}/>
                     </div>
                 </div>
             </div>
