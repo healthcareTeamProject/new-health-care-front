@@ -312,7 +312,6 @@ function MucleFat({ userId }: { userId?: string }) {
 
         const { weight, skeletalMuscleMass, bodyFatMass } = responseBody as  GetCustomerMyPageResponseDto;
         setWeight(weight);
-        console.log(weight);
         setSkeletalMuscleMass(skeletalMuscleMass);
         setBodyFatMass(bodyFatMass);
 
@@ -321,7 +320,6 @@ function MucleFat({ userId }: { userId?: string }) {
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
-        console.log(userId);
         if(!userId) return;
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;

@@ -57,6 +57,7 @@ const PATCH_COMMENTS_API_URL = (boardNumber : string | number, commentNumber : n
 const GET_COMMENT_LIST_API_URL = (boardNumber: string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comment-list`;
 const DELETE_COMMENT_API_URL = (boardNumber: string | number, commentNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
 
+
 const HEALTH_SCHEDULE_API_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
 
 const POST_HEALTH_SCHEDULE_API_URL = `${HEALTH_SCHEDULE_API_URL}`;
