@@ -11,14 +11,14 @@ import GetCustomerResposeDto from "./dto/response/customer/get-customer.response
 import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
 
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
-import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "./dto/response/schedule";
+import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
 
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
 
 import GetCommentListResponseDto from "./dto/response/board/get-comment.response.dto";
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
-import { PatchHealthScheduleRequestDto } from "./dto/request/schedule";
+import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
 
 
 // variable: API URL 상수 //
@@ -73,6 +73,9 @@ const GET_MEAL_SCHEDULE_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}`;
 const GET_MEAL_SCHEDULE_API_URL = (mealSchedulenumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealSchedulenumber}`;
 const PATCH_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
 const DELETE_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
+
+const GET_MEAL_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}/food-data`;
+const POST_SEARCH_MEAL_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}/search`;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({
@@ -256,9 +259,9 @@ export const deleteHealthScheduleRequest = async (healthScheduleNumber: number |
   return responseBody;
 }
 
-//
+
 // function: post meal schedule 요청 함수 //
-export const postMealScheduleRequest = async (requestBody: PostHealthScheduleRequestDto, accessToken: string) => {
+export const postMealScheduleRequest = async (requestBody: PostMealScheduleRequestDto, accessToken: string) => {
   const responseBody = await axios.post(POST_MEAL_SCHEDULE_API_URL, requestBody, bearerAuthorization(accessToken))
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler);
@@ -268,7 +271,7 @@ export const postMealScheduleRequest = async (requestBody: PostHealthScheduleReq
 // function: get meal schedule 요청 함수 //
 export const getMealScheduleRequest = async (mealScheduleNumber: number | string, accessToken: string) => {
   const responseBody = await axios.get(GET_MEAL_SCHEDULE_API_URL(mealScheduleNumber), bearerAuthorization(accessToken))
-    .then(responseDataHandler<GetHealthScheduleResponseDto>)
+    .then(responseDataHandler<GetMealScheduleResponseDto>)
     .catch(responseErrorHandler);
   return responseBody;
 };
@@ -276,13 +279,13 @@ export const getMealScheduleRequest = async (mealScheduleNumber: number | string
 // function: get meal schedule list 요청 함수 //
 export const getMealScheduleListRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_MEAL_SCHEDULE_LIST_API_URL, bearerAuthorization(accessToken))
-    .then(responseDataHandler<GetHealthScheduleListResponseDto>)
+    .then(responseDataHandler<GetMealScheduleListResponseDto>)
     .catch(responseErrorHandler)
   return responseBody;
 };
 
 // function: patch meal schedule 요청 함수 //
-export const patchMealScheduleRequest = async(requestBody: PatchHealthScheduleRequestDto, mealScheduleNumber: number | string, accessToken: string) => {
+export const patchMealScheduleRequest = async(requestBody: PatchMealScheduleRequestDto, mealScheduleNumber: number | string, accessToken: string) => {
   const responseBody = await axios.patch(PATCH_MEAL_SCHEDULE_API_URL(mealScheduleNumber), requestBody, bearerAuthorization(accessToken))
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler);
@@ -296,8 +299,10 @@ export const deleteMealScheduleRequest = async (mealScheduleNumber: number | str
     .catch(responseErrorHandler)
   return responseBody;
 }
-//
 
+// function: get meal 요청합수 //
+
+// function: post search meal List 요청함수 //
 
 // function: post board 요청 함수 //
 export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
