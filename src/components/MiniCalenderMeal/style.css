@@ -1,0 +1,197 @@
+.calendar-container{
+    display: flex;
+    flex-direction: column;
+    padding: 20px;
+    margin: 20px auto;
+    border: 1px solid #dcdcdc;
+    border-radius: 8px;
+}
+.calendar-header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 15px;
+}
+.calendar-header span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    font-weight: bold;
+    font-size: 28px;
+}
+.calendar-header button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 28px;
+    color: #333;
+    
+}
+.calendar-header button:hover{
+    color: #A7A7A7;
+}
+.week-header,
+.week{
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    text-align: center;
+    margin: 10px;
+}
+.day-header.sunday{
+    color: #ff4d4f;
+}
+.day-cell{
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+
+    gap: 3px;
+
+    padding: 15px;
+    position: relative;
+    cursor: pointer;
+    border: 1px solid white;
+}
+.day-cell.selected{
+    border: 1px solid white;
+    text-align: center;
+    cursor: pointer;
+}
+.day-cell.today{
+    border: 1px solid #cccccc;
+    
+}
+.day-cell.none{
+    border: 1px solid white;
+    color: #cccccc;
+}
+.schedule-titles{
+    position: absolute;
+    bottom: 1px;
+    left: 5px;
+    font-size: 10px;
+    color: #666;
+}
+/* .popup-content{
+    display: flex;
+    width: 750px;
+    height: 500px;
+
+    justify-content: center;
+    align-items: center;
+    border: 1px solid rgba(238, 238, 238, 0);
+    border-radius: 8px;
+} */
+
+.pop-up{
+    display: none;
+    position: fixed;
+    z-index: 9999;
+
+    display: flex;
+
+    width: 100vw;
+    height: 100vh;
+
+    background-color: rgba(0, 0, 0, 0.3);
+}
+.pop-up.active{
+    display: block;
+}
+.pop-up-content{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    position: fixed;
+
+    z-index: 9999;
+
+    box-sizing: border-box;
+    border: 1px solid rgba(238, 238, 238, 1);
+    border-radius: 8px;
+
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+
+    width: 300px;
+    height: 300px;
+
+    background-color: rgba(238, 238, 238, 1);
+}
+.pop-up-schedule-date{
+    display: block;
+    justify-content: center;
+
+    font-size: 15px;
+    font-weight: bold;
+    margin-top: 30px;
+}
+.pop-up-schedule-box{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 517px;
+    height: 455px;
+}
+.pop-up-schedule{
+    display: flex;
+    height: 100px;
+
+    resize: none;
+    
+    gap: 10px;
+    margin-top: 30px;
+
+}
+.pop-up-button-box{
+    display: flex;
+    flex-direction: row;
+
+    max-width: 200px;
+    margin-top: 22px;
+}
+.pop-up-select-schedule-box{
+    display: flex;
+    flex-direction: column;
+}
+.day-select-start,
+.day-select-end{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+
+.dot-box{
+    display: flex;
+    flex-direction: column;
+    
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+}
+
+.yellow-dot{
+    display: flex;
+    width: 10px;
+    height: 10px;
+    background-color: #F5DEB3;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 50%;
+}
+.date-box{
+    display: flex;
+    text-align: center;
+    background-color: white;
+    justify-content: center;
+    align-items: center;
+}
