@@ -297,7 +297,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     )
 };
 // component: 캘린더 컴포넌트 //
-export default function BigCalendar({ selectDate, setSelectDate, schedules, setSchedules}: CalendarProps) {
+export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, setSchedules}: CalendarProps) {
     dayjs.extend(weekday);
     dayjs.extend(isoWeek);
     dayjs.extend(weekOfYear);
