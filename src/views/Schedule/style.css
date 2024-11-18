@@ -37,6 +37,23 @@
     align-items: center;
     height: 716px;
 }
+.schedule-right-big-box{
+    display: flex;
+    flex-direction: column;
+}
+.schedule-change-button-box{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    height: 90px;
+
+    gap: 20px;
+}
+.health-schedule-button
+.meal-schedule-button{
+    width: 60px;
+    height: 50px;
+}
 .big-schedule-box{
     display: flex;
 }

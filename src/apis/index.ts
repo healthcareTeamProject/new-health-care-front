@@ -18,6 +18,7 @@ import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user
 
 import GetCommentListResponseDto from "./dto/response/board/get-comment.response.dto";
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
+import { PatchHealthScheduleRequestDto } from "./dto/request/schedule";
 
 
 // variable: API URL 상수 //
@@ -51,17 +52,12 @@ const DELETE_BOARD_API_URL = (boardNumber: number | string) => `${BOARD_MODULE_U
 const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boardNumber}`;
 const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
 
-
-const HEALTH_SCHEDULE_API_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/schedule/health-schedule`;
-
-
 const POST_COMMENTS_API_URL = (boardNumber : string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comments`;
 const PATCH_COMMENTS_API_URL = (boardNumber : string | number, commentNumber : number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
 const GET_COMMENT_LIST_API_URL = (boardNumber: string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comment-list`;
 const DELETE_COMMENT_API_URL = (boardNumber: string | number, commentNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
 
-const HEALTH_SCHEDULE_API_URL = `{HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
-
+const HEALTH_SCHEDULE_API_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
 
 const POST_HEALTH_SCHEDULE_API_URL = `${HEALTH_SCHEDULE_API_URL}`;
 const GET_HEALTH_SCHEDULE_LIST_API_URL = `${HEALTH_SCHEDULE_API_URL}`;
