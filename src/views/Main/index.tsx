@@ -368,9 +368,8 @@ export default function Main() {
             alert(message);
             return;
         }
-        console.log('리스트실행')
+
         const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto;
-        console.log(healthSchedulelist);
         setHealthScheduleList(healthSchedulelist);
     }
 
@@ -383,7 +382,7 @@ export default function Main() {
     // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
     useEffect(() => {
         const accessToken = cookies[ACCESS_TOKEN];
-        if(accessToken) {
+        if(accessToken) {   
             getSignInRequest(accessToken).then((responseBody: GetSignInResponseDto | ResponseDto | null) => {
                 const message = 
                     !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':

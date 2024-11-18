@@ -66,6 +66,13 @@ const GET_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `
 const PATCH_HEALTH_SCHEDULE_API_URL = (healthScheduleNumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthScheduleNumber}`;
 const DELETE_HEALTH_SCHEDULE_API_URL = (healthSchedulenumber: number | string) => `${HEALTH_SCHEDULE_API_URL}/${healthSchedulenumber}`;
 
+const MEAL_SCHEDULE_API_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/meal-schedule`;
+
+const POST_MEAL_SCHEDULE_API_URL = `${MEAL_SCHEDULE_API_URL}`;
+const GET_MEAL_SCHEDULE_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}`;
+const GET_MEAL_SCHEDULE_API_URL = (mealSchedulenumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealSchedulenumber}`;
+const PATCH_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
+const DELETE_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
 
 // function: Authorizarion Bearer 헤더 //
 const bearerAuthorization = (accessToken: string) => ({
@@ -248,6 +255,49 @@ export const deleteHealthScheduleRequest = async (healthScheduleNumber: number |
     .catch(responseErrorHandler)
   return responseBody;
 }
+
+//
+// function: post meal schedule 요청 함수 //
+export const postMealScheduleRequest = async (requestBody: PostHealthScheduleRequestDto, accessToken: string) => {
+  const responseBody = await axios.post(POST_MEAL_SCHEDULE_API_URL, requestBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get meal schedule 요청 함수 //
+export const getMealScheduleRequest = async (mealScheduleNumber: number | string, accessToken: string) => {
+  const responseBody = await axios.get(GET_MEAL_SCHEDULE_API_URL(mealScheduleNumber), bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetHealthScheduleResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+};
+
+// function: get meal schedule list 요청 함수 //
+export const getMealScheduleListRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_MEAL_SCHEDULE_LIST_API_URL, bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetHealthScheduleListResponseDto>)
+    .catch(responseErrorHandler)
+  return responseBody;
+};
+
+// function: patch meal schedule 요청 함수 //
+export const patchMealScheduleRequest = async(requestBody: PatchHealthScheduleRequestDto, mealScheduleNumber: number | string, accessToken: string) => {
+  const responseBody = await axios.patch(PATCH_MEAL_SCHEDULE_API_URL(mealScheduleNumber), requestBody, bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: delete meal schedule 요청 함수 //
+export const deleteMealScheduleRequest = async (mealScheduleNumber: number | string, accessToken: string) => {
+  const responseBody = await axios.delete(DELETE_MEAL_SCHEDULE_API_URL(mealScheduleNumber), bearerAuthorization(accessToken))
+    .then(responseDataHandler<ResponseDto>)
+    .catch(responseErrorHandler)
+  return responseBody;
+}
+//
+
 
 // function: post board 요청 함수 //
 export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
