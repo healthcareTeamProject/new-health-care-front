@@ -20,16 +20,16 @@ import { useLocation, useParams } from "react-router";
 interface CalendarProps {
     selectDate: Dayjs;
     setSelectDate: (date: Dayjs) => void;
-    schedules: { startDate: string; endDate: string; title: string }[];
-    setSchedules: (schedules: { startDate: string; endDate: string; title: string }[]) => void;
+    schedules: HealthSchedule[];
+    setSchedules: (schedules: HealthSchedule[]) => void;
 
 }
 
 // interface: 일정 팝업 Props //
 interface ScheduleProps{
     scheduleChange: () => void;
-    schedules: { startDate: string; endDate: string; title: string }[];
-    setSchedules: (schedules: { startDate: string; endDate: string; title: string }[]) => void;
+    schedules: HealthSchedule[];
+    setSchedules: (schedules: HealthSchedule[]) => void;
     popupDate: Dayjs | null;
     setPopupDate: (date: Dayjs | null) => void;
     getScheduleList: () => void;
@@ -142,18 +142,20 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
             if (editIndex !== null) {
                 // 일정 수정
                 newSchedules[editIndex] = {
-                    startDate: healthScheduleStart.format("YYYY-MM-DD"),
-                    endDate: healthScheduleEnd.format("YYYY-MM-DD"),
-                    title: healthTitle,
+                    healthScheduleStart: healthScheduleStart.format("YYYY-MM-DD"),
+                    healthScheduleEnd: healthScheduleEnd.format("YYYY-MM-DD"),
+                    healthTitle: healthTitle,
+                    healthScheduleNumber: newSchedules[editIndex].healthScheduleNumber
                 };
             } else {
                 // 새로운 일정 추가
                 let current = healthScheduleStart;
                 while (current.isBefore(healthScheduleEnd) || current.isSame(healthScheduleEnd)) {
                     newSchedules.push({
-                        startDate: current.format("YYYY-MM-DD"),
-                        endDate: current.format("YYYY-MM-DD"),
-                        title: healthTitle,
+                        healthScheduleStart: current.format("YYYY-MM-DD"),
+                        healthScheduleEnd: current.format("YYYY-MM-DD"),
+                        healthTitle: healthTitle,
+                        healthScheduleNumber: 0
                     });
                     current = current.add(1, "day");
                 }
@@ -174,6 +176,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         
         postHealthScheduleRequest(requestBody, accessToken).then(postHealthScheduleResponse);
     };
+    
 
     // event handler: 일정 변경 이벤트 처리 //
     const onScheduleChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -218,7 +221,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
         if(!healthScheduleNumber) return;
-        deleteHealthScheduleRequest(healthScheduleNumber, accessToken)
+        deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
     }
 
     
@@ -227,15 +230,15 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         if (popupDate) {
             const existingScheduleIndex = schedules.findIndex(
                 (schedule) =>
-                    dayjs(schedule.startDate).isSame(popupDate, "day") &&
-                    dayjs(schedule.endDate).isSame(popupDate, "day")
+                    dayjs(schedule.healthScheduleStart).isSame(popupDate, "day") &&
+                    dayjs(schedule.healthScheduleEnd).isSame(popupDate, "day")
             );
 
             if (existingScheduleIndex !== -1) {
                 const existingSchedule = schedules[existingScheduleIndex];
-                setHealthTitle(existingSchedule.title);
-                setHealthScheduleStart(dayjs(existingSchedule.startDate));
-                setHealthScheduleEnd(dayjs(existingSchedule.endDate));
+                setHealthTitle(existingSchedule.healthTitle);
+                setHealthScheduleStart(dayjs(existingSchedule.healthScheduleStart));
+                setHealthScheduleEnd(dayjs(existingSchedule.healthScheduleEnd));
                 setEditIndex(existingScheduleIndex);
             } else {
                 setHealthTitle("");

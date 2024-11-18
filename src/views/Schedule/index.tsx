@@ -1,20 +1,52 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import './style.css'
 import Calendar from '../../components/MiniCalender'
 import dayjs, { Dayjs } from 'dayjs'
 import SchedulePopup from '../../components/MiniCalender'
 import MiniCalendar from '../../components/MiniCalender'
 import BigCalendar from 'src/components/BigCalender'
+import { useCookies } from 'react-cookie'
+import { useSignInCustomerStroe } from 'src/stores'
+import { useNavigate } from 'react-router'
+import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from 'src/constant'
+import { HealthSchedule } from 'src/types'
 
 
 export default function Schedule() {
 
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+    // state: 로그인 사용자 상태 //
+    const {signInCustomer} = useSignInCustomerStroe();
+
+    // state: 캘린더 상태 //
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const [schedules, setSchedules] = useState<{ startDate: string; endDate: string; title: string }[]>([]);
-    const [popupDate, setPopupDate] = useState<Dayjs | null>(null);
+    const [schedules, setSchedules] = useState<HealthSchedule[]>([]);
 
-    const closePopup = () => setPopupDate(null);
+    // state: 캘린더 선택 상태 //
+    const [selectCalendar, setSelectCalendar] = useState<boolean>(true);
 
+    // function: 네비게이터 함수 //
+    const navigator = useNavigate();
+
+    // event handler: 운동, 식단 선택 //
+    const onSelectHealthCalendarClickHandler = () => {
+        setSelectCalendar(true);
+    }
+
+    // event handler: 운동, 식단 선택 //
+    const onSelectMealCalendarClickHandler = () => {
+        setSelectCalendar(false);
+    }
+    // effect: 쿠키 유효성 검사 및 사용자 로그인 되어있는지 확인 요청 //
+    useEffect(() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken){
+            navigator(MAIN_ABSOLUTE_PATH)
+            return;
+        }
+    }, [cookies]);
+    // render: 캘린더 컴포넌트 렌더링 //
     return (
         <div id='schedule-wrapper'>
             <div className='schedule-detail-box'>
@@ -26,8 +58,14 @@ export default function Schedule() {
                         <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
                     </div>
                 </div>
-                <div className='big-schedule-box'>
-                    <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                <div className='schedule-right-big-box'>
+                    <div className='schedule-change-button-box'>
+                        <button className='health-schedule-button'>운동</button>
+                        <button className='meal-schedule-button'>식단</button>
+                    </div>
+                    <div className='big-schedule-box'>
+                        <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                    </div>
                 </div>
             </div>
         </div>

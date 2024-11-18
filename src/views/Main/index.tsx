@@ -7,13 +7,13 @@ import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SCHEDULE_ABSOLUTE_DATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
-import { getCustomerMyPageRequest, getCustomerRequest, getSignInRequest, patchUserMuscleFatRequest, signInRequest } from 'src/apis';
+import { getCustomerMyPageRequest, getCustomerRequest, getHealthScheduleListRequest, getSignInRequest, patchUserMuscleFatRequest, signInRequest } from 'src/apis';
 
 import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
 import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
-import { useSignInCustomerStroe } from 'src/stores';
+import { useSchechduleStore, useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
@@ -22,6 +22,7 @@ import MiniCalendar from 'src/components/MiniCalender';
 import { PatchUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { GetHealthScheduleListResponseDto } from 'src/apis/dto/response/schedule';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -348,13 +349,30 @@ export default function Main() {
     const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
     // state: 달력 정보 상태 //
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const [schedules, setSchedules] = useState<{ startDate: string; endDate: string; title: string }[]>([]);
+    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
 
     // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
     const isLoggedIn = !!signInCustomer;
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
+
+    const getHealthScheduleListResponse = (responseBody: GetHealthScheduleListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed){
+            alert(message);
+            return;
+        }
+        console.log('리스트실행')
+        const {healthScheduleList} = responseBody as GetHealthScheduleListResponseDto;
+        console.log(healthScheduleList);
+        setHealthScheduleList(healthScheduleList);
+    }
 
     // event handler: 켈린더 버튼 클릭 이벤트 처리 //
     const onCalendarButtonClickHandler = () => {
@@ -384,9 +402,12 @@ export default function Main() {
                 const {userId, name, nickname, profileImage, personalGoals} = responseBody as GetSignInResponseDto;
                 setSignInCustomer({userId, name, nickname, profileImage, personalGoals});
             });
+            
+        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse)
         } else {
             setSignInCustomer(null);
         }
+        
     }, [cookies[ACCESS_TOKEN]]);
 
 
@@ -399,7 +420,7 @@ export default function Main() {
                     <div className='main-top-right-detail-box'>
                         {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
                         <div className='calendar-box'onClick={onCalendarButtonClickHandler}>
-                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} />
+                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={healthScheduleList} setSchedules={setHealthScheduleList} />
                         </div>
                     </div>
                 </div>

@@ -21,8 +21,8 @@ import Schedule from "src/views/Schedule";
 interface CalendarProps {
     selectDate: Dayjs;
     setSelectDate: (date: Dayjs) => void;
-    schedules: { startDate: string; endDate: string; title: string }[];
-    setSchedules: (schedules: { startDate: string; endDate: string; title: string }[]) => void;
+    schedules: HealthSchedule[];
+    setSchedules: (schedules: HealthSchedule[]) => void;
 
 }
 
@@ -45,6 +45,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     const [healthTitle, setHealthTitle] = useState<string>('');
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
     const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
+    // state: 원본 리스트 상태 //
+    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
 
     // function: post schedule response 처리 함수 //
     const postHealthScheduleResponse= (responseBody: ResponseDto | null ) => {
@@ -99,6 +101,22 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         scheduleChange();
     }
 
+    // function: get health schedule list response 처리 함수 //
+    const getHealthScheduleListResponse = (responseBody: GetHealthScheduleListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed){
+            alert(message);
+            return;
+        }
+        const {healthScheduleList} = responseBody as GetHealthScheduleListResponseDto; 
+        setHealthScheduleList(healthScheduleList);
+    }
+
     // event handler: 일정 추가 이벤트 처리 핸들러 //
     const onPostHealthScheduleButtonClickHandler = () => {
         const accessToken = cookies[ACCESS_TOKEN];
@@ -131,7 +149,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             
             postHealthScheduleRequest(requestBody, accessToken).then(postHealthScheduleResponse);
         }
-        window.location.reload();
+
+        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
     };
 
     // event handler: 일정 수정 이벤트 처리 핸들러//
@@ -151,7 +170,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
                 patchHealthScheduleRequest(requestBody, healthScheduleNumber, accessToken).then(patchHealthScheduleResponse);
             }
         }
-        window.location.reload();
+        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
     };
 
 
@@ -214,8 +233,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         if(!accessToken) return;
 
         deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
-
-        window.location.reload();
     };
     
     // effect: 일정이 변경될 시 실행할 함수 //
@@ -384,7 +401,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
 
 
 
-    // render: 캘린더 컴포넌트 렌더링 //
+    // render: 큰 캘린더 상세 컴포넌트 렌더링 //
     return (
         <div className="big-calendar-container">
             <div className="calendar-header">
