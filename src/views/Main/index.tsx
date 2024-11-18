@@ -369,9 +369,9 @@ export default function Main() {
             return;
         }
         console.log('리스트실행')
-        const {healthScheduleList} = responseBody as GetHealthScheduleListResponseDto;
-        console.log(healthScheduleList);
-        setHealthScheduleList(healthScheduleList);
+        const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto;
+        console.log(healthSchedulelist);
+        setHealthScheduleList(healthSchedulelist);
     }
 
     // event handler: 켈린더 버튼 클릭 이벤트 처리 //

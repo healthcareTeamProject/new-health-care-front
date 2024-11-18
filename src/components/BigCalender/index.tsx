@@ -113,8 +113,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             alert(message);
             return;
         }
-        const {healthScheduleList} = responseBody as GetHealthScheduleListResponseDto; 
-        setHealthScheduleList(healthScheduleList);
+        const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto; 
+        setHealthScheduleList(healthSchedulelist);
     }
 
     // event handler: 일정 추가 이벤트 처리 핸들러 //
@@ -351,8 +351,8 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
             alert(message);
             return;
         }
-        const {healthScheduleList} = responseBody as GetHealthScheduleListResponseDto; 
-        setHealthScheduleList(healthScheduleList);
+        const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto; 
+        setHealthScheduleList(healthSchedulelist);
     }
 
     
