@@ -13,7 +13,7 @@ import InputBox from 'src/components/InputBox';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
 import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
-import { useSchechduleStore, useSignInCustomerStroe } from 'src/stores';
+import { useHealthSchedulStroe, useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
@@ -349,7 +349,7 @@ export default function Main() {
     const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
     // state: 달력 정보 상태 //
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
+    const {healthScheduleList, setHealthScheduleList} = useHealthSchedulStroe();
 
     // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
     const isLoggedIn = !!signInCustomer;

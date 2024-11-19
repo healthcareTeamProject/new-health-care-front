@@ -9,7 +9,7 @@ import { Cookies, useCookies } from "react-cookie";
 import { ResponseDto } from "src/apis/dto/response";
 import { ACCESS_TOKEN } from "src/constant";
 import { access } from "fs";
-import { useSchechduleStore, useSignInCustomerStroe } from "src/stores";
+import { useHealthSchedulStroe, useSignInCustomerStroe } from "src/stores";
 import { HealthSchedule } from "src/types";
 import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "src/apis/dto/response/schedule";
 import { useParams } from "react-router";
@@ -47,7 +47,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
     const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
     // state: 원본 리스트 상태 //
-    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
+    const {healthScheduleList, setHealthScheduleList} = useHealthSchedulStroe();
 
     // function: post schedule response 처리 함수 //
     const postHealthScheduleResponse= (responseBody: ResponseDto | null ) => {
@@ -189,6 +189,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     // event handler: 시작 날짜 선택 이벤트 처리 //
     const onStartDateChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
+        console.log(value);
         setHealthScheduleStart(dayjs(value));
     };
 
@@ -320,7 +321,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
     // state: 팝업 상태창 상태 //
     const [scheduleChangePopup, setSchedulesChangePopup] = useState<boolean>(false);
     // state: 원본 리스트 상태 //
-    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
+    const {healthScheduleList, setHealthScheduleList} = useHealthSchedulStroe();
     // state: 헬스 일정 번호 경로 변수 상태 //
     const [healthScheduleNumber, setHealthScheduleNumber] = useState<number | null>(null);
     // state: 보여질 날짜가 속한 달의 첫 주차 계산 상태 //

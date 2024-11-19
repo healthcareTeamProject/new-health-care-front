@@ -18,7 +18,7 @@ import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user
 
 import GetCommentListResponseDto from "./dto/response/board/get-comment.response.dto";
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
-import { PatchHealthScheduleRequestDto } from "./dto/request/schedule";
+import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
 
 
 // variable: API URL 상수 //
@@ -258,7 +258,7 @@ export const deleteHealthScheduleRequest = async (healthScheduleNumber: number |
 
 //
 // function: post meal schedule 요청 함수 //
-export const postMealScheduleRequest = async (requestBody: PostHealthScheduleRequestDto, accessToken: string) => {
+export const postMealScheduleRequest = async (requestBody: PostMealScheduleRequestDto, accessToken: string) => {
   const responseBody = await axios.post(POST_MEAL_SCHEDULE_API_URL, requestBody, bearerAuthorization(accessToken))
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler);
@@ -282,7 +282,7 @@ export const getMealScheduleListRequest = async (accessToken: string) => {
 };
 
 // function: patch meal schedule 요청 함수 //
-export const patchMealScheduleRequest = async(requestBody: PatchHealthScheduleRequestDto, mealScheduleNumber: number | string, accessToken: string) => {
+export const patchMealScheduleRequest = async(requestBody: PatchMealScheduleRequestDto, mealScheduleNumber: number | string, accessToken: string) => {
   const responseBody = await axios.patch(PATCH_MEAL_SCHEDULE_API_URL(mealScheduleNumber), requestBody, bearerAuthorization(accessToken))
     .then(responseDataHandler<ResponseDto>)
     .catch(responseErrorHandler);

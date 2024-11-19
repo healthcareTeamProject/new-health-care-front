@@ -9,7 +9,7 @@ import { Cookies, useCookies } from "react-cookie";
 import { ResponseDto } from "src/apis/dto/response";
 import { ACCESS_TOKEN } from "src/constant";
 import { access } from "fs";
-import { useSchechduleStore, useSignInCustomerStroe } from "src/stores";
+import { useHealthSchedulStroe, useSignInCustomerStroe } from "src/stores";
 import { HealthSchedule } from "src/types";
 import { deleteHealthScheduleRequest, patchHealthScheduleRequest, postHealthScheduleRequest } from "src/apis";
 import { PatchHealthScheduleRequestDto, PostHealthScheduleRequestDto } from "src/apis/dto/request/schedule";
@@ -176,7 +176,7 @@ function SchedulePopup({scheduleChange, schedules, setSchedules, popupDate, setP
         
         postHealthScheduleRequest(requestBody, accessToken).then(postHealthScheduleResponse);
     };
-    
+
 
     // event handler: 일정 변경 이벤트 처리 //
     const onScheduleChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -297,7 +297,7 @@ export default function MiniCalendar({ selectDate, setSelectDate, schedules, set
     // state: cookie 상태 //
     const [cookies] = useCookies();
     // state: 스케쥴 리스트 상태 //
-    const {healthScheduleList} = useSchechduleStore();
+    const {healthScheduleList} = useHealthSchedulStroe();
     // state: 로그인 사용자 상태 //
     const {signInCustomer} = useSignInCustomerStroe();
     // state: 팝업에 표시할 날짜 상태 //
