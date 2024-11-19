@@ -16,6 +16,7 @@ import { usePagination } from 'src/hooks';
 import { GetBoardListResponseDto } from 'src/apis/dto/response/board';
 import BoardUser from 'src/types/board-user.interface';
 import GetBoardUserResponseDto from 'src/apis/dto/response/board/get-board-user.response.dto';
+import Pagination from 'src/components/Pagination';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -842,37 +843,22 @@ function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftPr
 
 // component: 내 게시물 컴포넌트 //
 function Board() {
-    // state: cookie 상태 //
+    // state: cookie 상태
     const [cookies] = useCookies();
 
-    // state: customer 아이디 상태 //
-    const {userId} = useParams();
+    // state: customer 아이디 상태
+    const { userId } = useParams();
 
-    // state: 페이징 관련 상태 
-    const {
-        currentPage, totalPage, totalCount, viewList,
-        setTotalList, initViewList, ...paginationProps
-    } = usePagination<BoardUser>();
-
-    const navigator = useNavigate();
-
+    // state: 원본 리스트 상태
     const [originalList, setOriginalList] = useState<BoardUser[]>([]);
 
-    // const onViewMoreButtonClickHandler = () => {
-    //     navigator(BOARD_LIST_ABSOLUTE_PATH);
-    // }
+    // 페이지네이션 관련 상태
+    const [currentPage, setCurrentPage] = useState<number>(1);
+    const [totalPage, setTotalPage] = useState<number>(1);
+    const [viewList, setViewList] = useState<BoardUser[]>([]);
 
-    // function: board list 불러오기 함수 //
-    const getBoarUserdListButtonClickHandler = () => {
-        const accessToken = cookies[ACCESS_TOKEN];
-        if (!accessToken) return;
-        if (!userId) return;
-
-        getBoardUserRequest(accessToken).then(getBoardUserListResponse);
-    };
-
-    // function: get board list response 처리 함수 //
-    const getBoardUserListResponse = (responseBody: GetBoardUserResponseDto | ResponseDto | null) => {
+    // function: get board list response 처리 함수
+    const getBoardUserListResponse = (responseBody: any) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -884,22 +870,82 @@ function Board() {
             return;
         }
 
-        const { boardList } = responseBody as GetBoardUserResponseDto;
-        console.log(boardList);
-        setTotalList(boardList);
+        const { boardList } = responseBody;
         setOriginalList(boardList);
+        setTotalPage(Math.ceil(boardList.length / 10)); // 10개씩 페이지 나누기
     };
 
-    useEffect(getBoarUserdListButtonClickHandler, []);
+    // function: board list 불러오기 함수
+    const getBoardUserList = () => {
+        const accessToken = cookies['ACCESS_TOKEN'];
+        if (!accessToken || !userId) return;
 
-    // render: 내 게시물 컴포넌트 렌더딩 //
+        // 여기에 실제 API 호출을 넣어주세요.
+        // 예시: getBoardUserRequest(accessToken).then(getBoardUserListResponse);
+        // 임시로 더미 데이터 추가
+        const dummyData = Array.from({ length: 50 }, (_, index) => ({
+            id: index + 1,
+            title: `게시물 ${index + 1}`,
+            viewCount: Math.floor(Math.random() * 1000),
+        }));
+        getBoardUserListResponse({ code: 'SU', boardList: dummyData });
+    };
+
+    // 페이지네이션 로직 (currentPage 변경 시 viewList 갱신)
+    useEffect(() => {
+        const startIndex = (currentPage - 1) * 10;
+        const pagedData = originalList.slice(startIndex, startIndex + 10);
+        setViewList(pagedData);
+    }, [currentPage, originalList]);
+
+    // 페이지 변경 핸들러
+    const onPageClickHandler = (page: number) => {
+        setCurrentPage(page);
+    };
+
+    const onPreSectionClickHandler = () => {
+        setCurrentPage(prev => Math.max(prev - 1, 1));
+    };
+
+    const onNextSectionClickHandler = () => {
+        setCurrentPage(prev => Math.min(prev + 1, totalPage));
+    };
+
+    // 게시물 목록 불러오기
+    useEffect(() => {
+        getBoardUserList();
+    }, [userId]);
+
     return (
         <div className='board'>
             <div className='board-title'>내 게시물</div>
-            <div></div>
-        </div>
-    )
 
+            {/* 게시물 리스트 출력 */}
+            <div className="board-list">
+                {viewList.length === 0 ? (
+                    <p>게시물이 없습니다.</p>
+                ) : (
+                    viewList.map((board) => (
+                        <div key={board.userId} className="board-item">
+                            <div className="board-item-title">{board.boardTitle}</div>
+                            <div className="board-item-view-count">조회수: {board.boardViewCount}</div>
+                            {/* 게시물 더 보기 링크 */}
+                            <a href={`/board/${board.userId}`} className="board-item-link">상세보기</a>
+                        </div>
+                    ))
+                )}
+            </div>
+
+            {/* 페이지네이션 컴포넌트 */}
+            <Pagination
+                pageList={Array.from({ length: totalPage }, (_, i) => i + 1)}
+                currentPage={currentPage}
+                onPageClickHandler={onPageClickHandler}
+                onPreSectionClickHandler={onPreSectionClickHandler}
+                onNextSectionClickHandler={onNextSectionClickHandler}
+            />
+        </div>
+    );
 }
 
 // component: 리스트 그래프 컴포넌트 //
