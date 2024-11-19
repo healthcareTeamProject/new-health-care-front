@@ -10,6 +10,8 @@ import { useHealthSchedulStroe, useSignInCustomerStroe } from 'src/stores'
 import { useNavigate } from 'react-router'
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from 'src/constant'
 import { HealthSchedule } from 'src/types'
+import BigCalendarMeal from 'src/components/BigCalenderMeal'
+import MiniCalendarMeal from 'src/components/MiniCalenderMeal'
 
 
 export default function Schedule() {
@@ -61,16 +63,22 @@ export default function Schedule() {
                         <div className='days-workout'>30 DAYS WORKOUT PLANNER</div>
                     </div>
                     <div className='calender-box'>
-                        <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                        {selectCalendar ?
+                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/> :
+                            <MiniCalendarMeal selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                        }
                     </div>
                 </div>
                 <div className='schedule-right-big-box'>
                     <div className='schedule-change-button-box'>
-                        <button className='health-schedule-button'>운동</button>
-                        <button className='meal-schedule-button'>식단</button>
+                        <button className='health-schedule-button' onClick={onSelectHealthCalendarClickHandler}>운동</button>
+                        <button className='meal-schedule-button' onClick={onSelectMealCalendarClickHandler}>식단</button>
                     </div>
                     <div className='big-schedule-box'>
-                        <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} resetScheduleInputs={resetScheduleInputs}/>
+                        {selectCalendar ?
+                            <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} resetScheduleInputs={resetScheduleInputs}/> :
+                            <BigCalendarMeal selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} />
+                        }
                     </div>
                 </div>
             </div>
