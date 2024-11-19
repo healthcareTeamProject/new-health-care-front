@@ -6,7 +6,7 @@ import SchedulePopup from '../../components/MiniCalender'
 import MiniCalendar from '../../components/MiniCalender'
 import BigCalendar from 'src/components/BigCalender'
 import { useCookies } from 'react-cookie'
-import { useSchechduleStore, useSignInCustomerStroe } from 'src/stores'
+import { useHealthSchedulStroe, useSignInCustomerStroe } from 'src/stores'
 import { useNavigate } from 'react-router'
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from 'src/constant'
 import { HealthSchedule } from 'src/types'
@@ -28,7 +28,7 @@ export default function Schedule() {
     // state: 캘린더 선택 상태 //
     const [selectCalendar, setSelectCalendar] = useState<boolean>(true);
      // state: 원본 리스트 상태 //
-    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
+    const {healthScheduleList, setHealthScheduleList} = useHealthSchedulStroe();
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();

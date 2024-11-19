@@ -1,12 +1,12 @@
 import { HealthSchedule } from "src/types";
 import { create } from "zustand";
 
-interface ScheduleStore {
+interface HealthScheduleStore {
     healthScheduleList: HealthSchedule[];
     setHealthScheduleList: (healthScheduleList: HealthSchedule[]) => void;
 }
 
-const useStore = create<ScheduleStore>(set => ({
+const useStore = create<HealthScheduleStore>(set => ({
     healthScheduleList: [],
     setHealthScheduleList: (healthScheduleList: HealthSchedule[]) => set(state => ({ ...state, healthScheduleList })),
 }));

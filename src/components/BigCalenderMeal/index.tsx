@@ -9,47 +9,49 @@ import { Cookies, useCookies } from "react-cookie";
 import { ResponseDto } from "src/apis/dto/response";
 import { ACCESS_TOKEN } from "src/constant";
 import { access } from "fs";
-import { useSchechduleStore, useSignInCustomerStroe } from "src/stores";
-import { HealthSchedule } from "src/types";
-import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto } from "src/apis/dto/response/schedule";
+import { useMealScheduleStroe, useSignInCustomerStroe } from "src/stores";
+import { GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "src/apis/dto/response/schedule";
 import { useParams } from "react-router";
-import { PatchHealthScheduleRequestDto, PostHealthScheduleRequestDto } from "src/apis/dto/request/schedule";
-import { deleteHealthScheduleRequest, getHealthScheduleListRequest, getHealthScheduleRequest, patchHealthScheduleRequest, postHealthScheduleRequest } from "src/apis";
+import { PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "src/apis/dto/request/schedule";
+import { deleteMealScheduleRequest, getMealScheduleListRequest, getMealScheduleRequest, patchMealScheduleRequest, postMealScheduleRequest } from "src/apis";
 import Schedule from "src/views/Schedule";
+import MealSchedule from "src/types/meal-schedule.interface";
+import MealMemo from "src/types/meal-memo.interface";
 
 // interface: 캘린더 Props //
 interface CalendarProps {
     selectDate: Dayjs;
     setSelectDate: (date: Dayjs) => void;
-    schedules: HealthSchedule[];
-    setSchedules: (schedules: HealthSchedule[]) => void;
+    schedules: MealSchedule[];
+    setSchedules: (schedules: MealSchedule[]) => void;
 
 }
 
 // interface: 일정 팝업 Props //
 interface ScheduleProps{
     scheduleChange: () => void;
-    schedules: HealthSchedule[];
+    schedules: MealSchedule[];
     popupDate: Dayjs | null;
-    getHealthScheduleList: () => void;
-    healthScheduleNumber: number | null;
+    getMealScheduleList: () => void;
+    MealScheduleNumber: number | null;
     
 }
 
 // component: 일정 팝업 컴포넌트 //
-function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleList, healthScheduleNumber}: ScheduleProps){
+function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleList, MealScheduleNumber}: ScheduleProps){
 
     // state: 일정 상태 관리 //
     const [cookies] = useCookies();
     // state: 일정 인풋 상태 //
-    const [healthTitle, setHealthTitle] = useState<string>('');
-    const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
-    const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
+    const [mealTitle, setMealTitle] = useState<string>('');
+    const [mealScheduleStart, setMealScheduleStart] = useState<Dayjs | null>(null);
+    const [mealScheduleEnd, setMealScheduleEnd] = useState<Dayjs | null>(null);
+    const [mealMemoList, setMealMemoList] = useState<MealMemo[]>([]);
     // state: 원본 리스트 상태 //
-    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
+    const {mealScheduleList, setMealScheduleList} = useMealScheduleStroe();
 
     // function: post schedule response 처리 함수 //
-    const postHealthScheduleResponse= (responseBody: ResponseDto | null ) => {
+    const postMealScheduleResponse= (responseBody: ResponseDto | null ) => {
         const message = 
             !responseBody ? '서버에 문제가 있습니다,' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' : 
@@ -60,11 +62,11 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             alert(message);
             return;
         }; 
-        getHealthScheduleList();
+        getMealScheduleList();
     };
 
     // function: get schedule response 처리 함수 //
-    const getHealthScheduleResponse = (responseBody: GetHealthScheduleResponseDto | ResponseDto | null) => {
+    const getMealScheduleResponse = (responseBody: GetMealScheduleResponseDto | ResponseDto | null) => {
         const message = 
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
@@ -78,14 +80,15 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             return;
         }
 
-        const {healthTitle, healthScheduleStart, healthScheduleEnd} = responseBody as GetHealthScheduleResponseDto;
-        setHealthTitle(healthTitle);
-        setHealthScheduleStart(dayjs(healthScheduleStart));
-        setHealthScheduleEnd(dayjs(healthScheduleEnd));
+        const {mealTitle, mealScheduleStart, mealScheduleEnd, mealMemo} = responseBody as GetMealScheduleResponseDto;
+        setMealTitle(mealTitle);
+        setMealScheduleStart(dayjs(mealScheduleStart));
+        setMealScheduleEnd(dayjs(mealScheduleEnd));
+        setMealMemoList(mealMemoList);
     };
 
     // function: patch schedule response 처리 함수 //
-    const patchHealthScheduleResponse = (responseBody: ResponseDto | null) => {
+    const patchMealScheduleResponse = (responseBody: ResponseDto | null) => {
         const message = 
             !responseBody ? '서버에 문제가 있습니다.':
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -97,12 +100,12 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             alert(message);
             return;
         }
-        getHealthScheduleList();
+        getMealScheduleList();
         scheduleChange();
     }
 
-    // function: get health schedule list response 처리 함수 //
-    const getHealthScheduleListResponse = (responseBody: GetHealthScheduleListResponseDto | ResponseDto | null) => {
+    // function: get Meal schedule list response 처리 함수 //
+    const getMealScheduleListResponse = (responseBody: GetMealScheduleListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -113,64 +116,56 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
             alert(message);
             return;
         }
-        const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto; 
-        setHealthScheduleList(healthSchedulelist);
+        const {mealSchedulelist} = responseBody as GetMealScheduleListResponseDto; 
+        setMealScheduleList(mealSchedulelist);
     }
 
     // event handler: 일정 추가 이벤트 처리 핸들러 //
-    const onPostHealthScheduleButtonClickHandler = () => {
+    const onPostMealScheduleButtonClickHandler = () => {
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
+        if(!mealScheduleStart) return;
+        if(!mealScheduleEnd) return;
 
-        // 하루에 3개 이상의 일정이 있는지 확인
-        const scheduleCount = schedules.filter(
-            (schedule) => dayjs(schedule.healthScheduleStart).isSame(healthScheduleStart, 'day')
-        ).length;
-        if (scheduleCount >= 3) {
-            alert('하루에 최대 3개의 일정만 추가할 수 있습니다.');
-            return;
-        };
-
-        if(!healthScheduleStart) return;
-        if(!healthScheduleEnd) return;
-
-        if(healthScheduleStart > healthScheduleEnd) {
+        if(mealScheduleStart > mealScheduleEnd) {
             alert('종료날짜가 시작날짜 보다 작을수 없습니다.')
             return;
         }
 
-        if (healthScheduleStart && healthScheduleEnd && healthTitle) {
+        if (mealScheduleStart && mealScheduleEnd && mealTitle && mealMemoList) {
 
-            const requestBody = {
-                healthTitle,
-                healthScheduleStart: healthScheduleStart.format("YYYY-MM-DD"),
-                healthScheduleEnd: healthScheduleEnd.format("YYYY-MM-DD")
+            const requestBody: PostMealScheduleRequestDto = {
+                mealTitle, 
+                mealScheduleStart: mealScheduleStart.format(),
+                mealScheduleEnd: mealScheduleEnd.format(),
+                mealMemo: mealMemoList
             };
             
-            postHealthScheduleRequest(requestBody, accessToken).then(postHealthScheduleResponse);
+            postMealScheduleRequest(requestBody, accessToken).then(postMealScheduleResponse);
         }
 
-        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
+        getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
     };
 
     // event handler: 일정 수정 이벤트 처리 핸들러//
-    const onUpdateHealthScheduleClickHandler = () => {
+    const onUpdateMealScheduleClickHandler = () => {
 
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
 
-        if (healthScheduleStart && healthScheduleEnd && healthTitle && healthScheduleNumber) {
+        if (mealScheduleStart && mealScheduleEnd && mealTitle && mealMemoList && MealScheduleNumber ) {
 
-            const requestBody = {
-                healthTitle,
-                healthScheduleStart: healthScheduleStart.format("YYYY-MM-DD"),
-                healthScheduleEnd: healthScheduleEnd.format("YYYY-MM-DD")
-            };
-            if (healthScheduleNumber) {
-                patchHealthScheduleRequest(requestBody, healthScheduleNumber, accessToken).then(patchHealthScheduleResponse);
+            const requestBody: PatchMealScheduleRequestDto = {
+                mealTitle, 
+                mealScheduleStart: mealScheduleStart.format(),
+                mealScheduleEnd: mealScheduleEnd.format(),
+                mealMemo: mealMemoList
+            }
+            if (MealScheduleNumber) {
+                patchMealScheduleRequest(requestBody, MealScheduleNumber, accessToken).then(patchMealScheduleResponse);
             }
         }
-        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
+        getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
         
     };
 
@@ -178,30 +173,30 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     // event handler: 일정 변경 이벤트 처리 //
     const onScheduleChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
         const {value} = event?.target;
-        setHealthTitle(value);
+        setMealTitle(value);
     };
 
     // event handler: 시작 날짜 선택 이벤트 처리 //
     const onStartDateChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        setHealthScheduleStart(dayjs(value));
+        setMealScheduleStart(dayjs(value));
     };
 
     // event handler: 종료 날짜 선택 이벤트 처리 //
     const onEndDateChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        setHealthScheduleEnd(dayjs(value));
+        setMealScheduleEnd(dayjs(value));
     };
 
     // effect: 헬스 스케줄이 변경될 시 실행할 함수 //
     useEffect(() => {
         const accessToken = cookies[ACCESS_TOKEN];
-        if(!accessToken || healthScheduleNumber === null) return;
-        getHealthScheduleRequest(healthScheduleNumber, accessToken).then(getHealthScheduleResponse)
-        }, [cookies, healthScheduleNumber]);
+        if(!accessToken || MealScheduleNumber === null) return;
+        getMealScheduleRequest(MealScheduleNumber, accessToken).then(getMealScheduleResponse)
+        }, [cookies, MealScheduleNumber]);
 
     // function: delete schedule response 처리 함수 //
-    const deleteHealthScheduleResponse = (responseBody: ResponseDto | null) => {
+    const deleteMealScheduleResponse = (responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
@@ -216,80 +211,81 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         }
         // // 성공적으로 삭제된 경우 상태 업데이트
         // const updatedSchedules = schedules.filter(schedule => 
-        //     schedule.healthScheduleStart !== healthScheduleStart?.format('YYYY-MM-DD') || 
-        //     schedule.healthScheduleEnd !== healthScheduleEnd?.format('YYYY-MM-DD')
+        //     schedule.MealScheduleStart !== MealScheduleStart?.format('YYYY-MM-DD') || 
+        //     schedule.MealScheduleEnd !== MealScheduleEnd?.format('YYYY-MM-DD')
         // );
 
         scheduleChange(); // 팝업 닫기
-        getHealthScheduleList(); // 최신 스케줄 리스트 가져오기
+        getMealScheduleList(); // 최신 스케줄 리스트 가져오기
     };
     //event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
-    const onDeletButtonClickHandler = (healthScheduleNumber: number | null) => {
-        if(healthScheduleNumber === null) {
+    const onDeletButtonClickHandler = (MealScheduleNumber: number | null) => {
+        if(MealScheduleNumber === null) {
             return;
         }
 
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
 
-        deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
+        deleteMealScheduleRequest(MealScheduleNumber, accessToken).then(deleteMealScheduleResponse);
     };
     
     // effect: 일정이 변경될 시 실행할 함수 //
     useEffect(() => {
-        if (healthScheduleNumber) {
-            const schedule = schedules.find(item => item.healthScheduleNumber === healthScheduleNumber);
+        if (MealScheduleNumber) {
+            const schedule = schedules.find(item => item.mealScheduleNumber === MealScheduleNumber);
             if (!schedule) return;
-            setHealthTitle(schedule.healthTitle);
-            setHealthScheduleStart(dayjs(schedule.healthScheduleStart));
-            setHealthScheduleEnd(dayjs(schedule.healthScheduleEnd));
+            setMealTitle(schedule.mealTitle);
+            setMealScheduleStart(dayjs(schedule.mealScheduleStart));
+            setMealScheduleEnd(dayjs(schedule.mealScheduleEnd));
+            setMealMemoList(schedule.mealMemo)
         }
         if (popupDate) {
             // popupDate가 설정되면 이를 시작일과 종료일로 사용
-            setHealthScheduleStart(popupDate);
-            setHealthScheduleEnd(popupDate); // 종료일도 동일하게 설정 (원하는 대로 조정 가능)
+            setMealScheduleStart(popupDate);
+            setMealScheduleEnd(popupDate); // 종료일도 동일하게 설정 (원하는 대로 조정 가능)
         }
-    }, [healthScheduleNumber, popupDate]);
+    }, [MealScheduleNumber, popupDate]);
 
     // render: 일정 추가 컴포넌트 렌더링 //
     return(
         <div className="pop-up-content">
             <div className="pop-up-schedule-date">
-                {healthScheduleStart && healthScheduleEnd
-                ? `${healthScheduleStart.format('YYYY-MM-DD')} ~ ${healthScheduleEnd.format('YYYY-MM-DD')} 일정`
+                {mealScheduleStart && mealScheduleEnd
+                ? `${mealScheduleStart.format('YYYY-MM-DD')} ~ ${mealScheduleEnd.format('YYYY-MM-DD')} 일정`
                 : popupDate?.format('YYYY-MM-DD')}
             </div>
             
             <div className="pop-up-schedule-box">
                 <div className="pop-up-select-schedule-box">
-                    <input className="day-select-start" type="date" value={healthScheduleStart ? healthScheduleStart.format('YYYY-MM-DD'):popupDate?.format('YYYY-MM-DD')}
+                    <input className="day-select-start" type="date" value={mealScheduleStart ? mealScheduleStart.format('YYYY-MM-DD'):popupDate?.format('YYYY-MM-DD')}
                     onChange={onStartDateChangeHandler}
                     />
                     <input className="day-select-end"
-                        type="date" value={healthScheduleEnd ? healthScheduleEnd.format('YYYY-MM-DD') : popupDate?.format('YYYY-MM-DD')} 
+                        type="date" value={mealScheduleEnd ? mealScheduleEnd.format('YYYY-MM-DD') : popupDate?.format('YYYY-MM-DD')} 
                         onChange={onEndDateChangeHandler} 
                     />
                     <textarea className="pop-up-schedule"
                         placeholder="일정을 입력하세요"
-                        value={healthTitle}
+                        value={mealTitle}
                         onChange={onScheduleChangeHandler}
                     />
                 </div>
             </div>
             <div className="pop-up-button-box">
-                {healthScheduleNumber !== null ? (
+                {MealScheduleNumber !== null ? (
                     // 일정이 있을 때 - 수정 버튼과 삭제 버튼 표시
                     <>
-                        <button onClick={onUpdateHealthScheduleClickHandler}>수정</button>
+                        <button onClick={onUpdateMealScheduleClickHandler}>수정</button>
                         <button onClick={()=>{
-                            if(healthScheduleNumber !== null){
-                                onDeletButtonClickHandler(healthScheduleNumber);
+                            if(MealScheduleNumber !== null){
+                                onDeletButtonClickHandler(MealScheduleNumber);
                             }
                         }}>삭제</button>
                     </>
                 ) : (
                     // 일정이 없을 때 - 추가 버튼만 표시
-                    <button onClick={onPostHealthScheduleButtonClickHandler}>추가</button>
+                    <button onClick={onPostMealScheduleButtonClickHandler}>추가</button>
                 )}
                 <button onClick={scheduleChange}>취소</button>
             </div>
@@ -313,9 +309,9 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
     // state: 팝업 상태창 상태 //
     const [scheduleChangePopup, setSchedulesChangePopup] = useState<boolean>(false);
     // state: 원본 리스트 상태 //
-    const {healthScheduleList, setHealthScheduleList} = useSchechduleStore();
+    const {mealScheduleList, setMealScheduleList} = useMealScheduleStroe();
     // state: 헬스 일정 번호 경로 변수 상태 //
-    const [healthScheduleNumber, setHealthScheduleNumber] = useState<number | null>(null);
+    const [mealScheduleNumber, setMealScheduleNumber] = useState<number | null>(null);
     // state: 보여질 날짜가 속한 달의 첫 주차 계산 상태 //
     const startWeek = viewDate.startOf('month').week();
     // state: 해당 달의 마지막 주차 상태 //
@@ -323,24 +319,25 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
     // state: 요일 배열 상태 //
     const weekDays = useMemo(() => ['SUN', 'MON', 'TUES', 'WED', 'THURS', 'FRI', 'SAT'], []);
     // state: 모든 일정 상태 //
-    const [healthTitle, setHealthTitle] = useState<string>('');
-    const [healthScheduleStart, setHealthScheduleStart] = useState<Dayjs | null>(null);
-    const [healthScheduleEnd, setHealthScheduleEnd] = useState<Dayjs | null>(null);
+    const [mealTitle, setMealTitle] = useState<string>('');
+    const [mealScheduleStart, setMealScheduleStart] = useState<Dayjs | null>(null);
+    const [mealScheduleEnd, setMealScheduleEnd] = useState<Dayjs | null>(null);
+    const [mealMemoList, setMealMemoList] = useState<MealMemo[]>([]);
     // state: 수정 중인 일정 상태 //
     const [editIndex, setEditIndex] = useState<number | null>(null);
 
     // function: 로그인 된 사용자 함수 //
     const isLoggIn = !!signInCustomer;
 
-    // function: Health schedule list 불러오기 함수 //
-    const getHealthScheduleList = () => {
+    // function: Meal schedule list 불러오기 함수 //
+    const getMealScheduleList = () => {
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
-        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
+        getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
     }
 
-    // function: get health schedule list response 처리 함수 //
-    const getHealthScheduleListResponse = (responseBody: GetHealthScheduleListResponseDto | ResponseDto | null) => {
+    // function: get Meal schedule list response 처리 함수 //
+    const getMealScheduleListResponse = (responseBody: GetMealScheduleListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
@@ -351,8 +348,8 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
             alert(message);
             return;
         }
-        const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto; 
-        setHealthScheduleList(healthSchedulelist);
+        const {mealSchedulelist} = responseBody as GetMealScheduleListResponseDto; 
+        setMealScheduleList(mealSchedulelist);
     }
 
     
@@ -380,14 +377,15 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
     };
 
     // event handler: 일정 수정 클릭 이벤트 처리 //
-    const onUpdateScheduleListClickHandler = (healthScheduleNumber: number) => {
-        const selectedSchedule = healthScheduleList.find(schedule => schedule.healthScheduleNumber === healthScheduleNumber);
+    const onUpdateScheduleListClickHandler = (MealScheduleNumber: number) => {
+        const selectedSchedule = mealScheduleList.find(schedule => schedule.mealScheduleNumber === MealScheduleNumber);
         if(selectedSchedule){
-            setHealthTitle(selectedSchedule.healthTitle);
-            setHealthScheduleStart(dayjs(selectedSchedule.healthScheduleStart));
-            setHealthScheduleEnd(dayjs(selectedSchedule.healthScheduleEnd));
-            setEditIndex(healthScheduleList.findIndex(Schedule => Schedule.healthScheduleNumber === healthScheduleNumber));
-            setPopupDate(dayjs(selectedSchedule.healthScheduleStart));
+            setMealTitle(selectedSchedule.mealTitle);
+            setMealScheduleStart(dayjs(selectedSchedule.mealScheduleStart));
+            setMealScheduleEnd(dayjs(selectedSchedule.mealScheduleEnd));
+            setMealMemoList(selectedSchedule.mealMemo);
+            setEditIndex(mealScheduleList.findIndex(Schedule => Schedule.mealScheduleNumber === MealScheduleNumber));
+            setPopupDate(dayjs(selectedSchedule.mealScheduleStart));
         }
         setSchedulesChangePopup(true);
     }
@@ -396,8 +394,8 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
     useEffect(()=>{
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
-        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse)
-    },[healthScheduleNumber])
+        getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse)
+    },[mealScheduleNumber])
 
 
 
@@ -437,7 +435,7 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
                                     // const isNone = current.format('MM') === viewDate.format('MM') ? '' : 'none';
 
                                     // 해당 날짜의 일정 필터링
-                                    const currentSchedules = healthScheduleList.filter(schedule => schedule.healthScheduleStart <= current.format('YYYY-MM-DD') && schedule.healthScheduleEnd >= current.format('YYYY-MM-DD'));
+                                    const currentSchedules = mealScheduleList.filter(schedule => schedule.mealScheduleStart <= current.format('YYYY-MM-DD') && schedule.mealScheduleEnd >= current.format('YYYY-MM-DD'));
                                     return (
                                         <div key={`${week}_${i}`} className={`big-day-cell`} onClick={() => {
                                             setSelectDate(current);
@@ -446,8 +444,8 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
                                                 return;
                                             if (currentSchedules.length > 0) {
                                                 // 기존 일정이 있는 경우, 해당 일정을 수정하기 위해 팝업을 띄움
-                                                const healthScheduleNumber = currentSchedules[0].healthScheduleNumber; // 첫 번째 일정 선택
-                                                onUpdateScheduleListClickHandler(healthScheduleNumber);
+                                                const mealScheduleNumber = currentSchedules[0].mealScheduleNumber; // 첫 번째 일정 선택
+                                                onUpdateScheduleListClickHandler(mealScheduleNumber);
                                             } else {
                                                 // 새로운 일정을 추가하는 팝업을 띄움
                                                 setPopupDate(current);
@@ -463,15 +461,16 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
                                                                 className="schedule-title" 
                                                                 onClick={(e) => {
                                                                     e.stopPropagation();
-                                                                    setHealthTitle(schedule.healthTitle);
-                                                                    setHealthScheduleStart(dayjs(schedule.healthScheduleStart));
-                                                                    setHealthScheduleEnd(dayjs(schedule.healthScheduleEnd));
-                                                                    setEditIndex(healthScheduleList.findIndex(s => s.healthScheduleNumber === schedule.healthScheduleNumber));
+                                                                    setMealTitle(schedule.mealTitle);
+                                                                    setMealScheduleStart(dayjs(schedule.mealScheduleStart));
+                                                                    setMealScheduleEnd(dayjs(schedule.mealScheduleEnd));
+                                                                    setMealMemoList(schedule.mealMemo)
+                                                                    setEditIndex(mealScheduleList.findIndex(s => s.mealScheduleNumber === schedule.mealScheduleNumber));
                                                                     setPopupDate(current);
                                                                     setSchedulesChangePopup(true);
-                                                                    setHealthScheduleNumber(schedule.healthScheduleNumber)
+                                                                    setMealScheduleNumber(schedule.mealScheduleNumber)
                                                                 }}>
-                                                                {schedule.healthTitle}
+                                                                {schedule.mealTitle}
                                                             </div>
                                                         ))}
                                                     </div>
@@ -489,10 +488,10 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
                 <div className="pop-up active">
                     <SchedulePopup 
                         scheduleChange={onScheduleChangePopup}
-                        schedules={healthScheduleList}
+                        schedules={mealScheduleList}
                         popupDate={popupDate}
-                        getHealthScheduleList={getHealthScheduleList} 
-                        healthScheduleNumber={healthScheduleNumber} />
+                        getMealScheduleList={getMealScheduleList} 
+                        MealScheduleNumber={mealScheduleNumber} />
                 </div>
             ) : null}
         </div>
