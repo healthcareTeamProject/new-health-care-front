@@ -4,14 +4,18 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useParams } from 'react-router';
-import { fileUploadRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
-import { ACCESS_TOKEN } from 'src/constant';
+import { fileUploadRequest, getBoardListRequest, getBoardUserRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
+import { ACCESS_TOKEN, BOARD_LIST_ABSOLUTE_PATH } from 'src/constant';
 import { GetCustomerMyPageResponseDto, GetUserMuscleFatListResponseDto, GetUserThreeMajorLiftListResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 import InputBox from 'src/components/InputBox';
 import { NicknameCheckRequestDto } from 'src/apis/dto/request/auth';
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PatchUserThreeMajorLiftRequestDto } from 'src/apis/dto/request/customer';
+import { usePagination } from 'src/hooks';
+import { GetBoardListResponseDto } from 'src/apis/dto/response/board';
+import BoardUser from 'src/types/board-user.interface';
+import GetBoardUserResponseDto from 'src/apis/dto/response/board/get-board-user.response.dto';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -805,9 +809,9 @@ function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftPr
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
-        if(!userId) return;
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
+        if (!userId) return;
 
         getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
     }, [userId]);
@@ -838,6 +842,55 @@ function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftPr
 
 // component: 내 게시물 컴포넌트 //
 function Board() {
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+    // state: customer 아이디 상태 //
+    const {userId} = useParams();
+
+    // state: 페이징 관련 상태 
+    const {
+        currentPage, totalPage, totalCount, viewList,
+        setTotalList, initViewList, ...paginationProps
+    } = usePagination<BoardUser>();
+
+    const navigator = useNavigate();
+
+    const [originalList, setOriginalList] = useState<BoardUser[]>([]);
+
+    // const onViewMoreButtonClickHandler = () => {
+    //     navigator(BOARD_LIST_ABSOLUTE_PATH);
+    // }
+
+    // function: board list 불러오기 함수 //
+    const getBoarUserdListButtonClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+        if (!userId) return;
+
+        getBoardUserRequest(accessToken).then(getBoardUserListResponse);
+    };
+
+    // function: get board list response 처리 함수 //
+    const getBoardUserListResponse = (responseBody: GetBoardUserResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { boardList } = responseBody as GetBoardUserResponseDto;
+        console.log(boardList);
+        setTotalList(boardList);
+        setOriginalList(boardList);
+    };
+
+    useEffect(getBoarUserdListButtonClickHandler, []);
 
     // render: 내 게시물 컴포넌트 렌더딩 //
     return (

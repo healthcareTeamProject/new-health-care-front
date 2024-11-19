@@ -19,6 +19,7 @@ import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user
 import GetCommentListResponseDto from "./dto/response/board/get-comment.response.dto";
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
 import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
+import GetBoardUserResponseDto from "./dto/response/board/get-board-user.response.dto";
 
 
 // variable: API URL 상수 //
@@ -56,6 +57,8 @@ const POST_COMMENTS_API_URL = (boardNumber : string | number) => `${BOARD_MODULE
 const PATCH_COMMENTS_API_URL = (boardNumber : string | number, commentNumber : number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
 const GET_COMMENT_LIST_API_URL = (boardNumber: string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comment-list`;
 const DELETE_COMMENT_API_URL = (boardNumber: string | number, commentNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
+
+const GET_BOARD_USER_API_URL = `${BOARD_MODULE_URL}/user`
 
 
 const HEALTH_SCHEDULE_API_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/health-schedule`;
@@ -327,6 +330,14 @@ export const getBoardRequest = async (boardNumber: string) => {
         .catch(responseErrorHandler);
     return responseBody;
 }
+
+// function: get board user 요청 함수 //
+export const getBoardUserRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_BOARD_USER_API_URL, bearerAuthorization(accessToken))
+  .then(responseDataHandler<GetBoardUserResponseDto>)
+  .catch(responseErrorHandler);
+  return responseBody;
+};
 
 
 // function: delete board 요청 함수 //
