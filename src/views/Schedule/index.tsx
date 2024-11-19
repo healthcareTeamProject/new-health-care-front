@@ -6,12 +6,13 @@ import SchedulePopup from '../../components/MiniCalender'
 import MiniCalendar from '../../components/MiniCalender'
 import BigCalendar from 'src/components/BigCalender'
 import { useCookies } from 'react-cookie'
-import { useHealthSchedulStroe, useSignInCustomerStroe } from 'src/stores'
+import { useHealthSchedulStroe, useMealScheduleStroe, useSignInCustomerStroe } from 'src/stores'
 import { useNavigate } from 'react-router'
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH } from 'src/constant'
 import { HealthSchedule } from 'src/types'
 import BigCalendarMeal from 'src/components/BigCalenderMeal'
 import MiniCalendarMeal from 'src/components/MiniCalenderMeal'
+import MealSchedule from 'src/types/meal-schedule.interface'
 
 
 export default function Schedule() {
@@ -23,19 +24,25 @@ export default function Schedule() {
 
     // state: 캘린더 상태 //
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const [schedules, setSchedules] = useState<HealthSchedule[]>([]);
+    const [healthSchedules, setHealthSchedules] = useState<HealthSchedule[]>([]);
+    const [mealSchedules, setMealSchedules] = useState<MealSchedule[]>([]);
 
     // state: 캘린더 선택 상태 //
     const [selectCalendar, setSelectCalendar] = useState<boolean>(true);
      // state: 원본 리스트 상태 //
     const {healthScheduleList, setHealthScheduleList} = useHealthSchedulStroe();
+    const {mealScheduleList, setMealScheduleList} = useMealScheduleStroe();
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
-    // function: 일정 입력 초기화 함수 //
-    const resetScheduleInputs = () => {
+    // function: 헬스 일정 입력 초기화 함수 //
+    const resetHealthScheduleInputs = () => {
         setHealthScheduleList(healthScheduleList);
+    }
+    // function: 식단 일정 입력 초기화 함수 //
+    const resetMealScheduleInputs = () => {
+        setMealScheduleList(mealScheduleList);
     }
     // event handler: 운동, 식단 선택 //
     const onSelectHealthCalendarClickHandler = () => {
@@ -64,8 +71,8 @@ export default function Schedule() {
                     </div>
                     <div className='calender-box'>
                         {selectCalendar ?
-                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/> :
-                            <MiniCalendarMeal selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={healthSchedules} setSchedules={setHealthSchedules}/> :
+                            <MiniCalendarMeal selectDate={selectDate} setSelectDate={setSelectDate} schedules={mealSchedules} setSchedules={setMealSchedules}/>
                         }
                     </div>
                 </div>
@@ -76,8 +83,8 @@ export default function Schedule() {
                     </div>
                     <div className='big-schedule-box'>
                         {selectCalendar ?
-                            <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} resetScheduleInputs={resetScheduleInputs}/> :
-                            <BigCalendarMeal selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules} />
+                            <BigCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={healthSchedules} setSchedules={setHealthSchedules} resetScheduleInputs={resetHealthScheduleInputs}/> :
+                            <BigCalendarMeal selectDate={selectDate} setSelectDate={setSelectDate} schedules={mealSchedules} setSchedules={setMealSchedules} resetScheduleInputs={resetMealScheduleInputs}/>
                         }
                     </div>
                 </div>

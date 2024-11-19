@@ -24,6 +24,7 @@ interface CalendarProps {
     setSelectDate: (date: Dayjs) => void;
     schedules: MealSchedule[];
     setSchedules: (schedules: MealSchedule[]) => void;
+    resetScheduleInputs: () => void;
 
 }
 
@@ -34,11 +35,12 @@ interface ScheduleProps{
     popupDate: Dayjs | null;
     getMealScheduleList: () => void;
     MealScheduleNumber: number | null;
+    resetScheduleInputs: () => void;
     
 }
 
 // component: 일정 팝업 컴포넌트 //
-function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleList, MealScheduleNumber}: ScheduleProps){
+function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleList, MealScheduleNumber, resetScheduleInputs}: ScheduleProps){
 
     // state: 일정 상태 관리 //
     const [cookies] = useCookies();
@@ -63,6 +65,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
             return;
         }; 
         getMealScheduleList();
+        scheduleChange();
+        resetScheduleInputs();
     };
 
     // function: get schedule response 처리 함수 //
@@ -145,6 +149,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }
 
         getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
+        resetScheduleInputs();
+        scheduleChange();
     };
 
     // event handler: 일정 수정 이벤트 처리 핸들러//
@@ -166,6 +172,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
             }
         }
         getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
+        resetScheduleInputs();
         
     };
 
@@ -216,6 +223,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         // );
 
         scheduleChange(); // 팝업 닫기
+        resetScheduleInputs();
         getMealScheduleList(); // 최신 스케줄 리스트 가져오기
     };
     //event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
@@ -334,6 +342,7 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
         getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
+        resetScheduleInputs();
     }
 
     // function: get Meal schedule list response 처리 함수 //
@@ -350,7 +359,17 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
         }
         const {mealSchedulelist} = responseBody as GetMealScheduleListResponseDto; 
         setMealScheduleList(mealSchedulelist);
+        resetScheduleInputs();
     }
+
+    // function: 일정 입력 초기화 함수 //
+    const resetScheduleInputs = () => {
+        setMealTitle("");
+        setMealScheduleStart(null);
+        setMealScheduleEnd(null);
+        setMealMemoList([]);
+        setMealScheduleNumber(null);
+    };
 
     
     // event handler: 달 변경 클릭 이벤트 처리 //
@@ -491,7 +510,8 @@ export default function BigCalendarMeal({ selectDate, setSelectDate, schedules, 
                         schedules={mealScheduleList}
                         popupDate={popupDate}
                         getMealScheduleList={getMealScheduleList} 
-                        MealScheduleNumber={mealScheduleNumber} />
+                        MealScheduleNumber={mealScheduleNumber} 
+                        resetScheduleInputs={resetScheduleInputs}/>
                 </div>
             ) : null}
         </div>
