@@ -257,46 +257,21 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
 
     // render: 일정 추가 컴포넌트 렌더링 //
     return(
-        <div className="pop-up-content">
-            <div className="pop-up-schedule-date">
-                {mealScheduleStart && mealScheduleEnd
-                ? `${mealScheduleStart.format('YYYY-MM-DD')} ~ ${mealScheduleEnd.format('YYYY-MM-DD')} 일정`
-                : popupDate?.format('YYYY-MM-DD')}
-            </div>
-            
-            <div className="pop-up-schedule-box">
-                <div className="pop-up-select-schedule-box">
-                    <input className="day-select-start" type="date" value={mealScheduleStart ? mealScheduleStart.format('YYYY-MM-DD'):popupDate?.format('YYYY-MM-DD')}
-                    onChange={onStartDateChangeHandler}
-                    />
-                    <input className="day-select-end"
-                        type="date" value={mealScheduleEnd ? mealScheduleEnd.format('YYYY-MM-DD') : popupDate?.format('YYYY-MM-DD')} 
-                        onChange={onEndDateChangeHandler} 
-                    />
-                    <textarea className="pop-up-schedule"
-                        placeholder="일정을 입력하세요"
-                        value={mealTitle}
-                        onChange={onScheduleChangeHandler}
-                    />
+        <div className="meal-schedule-title-popup">
+            <div className="meal-schedule-detail-box">
+                <div className="meal-schedule-today-box">
+                    <div className="meal-schedule-today">Today</div>
                 </div>
-            </div>
-            <div className="pop-up-button-box">
-                {MealScheduleNumber !== null ? (
-                    // 일정이 있을 때 - 수정 버튼과 삭제 버튼 표시
-                    <>
-                        <button onClick={onUpdateMealScheduleClickHandler}>수정</button>
-                        <button onClick={()=>{
-                            if(MealScheduleNumber !== null){
-                                onDeletButtonClickHandler(MealScheduleNumber);
-                            }
-                        }}>삭제</button>
-                    </>
-                ) : (
-                    // 일정이 없을 때 - 추가 버튼만 표시
-                    <button onClick={onPostMealScheduleButtonClickHandler}>추가</button>
-                )}
-                <button onClick={scheduleChange}>취소</button>
-            </div>
+                <div className="meal-schedule-breackfast-box">
+                    <div className="meal-schedule-breackfast">아침</div>
+                </div>
+                <div className="meal-schedule-lunch-box">
+                    <div className="meal-schedule-lunch">점심</div>
+                </div>
+                <div className="meal-schedule-dinner-box">
+                    <div className="meal-schedule-dinne">저녁</div>
+                </div>
+            </div> 
         </div>
     )
 };

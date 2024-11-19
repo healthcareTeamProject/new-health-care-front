@@ -61,6 +61,7 @@ export default function Schedule() {
             return;
         }
     }, [cookies]);
+    
     // render: 캘린더 컴포넌트 렌더링 //
     return (
         <div id='schedule-wrapper'>
