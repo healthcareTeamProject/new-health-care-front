@@ -77,7 +77,7 @@ const GET_MEAL_SCHEDULE_API_URL = (mealSchedulenumber: number | string) => `${ME
 const PATCH_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
 const DELETE_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
 
-const GET_MEAL_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}/food-data`;
+const GET_MEAL_MEMO_API_URL = `${MEAL_SCHEDULE_API_URL}/food-data`;
 const POST_SEARCH_MEAL_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}/search`;
 
 // function: Authorizarion Bearer 헤더 //
@@ -303,9 +303,9 @@ export const deleteMealScheduleRequest = async (mealScheduleNumber: number | str
   return responseBody;
 }
 
-// function: get meal list 요청합수 //
-export const getMealListRequest = async (accessToken: string) => {
-  const responseBody = await axios.get(GET_MEAL_LIST_API_URL, bearerAuthorization(accessToken))
+// function: get meal memo 요청합수 //
+export const getMealMemoRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_MEAL_MEMO_API_URL, bearerAuthorization(accessToken))
     .then(responseDataHandler<GetMealResponseDto>)
     .catch(responseErrorHandler)
   return responseBody;
