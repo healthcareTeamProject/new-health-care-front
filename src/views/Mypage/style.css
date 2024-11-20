@@ -574,6 +574,8 @@
 
 .tr-board-user {
     border-bottom: 1px solid black;
+
+    cursor: pointer;
 }
 
 .td-board-user-title {
