@@ -403,6 +403,7 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
                 beginAtZero: true,
                 ticks: {
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -413,6 +414,7 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
                 ticks: {
                     stepSize: stepSize, // 최대값의 20%로 설정
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -973,11 +975,17 @@ function Graph() {
             x: {
                 title: {
                     display: true,
+                    font: {
+                        family: 'GangwonEdu',
+                    }
                 }
             },
             y: {
                 title: {
                     display: true,
+                    font: {
+                        family: 'GangwonEdu',
+                    }
                 }
             }
         }
@@ -1234,7 +1242,6 @@ export default function Mypage() {
         }
 
         const { boardList } = responseBody as GetBoardUserResponseDto;
-        console.log(boardList);
         setTotalList(boardList);
     }
 
