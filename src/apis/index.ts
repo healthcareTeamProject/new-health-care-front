@@ -11,7 +11,7 @@ import GetCustomerResposeDto from "./dto/response/customer/get-customer.response
 import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
 
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
-import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
+import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
 
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
@@ -303,9 +303,17 @@ export const deleteMealScheduleRequest = async (mealScheduleNumber: number | str
   return responseBody;
 }
 
-// function: get meal 요청합수 //
+// function: get meal list 요청합수 //
+export const getMealListRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_MEAL_LIST_API_URL, bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetMealResponseDto>)
+    .catch(responseErrorHandler)
+  return responseBody;
+};
 
 // function: post search meal List 요청함수 //
+// export const postSearchMealList = async ()
+
 
 // function: post board 요청 함수 //
 export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
