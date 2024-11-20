@@ -63,7 +63,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         }; 
         getHealthScheduleList();
         scheduleChange();
-        resetScheduleInputs();
+        // resetScheduleInputs();
     };
 
     // function: get schedule response 처리 함수 //
@@ -154,7 +154,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         }
 
         getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
-        resetScheduleInputs();
+        // resetScheduleInputs();
         scheduleChange();
     };
 
@@ -242,7 +242,13 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
         deleteHealthScheduleRequest(healthScheduleNumber, accessToken).then(deleteHealthScheduleResponse);
         resetScheduleInputs();
     };
-    
+
+    // event handler: 취소 버튼 클릭 이벤트 처리 함수 //
+    const onCancelButtonClickHandler = () => {
+        resetScheduleInputs();
+        scheduleChange();
+    }
+
     // effect: 일정이 변경될 시 실행할 함수 //
     useEffect(() => {
         if (healthScheduleNumber) {
@@ -299,7 +305,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
                     // 일정이 없을 때 - 추가 버튼만 표시
                     <button onClick={onPostHealthScheduleButtonClickHandler}>추가</button>
                 )}
-                <button onClick={scheduleChange}>취소</button>
+                <button onClick={onCancelButtonClickHandler}>취소</button>
             </div>
         </div>
     )
@@ -346,7 +352,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken) return;
         getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse);
-        resetScheduleInputs();
+        // resetScheduleInputs();
     }
 
     // function: get health schedule list response 처리 함수 //
@@ -363,7 +369,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
         }
         const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto; 
         setHealthScheduleList(healthSchedulelist);
-        resetScheduleInputs();
+        // resetScheduleInputs();
     }
 
     // function: 일정 입력 초기화 함수 //
@@ -411,7 +417,7 @@ export default function BigCalendar({ selectDate, setSelectDate, schedules, setS
             setPopupDate(dayjs(selectedSchedule.healthScheduleStart));
         }
         setSchedulesChangePopup(true);
-        resetScheduleInputs();
+        // resetScheduleInputs();
         
     }
 
