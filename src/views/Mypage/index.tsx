@@ -4,8 +4,8 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useParams } from 'react-router';
-import { fileUploadRequest, getBoardListRequest, getBoardUserRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
-import { ACCESS_TOKEN, BOARD_DETAIL_ABSOLUTE_PATH, BOARD_LIST_ABSOLUTE_PATH } from 'src/constant';
+import { fileUploadRequest, getBoardUserRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
+import { ACCESS_TOKEN, BOARD_DETAIL_ABSOLUTE_PATH } from 'src/constant';
 import { GetCustomerMyPageResponseDto, GetUserMuscleFatListResponseDto, GetUserThreeMajorLiftListResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
@@ -13,7 +13,6 @@ import InputBox from 'src/components/InputBox';
 import { NicknameCheckRequestDto } from 'src/apis/dto/request/auth';
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PatchUserThreeMajorLiftRequestDto } from 'src/apis/dto/request/customer';
 import { usePagination } from 'src/hooks';
-import { GetBoardListResponseDto } from 'src/apis/dto/response/board';
 import BoardUser from 'src/types/board-user.interface';
 import GetBoardUserResponseDto from 'src/apis/dto/response/board/get-board-user.response.dto';
 import Pagination from 'src/components/Pagination';
@@ -866,10 +865,10 @@ function TableRow({ boardUser, getBoardUser }: TableRowProps) {
 
     // render: 고객 리스트 아이템 컴포넌트 렌더링 //
     return(
-        <div className='tr-board' onClick={onDetailButtonClickHandler}>
-            <div className='td-board-number'>{boardUser.boardTitle}</div>
-            <div className='td-board-name'>{boardUser.userId}</div>
-            <div className='td-board-charger'>{boardUser.boardViewCount}</div>
+        <div className='tr-board-user' onClick={onDetailButtonClickHandler}>
+            <div className='td-board-user-title'>{boardUser.boardTitle}</div>
+            <div className='td-board-user-id'>{boardUser.userId}</div>
+            <div className='td-board-user-viewcount'>{boardUser.boardViewCount}</div>
         </div>
     )
 
@@ -1203,9 +1202,6 @@ export default function Mypage() {
     const [mucleFatChangePopUp, setMucleFatChangePopUp] = useState(false);
     const [threeMajorLiftChangePopUp, setThreeMajorLiftChangePopUp] = useState(false);
 
-    // state: 원본 리스트 상태 //
-    const [originalList, setOriginalList] = useState<BoardUser[]>([]);
-
     // state: 페이징 관련 상태 //
     const {
         currentPage, totalPage, totalCount, viewList,
@@ -1240,7 +1236,6 @@ export default function Mypage() {
         const { boardList } = responseBody as GetBoardUserResponseDto;
         console.log(boardList);
         setTotalList(boardList);
-        setOriginalList(boardList);
     }
 
     // function: customer list 불러오기 함수 //
@@ -1274,18 +1269,18 @@ export default function Mypage() {
                 <div className='buttom'>
                     <div className='buttom-left'>
                         <ThreeMajorLift onThreeMajorLiftChange={onThreeMajorLiftChangePopUp} />
-                        <div className='board'>
-                            <div className='table'>
-                                <div className='th-board'>
-                                    <div className='td-board-title'>제목</div>
-                                    <div className='td-board-id'>작성자</div>
-                                    <div className='td-board-viewcount'>조회수</div>
+                        <div className='board-user'>
+                            <div className='table-board-user'>
+                                <div className='th-board-user'>
+                                    <div className='td-board-user-title'>제목</div>
+                                    <div className='td-board-user-id'>작성자</div>
+                                    <div className='td-board-user-viewcount'>조회수</div>
                                 </div>
                                 {viewList.map((boardUser, index) => <TableRow key={index} boardUser={boardUser} getBoardUser={getCustomerList} />)}
                             </div>
-                        </div>
-                        <div className='board-pagination'>
-                            <Pagination currentPage={currentPage} {...paginationProps} />
+                            <div className='board-user-pagination'>
+                                <Pagination currentPage={currentPage} {...paginationProps} />
+                            </div>
                         </div>
                     </div>
                     <Graph />
