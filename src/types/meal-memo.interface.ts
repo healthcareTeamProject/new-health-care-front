@@ -1,4 +1,4 @@
 export default interface MealMemo{
     mealKcal: number;
-    mealCount: number;
+    mealName: string;
 }

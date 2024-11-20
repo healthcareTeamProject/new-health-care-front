@@ -17,6 +17,8 @@ import { deleteMealScheduleRequest, getMealScheduleListRequest, getMealScheduleR
 import Schedule from "src/views/Schedule";
 import MealSchedule from "src/types/meal-schedule.interface";
 import MealMemo from "src/types/meal-memo.interface";
+import { usePagination } from "src/hooks";
+import Pagination from "../Pagination";
 
 // interface: 캘린더 Props //
 interface CalendarProps {
@@ -46,13 +48,21 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     const [cookies] = useCookies();
     // state: 일정 인풋 상태 //
     const [mealTitle, setMealTitle] = useState<string>('');
+    const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner' | null>(null);
     const [mealScheduleStart, setMealScheduleStart] = useState<Dayjs | null>(null);
     const [mealScheduleEnd, setMealScheduleEnd] = useState<Dayjs | null>(null);
     const [mealMemoList, setMealMemoList] = useState<MealMemo[]>([]);
     // state: 원본 리스트 상태 //
     const {mealScheduleList, setMealScheduleList} = useMealScheduleStroe();
-
-    const [mealTitleSelect, setMealTitleSelect] = useState<boolean>(false);
+    // state: 검색어 상태 //
+    const [searchWord, setSearchWord] = useState<string>('');
+    // state: 원본 리스트 상태 //
+    const [mealOriginalList, setMealOriginalList] = useState<MealMemo[]>([]);
+    // state: 페이징 관련 상태 //
+    const {
+        currentPage, totalPage, totalCount, viewList,
+        setTotalList, initViewList, ...paginationProps
+    } = usePagination<MealMemo>();
 
     // function: post schedule response 처리 함수 //
     const postMealScheduleResponse= (responseBody: ResponseDto | null ) => {
@@ -68,7 +78,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }; 
         getMealScheduleList();
         scheduleChange();
-        resetScheduleInputs();
     };
 
     // function: get schedule response 처리 함수 //
@@ -127,23 +136,16 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     }
 
     // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    const onChangeMealTitleButtonClickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
-        const mealText = (event.target as HTMLDivElement).textContent;
-        setMealTitle(mealText || '');
-        setMealTitleSelect(true);
+    const onMealTypeClickHandler = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
+        setMealType(mealType);
+        setMealTitle(mealType); // 선택한 식사 타입을 설정
     }
-
-    // // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    // const onChangeMealTitleLunchButtonClickHandler = () => {
-    //     setMealTitle('점심');
-    //     setMealTitleSelect(true);
-    // }
-
-    // // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    // const onChangeMealTitleDinnerButtonClickHandler = () => {
-    //     setMealTitle('저녁');
-    //     setMealTitleSelect(true);
-    // }
+    
+    // event handler: 팝업 닫기 클릭 이벤트 핸들러 //
+    const onClosePopupHandler = () => {
+        setMealType(null);
+        resetScheduleInputs();
+    }
 
     // event handler: 일정 추가 이벤트 처리 핸들러 //
     const onPostMealScheduleButtonClickHandler = () => {
@@ -170,7 +172,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }
 
         getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
-        resetScheduleInputs();
         scheduleChange();
     };
 
@@ -237,12 +238,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
             alert(message);
             return;
         }
-        // // 성공적으로 삭제된 경우 상태 업데이트
-        // const updatedSchedules = schedules.filter(schedule => 
-        //     schedule.MealScheduleStart !== MealScheduleStart?.format('YYYY-MM-DD') || 
-        //     schedule.MealScheduleEnd !== MealScheduleEnd?.format('YYYY-MM-DD')
-        // );
-
         scheduleChange(); // 팝업 닫기
         resetScheduleInputs();
         getMealScheduleList(); // 최신 스케줄 리스트 가져오기
@@ -283,16 +278,37 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                 <div className="meal-schedule-today-box">
                     <div className="meal-schedule-today">TODAY</div>
                 </div>
-                <div className="meal-schedule-breackfast-box">
-                    <div className="meal-schedule-breackfast" onClick={onChangeMealTitleButtonClickHandler}>아침</div>
+                <div className="meal-schedule-breackfast-box" onClick={() => onMealTypeClickHandler('breakfast')}>
+                    <div className="meal-schedule-breackfast">아침</div>
                 </div>
-                <div className="meal-schedule-lunch-box">
-                    <div className="meal-schedule-lunch" onClick={onChangeMealTitleButtonClickHandler}>점심</div>
+                <div className="meal-schedule-lunch-box" onClick={() => onMealTypeClickHandler('lunch')}>
+                    <div className="meal-schedule-lunch">점심</div>
                 </div>
-                <div className="meal-schedule-dinner-box">
-                    <div className="meal-schedule-dinne" onClick={onChangeMealTitleButtonClickHandler}>저녁</div>
+                <div className="meal-schedule-dinner-box" onClick={() => onMealTypeClickHandler('dinner')}>
+                    <div className="meal-schedule-dinner">저녁</div>
                 </div>
-            </div> 
+            </div>
+            {mealType && (
+                <div className="meal-search-popup">
+                    <div className="meal-search-top">
+                        <div className="meal-search-detail-box">
+                            <div className="meal-search-detail-delete"></div>
+                        </div>
+                        <div className="meal-search-detail-button"></div>
+                    </div>
+                    <div className="meal-search-middle">
+                        <div className="meal-search-middle-top">
+                            <div className="meal-search-middle-top-name">식품명</div>
+                            <div className="meal-search-middle-top-kcal">칼로리</div>
+                            <div className="meal-search-middle-top-item">개수</div>
+                        </div>
+
+                    </div>
+                    <div className="meal-search-pagination">
+                        <Pagination currentPage={currentPage} {...paginationProps} />
+                    </div>
+                </div>
+            )}
         </div>
     )
 };
