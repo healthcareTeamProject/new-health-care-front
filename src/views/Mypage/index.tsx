@@ -1234,7 +1234,6 @@ export default function Mypage() {
         }
 
         const { boardList } = responseBody as GetBoardUserResponseDto;
-        console.log(boardList);
         setTotalList(boardList);
     }
 

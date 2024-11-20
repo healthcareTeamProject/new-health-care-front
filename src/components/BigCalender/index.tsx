@@ -189,7 +189,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getHealthScheduleL
     // event handler: 시작 날짜 선택 이벤트 처리 //
     const onStartDateChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
-        console.log(value);
         setHealthScheduleStart(dayjs(value));
     };
 
