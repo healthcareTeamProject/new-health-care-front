@@ -1,6 +1,8 @@
 #main-layout{
     display: flex;
     width: 1920px;
+
+    font-family: 'GangwonEdu';
 }
 
 #layout-top-logo{

@@ -1,25 +1,20 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import './style.css'
-import TopBar from 'src/layouts/Topbar'
 import { useCookies } from 'react-cookie'
 import { useNavigate, useParams } from 'react-router';
 import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SCHEDULE_ABSOLUTE_DATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
-import { getCustomerMyPageRequest, getCustomerRequest, getHealthScheduleListRequest, getSignInRequest, patchUserMuscleFatRequest, signInRequest } from 'src/apis';
-
-import InputBox from 'src/components/InputBox';
+import { getCustomerMyPageRequest, getHealthScheduleListRequest, getSignInRequest, signInRequest } from 'src/apis';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
-import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
 import { useHealthSchedulStroe, useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
-import Calendar from 'src/components/MiniCalender';
 import MiniCalendar from 'src/components/MiniCalender';
-import { PatchUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { GetHealthScheduleListResponseDto } from 'src/apis/dto/response/schedule';
@@ -271,6 +266,7 @@ function MucleFat({ userId }: { userId?: string }) {
                 beginAtZero: true,
                 ticks: {
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -281,6 +277,7 @@ function MucleFat({ userId }: { userId?: string }) {
                 ticks: {
                     stepSize: stepSize, // 최대값의 20%로 설정
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',

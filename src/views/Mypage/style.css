@@ -1,6 +1,8 @@
 #my-wrapper {
     display: flex;
     gap: 45px;
+
+    font-family: 'GangwonEdu';
 }
 
 #my-wrapper .my-page-left {
@@ -15,7 +17,7 @@
 
     width: 300px;
     height: 60px;
-    padding: 15px 0 0 0; 
+    padding: 15px 0 0 15px; 
     margin: 0 15px;
 
     white-space: nowrap;
@@ -129,6 +131,7 @@
 .personal-goals-box .personal-goals-box-buttom .personal-goals-box-buttom-title {
     height: 30px;
 
+    padding-top: 10px;
     padding-left: 10px;
 
     font-size: 20px;
