@@ -124,6 +124,21 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         setMealScheduleList(mealSchedulelist);
     }
 
+    // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
+    const onChangeMealTitleBreackfastButtonClickHandler = () => {
+        setMealTitle('아침');
+    }
+
+    // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
+    const onChangeMealTitleLunchButtonClickHandler = () => {
+        setMealTitle('점심');
+    }
+
+    // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
+    const onChangeMealTitleDinnerButtonClickHandler = () => {
+        setMealTitle('저녁');
+    }
+
     // event handler: 일정 추가 이벤트 처리 핸들러 //
     const onPostMealScheduleButtonClickHandler = () => {
         const accessToken = cookies[ACCESS_TOKEN];
@@ -263,13 +278,13 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                     <div className="meal-schedule-today">Today</div>
                 </div>
                 <div className="meal-schedule-breackfast-box">
-                    <div className="meal-schedule-breackfast">아침</div>
+                    <div className="meal-schedule-breackfast" onClick={onChangeMealTitleBreackfastButtonClickHandler}>아침</div>
                 </div>
                 <div className="meal-schedule-lunch-box">
-                    <div className="meal-schedule-lunch">점심</div>
+                    <div className="meal-schedule-lunch" onClick={onChangeMealTitleLunchButtonClickHandler}>점심</div>
                 </div>
                 <div className="meal-schedule-dinner-box">
-                    <div className="meal-schedule-dinne">저녁</div>
+                    <div className="meal-schedule-dinne" onClick={onChangeMealTitleDinnerButtonClickHandler}>저녁</div>
                 </div>
             </div> 
         </div>
