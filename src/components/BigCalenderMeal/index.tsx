@@ -281,7 +281,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         <div className="meal-schedule-title-popup">
             <div className="meal-schedule-detail-box">
                 <div className="meal-schedule-today-box">
-                    <div className="meal-schedule-today">Today</div>
+                    <div className="meal-schedule-today">TODAY</div>
                 </div>
                 <div className="meal-schedule-breackfast-box">
                     <div className="meal-schedule-breackfast" onClick={onChangeMealTitleButtonClickHandler}>아침</div>

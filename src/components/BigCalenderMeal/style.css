@@ -131,16 +131,6 @@
     border: 0.25px solid white;
 }
 
-/* .popup-content{
-    display: flex;
-    width: 750px;
-    height: 500px;
-
-    justify-content: center;
-    align-items: center;
-    border: 1px solid rgba(238, 238, 238, 0);
-    border-radius: 8px;
-} */
 .pop-up{
     display: none;
     position: fixed;
@@ -155,62 +145,55 @@
 .pop-up.active{
     display: block;
 }
-.pop-up-content{
+.meal-schedule-title-popup{
     display: flex;
-    justify-content: center;
-    align-items: center;
     flex-direction: column;
     position: fixed;
 
     box-sizing: border-box;
-    border: 1px solid rgba(238, 238, 238, 1);
     border-radius: 8px;
 
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 
-    width: 300px;
-    height: 300px;
+    width: 200px;
 
     background-color: rgba(238, 238, 238, 1);
 }
-.pop-up-schedule-date{
-    display: block;
-    justify-content: center;
-
-    font-size: 15px;
-    font-weight: bold;
-    margin-top: 30px;
-}
-.pop-up-schedule-box{
-    display: flex;
-    justify-content: center;
-    align-items: center;
-
-    width: 517px;
-    height: 455px;
-}
-.pop-up-schedule{
-    display: flex;
-    height: 100px;
-
-    resize: none;
-    
-    gap: 10px;
-    margin-top: 30px;
-
-}
-.pop-up-button-box{
-    display: flex;
-    flex-direction: row;
-
-    max-width: 200px;
-    margin-top: 22px;
-}
-.pop-up-select-schedule-box{
+.meal-schedule-detail-box{
     display: flex;
     flex-direction: column;
+    justify-content: center;
+}
+.meal-schedule-today-box{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+}
+.meal-schedule-breackfast-box,
+.meal-schedule-lunch-box,
+.meal-schedule-dinner-box{
+    display: flex;
+    padding: 8px;
+    align-items: center;
+    border-top: 2px solid white;
+    cursor: pointer;
+}
+.meal-schedule-today{
+    font-size: 18px;
+    margin-left: 5px;
+    text-align: center;
+    font-weight: 500;
+}
+.meal-schedule-breackfast,
+.meal-schedule-lunch,
+.meal-schedule-dinner{
+    font-size: 18px;
+    margin-left: 5px;
+    text-align: center;
+    font-weight: 500;
 }
 .day-select-start,
 .day-select-end{
@@ -218,7 +201,4 @@
     justify-content: center;
     align-items: center;
 }
-/* .schedule-title-box{
-    display: flex;
-    flex-direction: column;
-} */
+
