@@ -176,20 +176,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         
     };
 
-    // event handler: meal title 클릭 이벤트 처리 //
-    const onMealTileBreackfastClickHandler = () => {
-        setMealTitle('아침');
-    }
-
-    // event handler: meal title 클릭 이벤트 처리 //
-    const onMealTileLunchClickHandler = () => {
-        setMealTitle('점심');
-    }
-
-    // event handler: meal title 클릭 이벤트 처리 //
-    const onMealTileDinnerClickHandler = () => {
-        setMealTitle('저녁');
-    }
 
     // event handler: 일정 변경 이벤트 처리 //
     const onScheduleChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
@@ -230,6 +216,11 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
             alert(message);
             return;
         }
+        // // 성공적으로 삭제된 경우 상태 업데이트
+        // const updatedSchedules = schedules.filter(schedule => 
+        //     schedule.MealScheduleStart !== MealScheduleStart?.format('YYYY-MM-DD') || 
+        //     schedule.MealScheduleEnd !== MealScheduleEnd?.format('YYYY-MM-DD')
+        // );
 
         scheduleChange(); // 팝업 닫기
         resetScheduleInputs();
@@ -272,15 +263,15 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                     <div className="meal-schedule-today">Today</div>
                 </div>
                 <div className="meal-schedule-breackfast-box">
-                    <div className="meal-schedule-breackfast" onClick={onMealTileBreackfastClickHandler}>아침</div>
+                    <div className="meal-schedule-breackfast">아침</div>
                 </div>
                 <div className="meal-schedule-lunch-box">
-                    <div className="meal-schedule-lunch" onClick={onMealTileLunchClickHandler}>점심</div>
+                    <div className="meal-schedule-lunch">점심</div>
                 </div>
                 <div className="meal-schedule-dinner-box">
-                    <div className="meal-schedule-dinne" onClick={onMealTileDinnerClickHandler}>저녁</div>
+                    <div className="meal-schedule-dinne">저녁</div>
                 </div>
-            </div>
+            </div> 
         </div>
     )
 };
