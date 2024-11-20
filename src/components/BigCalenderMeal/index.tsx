@@ -52,6 +52,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     // state: 원본 리스트 상태 //
     const {mealScheduleList, setMealScheduleList} = useMealScheduleStroe();
 
+    const [mealTitleSelect, setMealTitleSelect] = useState<boolean>(false);
+
     // function: post schedule response 처리 함수 //
     const postMealScheduleResponse= (responseBody: ResponseDto | null ) => {
         const message = 
@@ -125,19 +127,23 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     }
 
     // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    const onChangeMealTitleBreackfastButtonClickHandler = () => {
-        setMealTitle('아침');
+    const onChangeMealTitleButtonClickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
+        const mealText = (event.target as HTMLDivElement).textContent;
+        setMealTitle(mealText || '');
+        setMealTitleSelect(true);
     }
 
-    // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    const onChangeMealTitleLunchButtonClickHandler = () => {
-        setMealTitle('점심');
-    }
+    // // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
+    // const onChangeMealTitleLunchButtonClickHandler = () => {
+    //     setMealTitle('점심');
+    //     setMealTitleSelect(true);
+    // }
 
-    // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    const onChangeMealTitleDinnerButtonClickHandler = () => {
-        setMealTitle('저녁');
-    }
+    // // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
+    // const onChangeMealTitleDinnerButtonClickHandler = () => {
+    //     setMealTitle('저녁');
+    //     setMealTitleSelect(true);
+    // }
 
     // event handler: 일정 추가 이벤트 처리 핸들러 //
     const onPostMealScheduleButtonClickHandler = () => {
@@ -278,13 +284,13 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                     <div className="meal-schedule-today">Today</div>
                 </div>
                 <div className="meal-schedule-breackfast-box">
-                    <div className="meal-schedule-breackfast" onClick={onChangeMealTitleBreackfastButtonClickHandler}>아침</div>
+                    <div className="meal-schedule-breackfast" onClick={onChangeMealTitleButtonClickHandler}>아침</div>
                 </div>
                 <div className="meal-schedule-lunch-box">
-                    <div className="meal-schedule-lunch" onClick={onChangeMealTitleLunchButtonClickHandler}>점심</div>
+                    <div className="meal-schedule-lunch" onClick={onChangeMealTitleButtonClickHandler}>점심</div>
                 </div>
                 <div className="meal-schedule-dinner-box">
-                    <div className="meal-schedule-dinne" onClick={onChangeMealTitleDinnerButtonClickHandler}>저녁</div>
+                    <div className="meal-schedule-dinne" onClick={onChangeMealTitleButtonClickHandler}>저녁</div>
                 </div>
             </div> 
         </div>
