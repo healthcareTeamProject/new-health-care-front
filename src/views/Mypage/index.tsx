@@ -848,7 +848,7 @@ interface TableRowProps {
     getBoardUser: () => void;
 }
 
-// component: 고객 리스트 아이템 컴포넌트 //
+// component: 내 게시물 아이템 컴포넌트 //
 function TableRow({ boardUser, getBoardUser }: TableRowProps) {
 
 
@@ -865,7 +865,7 @@ function TableRow({ boardUser, getBoardUser }: TableRowProps) {
         navigator(BOARD_DETAIL_ABSOLUTE_PATH(boardUser.boardNumber));
     }
 
-    // render: 고객 리스트 아이템 컴포넌트 렌더링 //
+    // render: 내 게시물 아이템 컴포넌트 렌더링 //
     return(
         <div className='tr-board-user' onClick={onDetailButtonClickHandler}>
             <div className='td-board-user-title'>{boardUser.boardTitle}</div>
