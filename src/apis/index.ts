@@ -11,7 +11,7 @@ import GetCustomerResposeDto from "./dto/response/customer/get-customer.response
 import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
 
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
-import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
+import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
 
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
