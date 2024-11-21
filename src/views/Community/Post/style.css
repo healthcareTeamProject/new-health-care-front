@@ -1,6 +1,6 @@
 #post {
     width: 1830px;
-    height: 790px;
+    max-height: null;
     margin: 45px;
 }
 
@@ -405,4 +405,46 @@
     cursor: pointer;
 }
 
+#post .gym-location-box {
+    display: flex;
+    float: right;
+}
 
+#post .location {
+
+}
+
+#post .address-search-input {
+    width: 360px;
+    height: 30px;
+    border: 1px solid rgba(167, 167, 167, 1);
+}
+
+#post .location {
+    width: 70px;
+    height: 30px;
+    line-height: 30px;
+    text-align: center;
+    font-size: 13px;
+}
+
+#post .address-search-button {
+    width: 70px;
+    height: 30px;
+    font-size: 13px;
+    line-height: 30px;
+    text-align: center;
+    border-radius: 4px;
+    background-color: rgba(167, 167, 167, 1);
+}
+
+#post .address-search-input {
+    width: 360px;
+    height: 30px;
+}
+
+#post .gym-location {
+    width: 400px;
+    height: 200px;
+    float: right;
+}

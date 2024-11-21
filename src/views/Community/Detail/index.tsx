@@ -5,7 +5,7 @@ import { useSearchParams } from 'react-router-dom';
 import { useCookies } from 'react-cookie';
 import { useSignInCustomerStroe } from 'src/stores';
 import { ACCESS_TOKEN, BOARD_LIST_ABSOLUTE_PATH, BOARD_LIST_PATH, BOARD_UPDATE_ABSOLUTE_PATH } from 'src/constant';
-import { deleteBoardRequest, deleteCommentRequest, getBoardRequest, getCommentListRequest, patchCommentRequest, postCommentsRequest } from 'src/apis';
+import { deleteBoardRequest, deleteCommentRequest, getBoardRequest, getCommentListRequest, patchCommentRequest, postCommentsRequest, putCommentLikeRequest, putLikeRequest, putViewRequest } from 'src/apis';
 import { ResponseDto } from 'src/apis/dto/response';
 import { Board, Comment } from 'src/types';
 import { GetBoardResponseDto } from 'src/apis/dto/response/board';
@@ -39,6 +39,8 @@ function CommentBox({ unShow, getCommentList }: PostCommentProps) {
     const [commentContents, setCommentContents] = useState<string>('');
     const [commentLikeCount, setCommentLikeCount] = useState<number>(0);
     const [commentDate, setCommentDate] = useState<string>('');
+    const [comments, setComments] = useState<string>('');
+    
 
 
     // function: post comments response 처리 함수 //
@@ -76,7 +78,7 @@ function CommentBox({ unShow, getCommentList }: PostCommentProps) {
         }
         const requestBody: PostCommentRequestDto = {
             userId,
-            commentContents,
+            commentContents: commentContents,
             commentLikeCount,
             commentDate
             
@@ -90,9 +92,9 @@ function CommentBox({ unShow, getCommentList }: PostCommentProps) {
     // render: 댓글 등록 컴포넌트 렌더링 //
     return (
         <div className='commentInputBox'>
-            <div className='commentContent'>댓글내용</div>
-            <div className='commentInput'></div>
-            <div className='button primary' onClick={onPostButtonClickHandler}>댓글등록</div>
+            <div className='commentContent'>댓글 내용</div>
+            <input className='commentInput' onChange={onContentsChangeHandler} />
+            <div className='button-primary' onClick={onPostButtonClickHandler}>댓글 등록</div>
         </div>
         
     )
@@ -106,19 +108,13 @@ interface PatchBoxProps {
 }
 
 // component: 댓글 수정 컴포넌트 //
-function PatchBox({ commentNumber, unShow, getCommentList }: PatchBoxProps) {
+function PatchCommentBox({ commentNumber, unShow, getCommentList }: PatchBoxProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
 
     // useParams로부터 boardNumber를 받아옵니다.
-    const { boardNumber } = useParams<{ boardNumber: string }>();
-
-    // boardNumber를 숫자로 변환하고 사용
-    const boardId = boardNumber ? parseInt(boardNumber, 10) : null;
-
-    console.log('boardNumber:', boardNumber); // '1' (문자열)
-    console.log('boardId:', boardId); // 1 (숫자)
+    const { boardNumber } = useParams() as {boardNumber: string};
 
     // state: 댓글 정보 상태 //
     const [userId, setUserId] = useState<string>('');
@@ -138,6 +134,7 @@ function PatchBox({ commentNumber, unShow, getCommentList }: PatchBoxProps) {
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
+            unShow();
             return;
         }
 
@@ -163,13 +160,14 @@ function PatchBox({ commentNumber, unShow, getCommentList }: PatchBoxProps) {
         }
 
         getCommentList();
+        unShow();
     };
 
     // event handler: 댓글 내용 변경 이벤트 처리 함수 //
     const onContentsChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
         const { value } = event.target;
         setCommentContents(value);
-    }
+    };
 
     // event handler: 수정 버튼 클릭 이벤트 처리 함수 //
     const onUpdateButtonClickHandler = () => {
@@ -191,7 +189,19 @@ function PatchBox({ commentNumber, unShow, getCommentList }: PatchBoxProps) {
         if(!boardNumber) return;
 
         patchCommentRequest(requestBody, commentNumber, boardNumber, accessToken).then(patchCommentResponse);
-    }
+        
+    };
+
+    useEffect(getCommentList, []);
+
+    // render: 댓글 수정 컴포넌트 렌더링 //
+    return (
+        <div className='commentInputBox'>
+            <div className='commentContent'>댓글내용</div>
+            <input className='commentInput' onChange={onContentsChangeHandler} />
+            <div className='button-primary1' onClick={onUpdateButtonClickHandler}>수정</div>
+        </div>
+    )
 }
 
 // component: 카테고리 네비게이션 // 
@@ -242,18 +252,38 @@ function CategoryNavigation() {
 interface TableRowProps {
     comment: Comment;
     getCommentList: () => void;
-    onUpdateButtonClickHandler: (commentNumber: number) => void;
+    onUpdateCommentButtonClickHandler: (commentNumber: number) => void;
 }
 
 // component: 댓글 리스트 아이템 컴포넌트 //
-function TableRow({ comment, getCommentList, onUpdateButtonClickHandler}: TableRowProps) {
+function TableRow({ comment, getCommentList, onUpdateCommentButtonClickHandler}: TableRowProps) {
 
     // state: cookie 상태 //
     const [cookies] = useCookies();
 
-    const {boardNumber} = useParams();
+    const { boardNumber } = useParams() as {boardNumber: string};
 
-    console.log(boardNumber)
+    const [commentLikeCount, setCommentLikeCount] = useState<number>(0);
+
+    const [commentList, setCommentList] = useState<Comment[]>([]);
+
+    const [originalList, setOriginalList] = useState<Comment[]>([]);
+
+    // state: 게시글 정보 상태 //
+    const [customer, setCustomer] = useState<string>('');
+    const [boardTitle, setBoardTitle] = useState<string>('');
+    const [userId, setUserId] = useState<string>('');
+    const [boardUploadDate, setBoardUploadDate] = useState<string>('');
+    const [boardContents, setBoardContents] = useState<string>('');
+    const [youtubeVideoLink, setYoutubeVideoLink] = useState<string>('');
+    const [boardFileContents, setBoardFileContents] = useState<string>('');
+    const [boardLikeCount, setBoardLikeCount] = useState<number>(0);
+    
+
+    const [hasLiked, setHasLiked] = useState<boolean>(false);
+    const [comments, setComments] = useState<string>('');
+
+    const navigator = useNavigate();
 
     // function: delete comment response 처리 함수 //
     const deleteCommentResponse = (responseBody: ResponseDto | null) => {
@@ -261,17 +291,62 @@ function TableRow({ comment, getCommentList, onUpdateButtonClickHandler}: TableR
             !responseBody ? '서버에 문제가 있습니다.' :
                 responseBody.code === 'VF' ? '잘못된 접근입니다.' :
                     responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-                        responseBody.code === 'NT' ? '존재하지 않는 용품입니다.' :
+                        responseBody.code === 'NT' ? '존재하지 않는 댓글입니다.' :
                             responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
         if (!isSuccessed) {
             alert(message);
             return;
-        }
-
+        }  
         getCommentList();
     };
+
+    // function: get comment list response 처리 함수 //
+    const getCommentListResponse = (responseBody: GetCommentListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+                    responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { commentList } = responseBody as GetCommentListResponseDto;
+        setCommentList(commentList);
+        setOriginalList(commentList);
+    }
+
+
+    // function: put comment like response 처리 함수 //
+    const putCommentLikeResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다' :
+                responseBody.code === 'NC' ? '존재하지않는 댓글입니다.' :
+                responseBody.code === 'NP' ? '권한이 없습니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+
+            const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+            if (!isSuccessed) {
+                alert(message);
+                return;
+            }
+            if (!boardNumber) return;
+
+            getCommentList();
+    }
+
+    const commentHandlerLike = (event: MouseEvent<HTMLDivElement>) => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('로그인이 필요합니다!');
+            return;
+        }
+
+        putCommentLikeRequest(boardNumber, comment.commentNumber, accessToken).then(putCommentLikeResponse);
+    }
 
     // event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
     const onDeleteButtonClickHandler = () => {
@@ -283,7 +358,7 @@ function TableRow({ comment, getCommentList, onUpdateButtonClickHandler}: TableR
 
         if(!boardNumber) return;
 
-        deleteCommentRequest(boardNumber, comment.commentsNumber, accessToken).then(deleteCommentResponse);
+        deleteCommentRequest(boardNumber, comment.commentNumber, accessToken).then(deleteCommentResponse);
     };
 
     // render: 댓글 리스트 아이템 컴포넌트 렌더링 //
@@ -295,9 +370,9 @@ function TableRow({ comment, getCommentList, onUpdateButtonClickHandler}: TableR
                             <div className='uploaded-comments-contents'>{comment.commentContents}</div>
                         </div>
                         <div className='tunbs-up-recommend'>
-                            <div className='comments-tumbs-up'></div>
+                            <div className='comments-tumbs-up' onClick={commentHandlerLike}></div>
                             <div className='comments-recommend'>추천{comment.commentLikeCount}</div>
-                            <div className='comments-edit' onClick={() => onUpdateButtonClickHandler(comment.commentsNumber)}>수정</div>
+                            <div className='comments-edit' onClick={() => onUpdateCommentButtonClickHandler(comment.commentNumber)}>수정</div>
                             <div className='comments-delete' onClick={onDeleteButtonClickHandler}>삭제</div>
                         </div>
                     </div>
@@ -312,6 +387,8 @@ export default function BoardDetail() {
     const [cookies] = useCookies();
 
     const [showCommentBox, setShowCommentBox] = useState<boolean>(false);
+    const [showPatchBox, setShowPatchBox] = useState<boolean>(false);
+    const [patchCommentNumber, setPatchCommentNumber] = useState<number>(0);
 
     // state: 로그인 사용자 상태 //
     const { signInCustomer } = useSignInCustomerStroe();
@@ -320,15 +397,13 @@ export default function BoardDetail() {
     const [originalList, setOriginalList] = useState<Comment[]>([]);
 
     // 
-    const { boardNumber } = useParams();
+    const { boardNumber } = useParams() as {boardNumber: string};
 
-    
-
-    // const {
-    //     currentPage, totalPage, totalCount, viewList, pageList,
-    //     setTotalList, initViewList,
-    //     onPageClickHandler, onPreSectionClickHandler, onNextSectionClickHandler
-    // } = usePagination<Comment>();
+    const {
+        currentPage, totalPage, totalCount, viewList, pageList,
+        setTotalList, initViewList,
+        onPageClickHandler, onPreSectionClickHandler, onNextSectionClickHandler
+    } = usePagination<Comment>();
 
     // state: 게시글 정보 상태 //
     const [customer, setCustomer] = useState<string>('');
@@ -339,8 +414,44 @@ export default function BoardDetail() {
     const [youtubeVideoLink, setYoutubeVideoLink] = useState<string>('');
     const [boardFileContents, setBoardFileContents] = useState<string>('');
     const [boardLikeCount, setBoardLikeCount] = useState<number>(0);
+
+    const [showPostBox, setShowPostBox] = useState<boolean>(false);
+
+    const [hasLiked, setHasLiked] = useState<boolean>(false);
     const [comments, setComments] = useState<string>('');
     const [commentList, setCommentList] = useState<Comment[]>([]);
+
+    // function: put like response 처리 함수 //
+    const putLikeResponse = (responseBody: ResponseDto | null) => {
+            const message =
+                !responseBody ? '서버에 문제가 있습니다.' :
+                responseBody.code === 'NC' ? '존재하지 않는 게시글입니다.' :
+                responseBody.code === 'NP' ? '권한이 없습니다.' :
+                responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
+    
+            const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+            if (!isSuccessed) {
+                alert(message);
+                return;
+            }
+            if (!boardNumber) return;
+            getBoardRequest(boardNumber).then(getBoardResponse);
+    }
+
+    const handleLike = (event: MouseEvent<HTMLDivElement>) => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('로그인이 필요합니다!');
+            return;
+        }
+
+        if (hasLiked) {
+            alert('이미 좋아요를 눌렀습니다')
+            return;
+        }
+
+        putLikeRequest(boardNumber, accessToken).then(putLikeResponse);
+    }
 
 
     // variable: 본인 여부 //
@@ -352,9 +463,20 @@ export default function BoardDetail() {
     // function: 등록 박스 뷰 상태 변경 함수 //
     const unShowCommentBox = () => setShowCommentBox(false);
 
+    // function: 수정 박스 뷰 상태 변경 함수 //
+    const unShowPatchBox = () => setShowPatchBox(false);
+
     // event handler: 등록 버튼 클릭 이벤트 처리 함수 //
     const onPostButtonClickHandler = () => {
         setShowCommentBox(true);
+        setShowPatchBox(false);
+    }
+
+    // event handler: 댓글 수정 버튼 클릭 이벤트 처리 함수 //
+    const onUpdateCommentButtonClickHandler = (commentNumber: number) => {
+        setShowPatchBox(true);
+        setShowCommentBox(false);
+        setPatchCommentNumber(commentNumber);
     }
 
     // function: comment list 불러오기 함수 //
@@ -380,6 +502,20 @@ export default function BoardDetail() {
         setOriginalList(commentList);
     }
 
+
+    const putViewResponse = (responseBody: ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+        if (!boardNumber) return;
+        getBoardRequest(boardNumber).then(getBoardResponse);
+    }
+
     // function: get board response 처리 함수 //
     const getBoardResponse = (responseBody: GetBoardResponseDto | ResponseDto | null) => {
         const message =
@@ -398,6 +534,7 @@ export default function BoardDetail() {
 
         const { boardTitle, userId, boardUploadDate, boardContents, youtubeVideoLink, boardFileContents, boardLikeCount, comments } = responseBody as GetBoardResponseDto;
         setBoardTitle(boardTitle);
+        setCustomer(userId)
         setUserId(userId);
         setBoardUploadDate(boardUploadDate);
         setBoardContents(boardContents);
@@ -410,13 +547,13 @@ export default function BoardDetail() {
     // state: 검색어 상태 //
     const [searchWord, setSearchWord] = useState<string>('');
 
-    // function: delete customer response 처리 함수 //
+    // function: delete board response 처리 함수 //
     const deleteBoardResponse = (responseBody: ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '잘못된 접근입니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'NC' ? '존재하지 않는 고객입니다.' :
+            responseBody.code === 'NC' ? '존재하지 않는 게시글입니다.' :
             responseBody.code === 'NP' ? '권한이 없습니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
@@ -428,6 +565,12 @@ export default function BoardDetail() {
 
         navigator(BOARD_LIST_ABSOLUTE_PATH);
     };
+
+    // event handler: 댓글 내용 변경 이벤트 처리 //
+    const onCommentsChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        
+    }
 
     // event handler: 검색어 변경 이벤트 처리 함수 //
     // const onSearchWordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
@@ -445,6 +588,8 @@ export default function BoardDetail() {
     const onListButtonClickHandler = () => {
         navigator(BOARD_LIST_PATH);
     };
+
+    
 
     // event handler: 수정 버튼 클릭 이벤트 처리 //
     const onUpdateButtonClickHandler = () => {
@@ -468,16 +613,19 @@ export default function BoardDetail() {
         deleteBoardRequest(boardNumber, accessToken).then(deleteBoardResponse);
     };
 
-    // effect: 고객 번호 변경시 고객 정보 요청 함수 //
+    // effect: 게시글 번호 변경시 고객 정보 요청 함수 //
     useEffect(() => {
         if (!boardNumber) return;
+        const accessToken = cookies[ACCESS_TOKEN];
         
-        getBoardRequest(boardNumber).then(getBoardResponse);
+        putViewRequest(boardNumber).then(putViewResponse);
 
     }, [boardNumber]);
 
     // effect: 컴포넌트 로드시 댓글 리스트 불러오기 함수 //
     useEffect(getCommentList, []);
+
+    
 
     return (
         <div id='dt'>
@@ -501,24 +649,25 @@ export default function BoardDetail() {
                     <div className='contents'>{boardContents}</div>
                     <div className='uploadedfile' style={{ backgroundImage: `url(${boardFileContents})`}}></div>
                     <div className='recommend-bar'>
-                        <div className='tumbs-up'></div>
-                        <div className='recommend'>추천(1)</div>
+                        <div className='tumbs-up' onClick={handleLike}></div>
+                        <div className='recommend'>추천({boardLikeCount})</div>
                     </div>
                 </div>
                 <div className='catalog'>
-                    <div className='comments-count'>댓글 1</div>
+                    <div className='comments-count'>댓글 {totalCount}</div>
                     {isCustomer &&
-                    <div>
+                    <div className='edit-delete'>
                         <div className='edit-button' onClick={onUpdateButtonClickHandler}>수정</div>
                         <div className='delete-button' onClick={onDeleteButtonClickHandler}>삭제</div>
                     </div>
                     }
                     <div className='catalog-button' onClick={onListButtonClickHandler}>목록</div>
                 </div>
-                {commentList.map((comment, index) => <TableRow key={index} comment={comment} getCommentList={getCommentList} onUpdateButtonClickHandler={onUpdateButtonClickHandler}/>)}
+                {commentList.map((comment, index) => <TableRow key={index} comment={comment} getCommentList={getCommentList} onUpdateCommentButtonClickHandler={onUpdateCommentButtonClickHandler}/>)}
                 {showCommentBox && <CommentBox unShow={unShowCommentBox} getCommentList={getCommentList} /> }
+                {showPatchBox && <PatchCommentBox unShow={unShowPatchBox} getCommentList={getCommentList} commentNumber={patchCommentNumber} />}
                 <div className='comments-upload'>
-                    {!showCommentBox && <div className='comments-upload-button' onClick={onPostButtonClickHandler}>댓글 등록</div> }
+                    {!showCommentBox && !showPatchBox && <div className='comments-upload-button' onClick={onPostButtonClickHandler}>댓글 등록</div> }
                 </div>
             </div>
         </div>

@@ -1,15 +1,17 @@
-import React, { ChangeEvent, useRef, useState } from 'react';
+import React, { ChangeEvent, useEffect, useRef, useState } from 'react';
 import './style.css';
 import Category from 'src/types/category.interface';
 import { ACCESS_TOKEN, BOARD_LIST_PATH } from 'src/constant';
 import { useCookies } from 'react-cookie';
-import { useNavigate } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 import { PostBoardRequestDto } from 'src/apis/dto/request/board';
 import { fileUploadRequest, postBoardRequest } from 'src/apis';
-
-
+import { Map, MapMarker } from "react-kakao-maps-sdk";
+import { Address, useDaumPostcodePopup } from 'react-daum-postcode';
+import { useKakaoLoader } from 'src/hooks';
+import { NONAME } from 'dns';
 
 const categoryList: string[] = ['식단', '홈 트레이닝', '운동기구', '헬스장'];
 
@@ -20,6 +22,8 @@ const popularTagsList: string[] = ['운동일지', '영양식단', '상체', '�
 interface PostBoardProps {
     getBoardList: () => void;
 }
+
+const defaultImageUrl = '';
 
 // component: 게시글 작성 화면 컴포넌트 //
 export default function Post() {
@@ -43,8 +47,18 @@ export default function Post() {
     const [boardTag, setBoardTag] = useState<string>('');
     const [boardContents, setBoardContents] = useState<string>('');
     const [youtubeVideoLink, setYoutubeVideoLink] = useState<string>('');
-    const [boardFileContents, setBoardFileContents] = useState<[]>([]);
-    
+    const [boardFileContents, setBoardFileContents] = useState<string>('');
+    const [address, setAddress] = useState<string>('');
+    const [location, setLocation] = useState<string>('');
+    const [lat, setLat] = useState<number>(0);
+    const [lng, setLng] = useState<number>(0);
+    const [changeProfileImage, setChangeProfileImage] = useState<File|null>(null);
+
+    const [profileImage, setProfileImage] = useState<string>('');
+    const [previewUrl, setPreviewUrl] = useState<string>('');
+
+    const { userId } = useParams();
+
 
     // state: 카테고리 셀렉터 오픈 여부 상태 //
     const [showCategorySelector, setShowCategorySelector] = useState<boolean>(false);
@@ -59,6 +73,9 @@ export default function Post() {
     // state: 선택한 태그 상태 //
     const [selectedPopularTag, setSelectedPopularTag] = useState<string>('');
 
+
+    useKakaoLoader();
+
     // event handler: 셀렉터 오픈 이벤트 처리 //
     const onCategorySelectorClickHandler = () => {
         setShowCategorySelector(!showCategorySelector);
@@ -72,12 +89,14 @@ export default function Post() {
     // event handler: 카테고리 선택 이벤트 처리 //
     const onCategorySelectHandler = (category: string) => {
         setSelectedCategory(category);
+        setBoardCategory(category);
         setShowCategorySelector(false);
     };
 
     // event handler: 태그 선택 이벤트 처리 //
     const onPopularTagSelectHandler = (popularTag: string) => {
         setSelectedPopularTag(popularTag);
+        setBoardTag(popularTag);
         setShowPopularTagSelector(false);
     }
 
@@ -87,7 +106,6 @@ export default function Post() {
             !responseBody ? '서버에 문제가 있습니다.' :
             responseBody.code === 'VF' ? '필수 항목을 입력해주세요.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'NI' ? '존재하지 않는 요양사입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
 
         const isSuccessed = responseBody !== null && responseBody.code === 'SU';
@@ -98,6 +116,16 @@ export default function Post() {
 
         navigator(BOARD_LIST_PATH);
     };
+
+    // function: 다음 주소 검색 팝업 함수 //
+    const daumPostcodePopup = useDaumPostcodePopup();
+
+    // function: 다음 주소 검색 완료 처리 함수 //
+    const daumPostcodeComplete = (result: Address) => {
+        const { address, sigungu } = result;
+        setAddress(address);
+        setLocation(sigungu);
+    }
     
     // event handler: 파일 선택 클릭 이벤트 처리 //
     const onFileSelectClickHandler = () => {
@@ -116,8 +144,10 @@ export default function Post() {
 
         const fileReader = new FileReader();
         fileReader.readAsDataURL(file);
-        
-        }
+        fileReader.onloadend = () => {
+            setPreviewUrl(fileReader.result as string);
+        };
+    };
     
 
     // event handler: 글쓰기 버튼 클릭 이벤트 처리
@@ -133,18 +163,26 @@ export default function Post() {
             formData.append('file', ImageFile);
             url = await fileUploadRequest(formData);
         }
-        
+        url = url ? url : defaultImageUrl;
 
             const postBoardRequestBody: PostBoardRequestDto = {
                 boardTitle,
+                userId,
                 boardCategory,
                 boardTag,
                 boardContents,
                 youtubeVideoLink,
-                boardFileContents,
+                boardFileContents:[],
+                lat,
+                lng
             };
             postBoardRequest(postBoardRequestBody, accessToken).then(postBoardResponse);
     };
+
+    // event handler: 주소 검색 버튼 클릭 이벤트 처리 //
+    const onAddressButtonClickHandler = () => {
+        daumPostcodePopup({ onComplete: daumPostcodeComplete })
+    }
 
 
     // event handler: 제목 변경 이벤트 처리 함수 //
@@ -162,14 +200,50 @@ export default function Post() {
         const { value } = event.target;
         setBoardContents(value);
     }
+
+    
+
     
     // event handler: 모달 오픈 이벤트 처리 //
     const onModelOpenHandler = () => {
         setModalOpen(!modalOpen);
     };
 
+    
+
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
+
+    useEffect(() => {
+        if (!address) return;
+        const geocoder = new window.kakao.maps.services.Geocoder();
+
+        geocoder.addressSearch(address, (result, status) => {
+            if (status === window.kakao.maps.services.Status.OK) {
+                const {x:lng, y:lat} = result[0];
+                setLat(+lat);
+                setLng(+lng);
+            } else {
+                setLat(0);
+                setLng(0);
+            }
+        })
+    }, [address]);
+
+    const [imageFiles, setImageFiles] = useState<string[]>([]);
+
+const addImageFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    let tmp = e.target.files;
+    if (tmp) {
+        const reader = new FileReader();
+        reader.readAsDataURL(tmp[0]);
+        reader.onloadend = () => {
+            if (reader.result) {
+                setImageFiles(prev => [...prev, reader.result as string]);
+            }
+        };
+    }
+};
 
     
     
@@ -227,8 +301,9 @@ export default function Post() {
                     <div className='attachmentTitle'>첨부파일</div>
                     <div className='attachmentBottom'>
                         <div className='fileSelectBox1'>
-                            <div className='fileSelectButton1' onClick={onFileSelectClickHandler}>파일선택</div>
-                            <div className='fileSelectInput1'></div>
+                            <div className='profile-image' style={{ backgroundImage: previewUrl ? `url(${previewUrl})` : `url(${profileImage})` }} onClick={onFileSelectClickHandler}>
+                                <input ref={imageInputRef} style={{ display: 'none' }} type='file' accept='image/*' onChange={onImageInputChangeHandler} />
+                            </div>
                             <div className='cancel1'>취소</div>
                         </div>
                         <div className='fileSelectBox2'>
@@ -243,6 +318,40 @@ export default function Post() {
                         </div>
                     </div>
                     <div className='attachmentText'>'png', 'gif', 'jpg', 'jpeg', 'mp4', 'mkv', 'avi'파일만 등록 가능합니다.</div>
+                    <div>
+                        <div className='gym-location-box'>
+                            <div className='location'>위치</div>
+                            <input className='address-search-input' value={address} readOnly placeholder='주소를 선택하세요.' />
+                            <div className='address-search-button' onClick={onAddressButtonClickHandler}>검색</div>
+                        </div>
+                        <div className='gym-location'>
+                            {lat !== 0 && lng !== 0 &&
+                                <Map // 지도를 표시할 Container
+                                    center={{
+                                        // 지도의 중심좌표
+                                        lat,
+                                        lng,
+                                    }}
+                                    style={{
+                                        // 지도의 크기
+                                        width: "100%",
+                                        height: "450px",
+                                    }}
+                                    draggable={false}
+                                    zoomable={false}
+                                    level={3} // 지도의 확대 레벨
+                                >
+                                    <MapMarker // 마커를 생성합니다
+                                        position={{
+                                            // 마커가 표시될 위치입니다
+                                            lat,
+                                            lng,
+                                        }}
+                                    />
+                                </Map>
+                            }
+                        </div>
+                    </div>
                 </div>
             </div>
             <div className='Bottom'>
@@ -254,6 +363,4 @@ export default function Post() {
         </div>
     )
 }
-
-
 
