@@ -20,6 +20,7 @@ import GetCommentListResponseDto from "./dto/response/board/get-comment.response
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
 import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
 import GetBoardUserResponseDto from "./dto/response/board/get-board-user.response.dto";
+import GetMealResponseDto from "./dto/response/schedule/get-meal.response.dto";
 
 
 // variable: API URL 상수 //
@@ -77,7 +78,7 @@ const GET_MEAL_SCHEDULE_API_URL = (mealSchedulenumber: number | string) => `${ME
 const PATCH_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
 const DELETE_MEAL_SCHEDULE_API_URL = (mealScheduleNumber: number | string) => `${MEAL_SCHEDULE_API_URL}/${mealScheduleNumber}`;
 
-const GET_MEAL_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}/food-data`;
+const GET_MEAL_MEMO_API_URL = `${MEAL_SCHEDULE_API_URL}/food-data`;
 const POST_SEARCH_MEAL_LIST_API_URL = `${MEAL_SCHEDULE_API_URL}/search`;
 
 // function: Authorizarion Bearer 헤더 //
@@ -303,9 +304,17 @@ export const deleteMealScheduleRequest = async (mealScheduleNumber: number | str
   return responseBody;
 }
 
-// function: get meal 요청합수 //
+// function: get meal memo list 요청합수 //
+export const getMealMemoListRequest = async (accessToken: string) => {
+  const responseBody = await axios.get(GET_MEAL_MEMO_API_URL, bearerAuthorization(accessToken))
+    .then(responseDataHandler<GetMealResponseDto>)
+    .catch(responseErrorHandler)
+  return responseBody;
+};
 
 // function: post search meal List 요청함수 //
+// export const postSearchMealList = async ()
+
 
 // function: post board 요청 함수 //
 export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessToken: string) => {
