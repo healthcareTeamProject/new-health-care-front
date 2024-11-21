@@ -13,10 +13,12 @@ import { useMealScheduleStroe, useSignInCustomerStroe } from "src/stores";
 import { GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "src/apis/dto/response/schedule";
 import { useParams } from "react-router";
 import { PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "src/apis/dto/request/schedule";
-import { deleteMealScheduleRequest, getMealScheduleListRequest, getMealScheduleRequest, patchMealScheduleRequest, postMealScheduleRequest } from "src/apis";
+import { deleteMealScheduleRequest, getMealMemoListRequest, getMealScheduleListRequest, getMealScheduleRequest, patchMealScheduleRequest, postMealScheduleRequest } from "src/apis";
 import Schedule from "src/views/Schedule";
 import MealSchedule from "src/types/meal-schedule.interface";
 import MealMemo from "src/types/meal-memo.interface";
+import { usePagination } from "src/hooks";
+import Pagination from "../Pagination";
 
 // interface: 캘린더 Props //
 interface CalendarProps {
@@ -46,13 +48,25 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     const [cookies] = useCookies();
     // state: 일정 인풋 상태 //
     const [mealTitle, setMealTitle] = useState<string>('');
+    const [mealType, setMealType] = useState<'breakfast' | 'lunch' | 'dinner' | null>(null);
     const [mealScheduleStart, setMealScheduleStart] = useState<Dayjs | null>(null);
     const [mealScheduleEnd, setMealScheduleEnd] = useState<Dayjs | null>(null);
     const [mealMemoList, setMealMemoList] = useState<MealMemo[]>([]);
     // state: 원본 리스트 상태 //
     const {mealScheduleList, setMealScheduleList} = useMealScheduleStroe();
-
-    const [mealTitleSelect, setMealTitleSelect] = useState<boolean>(false);
+    // state: 검색어 상태 //
+    const [searchWord, setSearchWord] = useState<string>('');
+    // state: 원본 리스트 상태 //
+    const [mealOriginalList, setMealOriginalList] = useState<MealMemo[]>([]);
+    // state: 개수 상태 관리 //
+    const [mealCounts, setMealCounts] = useState<Record<string, number>>({});
+    // state: 검색어 리스트 상태 //
+    const [filteredMealMemoList, setFilteredMealMemoList] = useState<MealMemo[]>([]); // 검색된 리스트 상태 추가
+    // state: 페이징 관련 상태 //
+    const {
+        currentPage, totalPage, totalCount, viewList,
+        setTotalList, initViewList, ...paginationProps
+    } = usePagination<MealMemo>();
 
     // function: post schedule response 처리 함수 //
     const postMealScheduleResponse= (responseBody: ResponseDto | null ) => {
@@ -68,7 +82,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }; 
         getMealScheduleList();
         scheduleChange();
-        resetScheduleInputs();
     };
 
     // function: get schedule response 처리 함수 //
@@ -127,23 +140,16 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     }
 
     // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    const onChangeMealTitleButtonClickHandler = (event: React.MouseEvent<HTMLDivElement>) => {
-        const mealText = (event.target as HTMLDivElement).textContent;
-        setMealTitle(mealText || '');
-        setMealTitleSelect(true);
+    const onMealTypeClickHandler = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
+        setMealType(mealType);
+        setMealTitle(mealType); // 선택한 식사 타입을 설정
     }
-
-    // // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    // const onChangeMealTitleLunchButtonClickHandler = () => {
-    //     setMealTitle('점심');
-    //     setMealTitleSelect(true);
-    // }
-
-    // // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
-    // const onChangeMealTitleDinnerButtonClickHandler = () => {
-    //     setMealTitle('저녁');
-    //     setMealTitleSelect(true);
-    // }
+    
+    // event handler: 팝업 닫기 클릭 이벤트 핸들러 //
+    const onClosePopupHandler = () => {
+        setMealType(null);
+        resetScheduleInputs();
+    }
 
     // event handler: 일정 추가 이벤트 처리 핸들러 //
     const onPostMealScheduleButtonClickHandler = () => {
@@ -151,11 +157,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         if (!accessToken) return;
         if(!mealScheduleStart) return;
         if(!mealScheduleEnd) return;
-
-        if(mealScheduleStart > mealScheduleEnd) {
-            alert('종료날짜가 시작날짜 보다 작을수 없습니다.')
-            return;
-        }
 
         if (mealScheduleStart && mealScheduleEnd && mealTitle && mealMemoList) {
 
@@ -170,7 +171,6 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }
 
         getMealScheduleListRequest(accessToken).then(getMealScheduleListResponse);
-        resetScheduleInputs();
         scheduleChange();
     };
 
@@ -197,11 +197,21 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         
     };
 
-
-    // event handler: 일정 변경 이벤트 처리 //
-    const onScheduleChangeHandler = (event: ChangeEvent<HTMLTextAreaElement>) => {
-        const {value} = event?.target;
-        setMealTitle(value);
+    // event handler: 검색어 입력 이벤트 처리 함수 //
+    const onSearchWordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setSearchWord(value);
+    
+        if (value.trim() === '') {
+        // 검색어가 비어있다면 전체 리스트를 보여줍니다.
+        setFilteredMealMemoList(mealOriginalList);
+        } else {
+        // 검색어가 있다면 원본 리스트를 필터링해서 보여줍니다.
+        const filteredList = mealOriginalList.filter(mealMemoList =>
+            mealMemoList.mealName.toLowerCase().includes(value.toLowerCase())
+        );
+        setFilteredMealMemoList(filteredList);
+        }
     };
 
     // event handler: 시작 날짜 선택 이벤트 처리 //
@@ -216,48 +226,45 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         setMealScheduleEnd(dayjs(value));
     };
 
-    // effect: 헬스 스케줄이 변경될 시 실행할 함수 //
+    // event handler: 개수 증가 이벤트 처리 //
+    const onUpCountHandler = (mealName: string) =>{
+        setMealCounts((prevCounts) => ({
+            ...prevCounts,
+            [mealName]: (prevCounts[mealName] || 0) + 1,
+        }));
+    }
+
+    // event handler: 개수 감소 이벤트 처리 //
+    const onDownCountHandler = (mealName: string) => {
+        setMealCounts((prevCount) => {
+            const newCount = Math.max((prevCount[mealName] || 0) - 1, 0);
+            return{
+                ...prevCount,
+                [mealName]: newCount,
+            };
+        });
+    };
+
+    // event handler: 저장 버튼 클릭 이벤트 처리 //
+    const onSaveMealMemoClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+
+        // mealMemo 데이터를 저장할 때 count 값도 포함시킵니다.
+        const mealMemoCountToSave = mealMemoList
+            .filter((mealMemo) => mealCounts[mealMemo.mealName] > 0) // count가 0보다 큰 것만 저장
+            .map((mealMemo) => ({
+                ...mealMemo,
+                count: mealCounts[mealMemo.mealName] || 0, // 각 항목의 개수를 상태에서 가져옵니다
+            }));
+    }
+
+    // effect: 식단 스케줄이 변경될 시 실행할 함수 //
     useEffect(() => {
         const accessToken = cookies[ACCESS_TOKEN];
         if(!accessToken || MealScheduleNumber === null) return;
         getMealScheduleRequest(MealScheduleNumber, accessToken).then(getMealScheduleResponse)
         }, [cookies, MealScheduleNumber]);
-
-    // function: delete schedule response 처리 함수 //
-    const deleteMealScheduleResponse = (responseBody: ResponseDto | null) => {
-        const message =
-            !responseBody ? '서버에 문제가 있습니다.' :
-            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
-            responseBody.code === 'NS' ? '존재하지 않는 스케줄입니다' :
-            responseBody.code === 'AF' ? '인증이 실패하였습니다..' :
-            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.' : '';
-
-        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
-        if (!isSuccessed){
-            alert(message);
-            return;
-        }
-        // // 성공적으로 삭제된 경우 상태 업데이트
-        // const updatedSchedules = schedules.filter(schedule => 
-        //     schedule.MealScheduleStart !== MealScheduleStart?.format('YYYY-MM-DD') || 
-        //     schedule.MealScheduleEnd !== MealScheduleEnd?.format('YYYY-MM-DD')
-        // );
-
-        scheduleChange(); // 팝업 닫기
-        resetScheduleInputs();
-        getMealScheduleList(); // 최신 스케줄 리스트 가져오기
-    };
-    //event handler: 삭제 버튼 클릭 이벤트 처리 함수 //
-    const onDeletButtonClickHandler = (MealScheduleNumber: number | null) => {
-        if(MealScheduleNumber === null) {
-            return;
-        }
-
-        const accessToken = cookies[ACCESS_TOKEN];
-        if(!accessToken) return;
-
-        deleteMealScheduleRequest(MealScheduleNumber, accessToken).then(deleteMealScheduleResponse);
-    };
     
     // effect: 일정이 변경될 시 실행할 함수 //
     useEffect(() => {
@@ -276,6 +283,22 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }
     }, [MealScheduleNumber, popupDate]);
 
+    // effect: meal Memo 데이터 가져올 때 실행할 함수 //
+    useEffect(() => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if(!accessToken) return;
+        // 모든 mealMemo 리스트 가져오기
+        getMealMemoListRequest(accessToken).then(getMealScheduleListResponse);
+        // 가져온 mealMemo 리스트에 대해 초기 count 값을 0으로 설정
+        if(mealScheduleList){
+            const initialCount: Record<string, number> = {};
+            mealScheduleList.forEach((mealMemo) => {
+                initialCount[mealMemo.mealTitle] = 0;
+            });
+            setMealCounts(initialCount);
+        }
+    }, [cookies]);
+
     // render: 일정 추가 컴포넌트 렌더링 //
     return(
         <div className="meal-schedule-title-popup">
@@ -283,16 +306,52 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                 <div className="meal-schedule-today-box">
                     <div className="meal-schedule-today">TODAY</div>
                 </div>
-                <div className="meal-schedule-breackfast-box">
-                    <div className="meal-schedule-breackfast" onClick={onChangeMealTitleButtonClickHandler}>아침</div>
+                <div className="meal-schedule-breackfast-box" onClick={() => onMealTypeClickHandler('breakfast')}>
+                    <div className="meal-schedule-breackfast">아침</div>
                 </div>
-                <div className="meal-schedule-lunch-box">
-                    <div className="meal-schedule-lunch" onClick={onChangeMealTitleButtonClickHandler}>점심</div>
+                <div className="meal-schedule-lunch-box" onClick={() => onMealTypeClickHandler('lunch')}>
+                    <div className="meal-schedule-lunch">점심</div>
                 </div>
-                <div className="meal-schedule-dinner-box">
-                    <div className="meal-schedule-dinne" onClick={onChangeMealTitleButtonClickHandler}>저녁</div>
+                <div className="meal-schedule-dinner-box" onClick={() => onMealTypeClickHandler('dinner')}>
+                    <div className="meal-schedule-dinner">저녁</div>
                 </div>
-            </div> 
+            </div>
+            {mealType && (
+                <div className="meal-search-popup">
+                    <div className="meal-search-top">
+                        <div className="meal-search-detail-box">
+                            <div className="meal-search-detail-delete"></div>
+                        </div>
+                        <div className="meal-search-detail-button"></div>
+                    </div>
+                    <div className="meal-search-middle">
+                        <div className="meal-search-middle-top">
+                            <div className="meal-search-middle-top-name">식품명</div>
+                            <div className="meal-search-middle-top-kcal">칼로리</div>
+                            <div className="meal-search-middle-top-item">개수</div>
+                        </div>
+                        {/* mealMemo 데이터를 렌더링 */}
+                    {filteredMealMemoList.length > 0 ? (
+                        filteredMealMemoList.map((mealMemo, index) => (
+                        <div key={index} className="meal-search-middle-item">
+                            <div className="meal-search-item-name">{mealMemo.mealName}</div>
+                            <div className="meal-search-item-kcal">{mealMemo.mealKcal} kcal</div>
+                            <div className="meal-search-item-count">
+                                <button onClick={() => onDownCountHandler(mealMemo.mealName)}>-</button>
+                                <span>{mealCounts[mealMemo.mealName] || 0}</span>
+                                <button onClick={() => onUpCountHandler(mealMemo.mealName)}>+</button>
+                            </div>
+                        </div>
+                        ))
+                    ) : (
+                        <div className="meal-search-middle-no-item">식품이 없습니다.</div>
+                    )}
+                    </div>
+                    <div className="meal-search-pagination">
+                        <Pagination currentPage={currentPage} {...paginationProps} />
+                    </div>
+                </div>
+            )}
         </div>
     )
 };

@@ -20,6 +20,7 @@ import GetCommentListResponseDto from "./dto/response/board/get-comment.response
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
 import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
 import GetBoardUserResponseDto from "./dto/response/board/get-board-user.response.dto";
+import GetMealResponseDto from "./dto/response/schedule/get-meal.response.dto";
 
 
 // variable: API URL 상수 //
@@ -303,8 +304,8 @@ export const deleteMealScheduleRequest = async (mealScheduleNumber: number | str
   return responseBody;
 }
 
-// function: get meal memo 요청합수 //
-export const getMealMemoRequest = async (accessToken: string) => {
+// function: get meal memo list 요청합수 //
+export const getMealMemoListRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_MEAL_MEMO_API_URL, bearerAuthorization(accessToken))
     .then(responseDataHandler<GetMealResponseDto>)
     .catch(responseErrorHandler)
