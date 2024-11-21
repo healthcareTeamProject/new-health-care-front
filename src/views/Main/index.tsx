@@ -1,27 +1,23 @@
 import React, { ChangeEvent, useEffect, useState } from 'react'
 import './style.css'
-import TopBar from 'src/layouts/Topbar'
 import { useCookies } from 'react-cookie'
 import { useNavigate, useParams } from 'react-router';
 import { SignInRequestDto } from 'src/apis/dto/request/auth';
 import { ResponseDto } from 'src/apis/dto/response';
 import { SignInResponseDto } from 'src/apis/dto/response/auth';
 import { ACCESS_TOKEN, MAIN_ABSOLUTE_PATH, MAIN_PATH, ROOT_PATH, SCHEDULE_ABSOLUTE_DATH, SIGN_UP_ABSOLUTE_PATH, SIGN_UP_PATH } from 'src/constant';
-import { getCustomerMyPageRequest, getCustomerRequest, getSignInRequest, patchUserMuscleFatRequest, signInRequest } from 'src/apis';
-
-import InputBox from 'src/components/InputBox';
+import { getCustomerMyPageRequest, getHealthScheduleListRequest, getSignInRequest, signInRequest } from 'src/apis';
 import { useSearchParams } from 'react-router-dom';
 import MainInputBox from 'src/components/MainInputBox';
-import { GetCustomerMyPageResponseDto, GetCustomerResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
-import { useSignInCustomerStroe } from 'src/stores';
+import { GetCustomerMyPageResponseDto, GetSignInResponseDto } from 'src/apis/dto/response/customer';
+import { useHealthSchedulStroe, useSignInCustomerStroe } from 'src/stores';
 import CommunityBoard from 'src/components/Board';
 import { SignInCustomer } from 'src/types';
 import dayjs, { Dayjs } from 'dayjs';
-import Calendar from 'src/components/MiniCalender';
 import MiniCalendar from 'src/components/MiniCalender';
-import { PatchUserMuscleFatRequestDto } from 'src/apis/dto/request/customer';
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
+import { GetHealthScheduleListResponseDto } from 'src/apis/dto/response/schedule';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -69,6 +65,7 @@ function CustomerComponent({customer}: SignInCustomerProps){
         setNickname(nickname);
         setPersonalGoals(personalGoals);
     };
+
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(() => {
@@ -269,6 +266,7 @@ function MucleFat({ userId }: { userId?: string }) {
                 beginAtZero: true,
                 ticks: {
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -279,6 +277,7 @@ function MucleFat({ userId }: { userId?: string }) {
                 ticks: {
                     stepSize: stepSize, // 최대값의 20%로 설정
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -310,7 +309,6 @@ function MucleFat({ userId }: { userId?: string }) {
 
         const { weight, skeletalMuscleMass, bodyFatMass } = responseBody as  GetCustomerMyPageResponseDto;
         setWeight(weight);
-        console.log(weight);
         setSkeletalMuscleMass(skeletalMuscleMass);
         setBodyFatMass(bodyFatMass);
 
@@ -319,7 +317,6 @@ function MucleFat({ userId }: { userId?: string }) {
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
-        console.log(userId);
         if(!userId) return;
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
@@ -349,13 +346,29 @@ export default function Main() {
     const {signInCustomer, setSignInCustomer} = useSignInCustomerStroe();
     // state: 달력 정보 상태 //
     const [selectDate, setSelectDate] = useState<Dayjs>(dayjs());
-    const [schedules, setSchedules] = useState<{ startDate: string; endDate: string; title: string }[]>([]);
+    const {healthScheduleList, setHealthScheduleList} = useHealthSchedulStroe();
 
     // 현재 사용자가 로그인되어 있는지 확인하기 위해 accessToken을 쿠키에서 가져온다 //
     const isLoggedIn = !!signInCustomer;
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
+
+    const getHealthScheduleListResponse = (responseBody: GetHealthScheduleListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed){
+            alert(message);
+            return;
+        }
+
+        const {healthSchedulelist} = responseBody as GetHealthScheduleListResponseDto;
+        setHealthScheduleList(healthSchedulelist);
+    }
 
     // event handler: 켈린더 버튼 클릭 이벤트 처리 //
     const onCalendarButtonClickHandler = () => {
@@ -366,7 +379,7 @@ export default function Main() {
     // effect: cookie의 accessToken 값이 변경될 때마다 로그인 유저 정보를 요청하는 함수 //
     useEffect(() => {
         const accessToken = cookies[ACCESS_TOKEN];
-        if(accessToken) {
+        if(accessToken) {   
             getSignInRequest(accessToken).then((responseBody: GetSignInResponseDto | ResponseDto | null) => {
                 const message = 
                     !responseBody ? '로그인 유저 정보를 불러오는데 문제가 발생했습니다.':
@@ -385,9 +398,12 @@ export default function Main() {
                 const {userId, name, nickname, profileImage, personalGoals} = responseBody as GetSignInResponseDto;
                 setSignInCustomer({userId, name, nickname, profileImage, personalGoals});
             });
+            
+        getHealthScheduleListRequest(accessToken).then(getHealthScheduleListResponse)
         } else {
             setSignInCustomer(null);
         }
+        
     }, [cookies[ACCESS_TOKEN]]);
 
 
@@ -399,8 +415,8 @@ export default function Main() {
                     <div className='main-image'></div>
                     <div className='main-top-right-detail-box'>
                         {isLoggedIn ? <CustomerComponent customer={signInCustomer}/> : <SignInComponent />}
-                        <div className='calendar-box'>
-                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={schedules} setSchedules={setSchedules}/>
+                        <div className='calendar-box'onClick={onCalendarButtonClickHandler}>
+                            <MiniCalendar selectDate={selectDate} setSelectDate={setSelectDate} schedules={healthScheduleList} setSchedules={setHealthScheduleList} />
                         </div>
                     </div>
                 </div>

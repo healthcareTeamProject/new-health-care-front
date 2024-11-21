@@ -5,7 +5,9 @@
     gap: 45px;
 
     width: 1920px;
+    font-family: 'GangwonEdu';
 }
+
 
 .main-detail-box{
     display: flex;
@@ -409,7 +411,7 @@
     display: flex;
 
     width: 600px;
-    height: 490px;
+    height: 530px;
 }
 
 .main-user-muscle-fat {

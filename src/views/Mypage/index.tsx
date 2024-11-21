@@ -4,15 +4,18 @@ import { Bar, Line } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend } from 'chart.js';
 import { useCookies } from 'react-cookie';
 import { useNavigate, useParams } from 'react-router';
-import { fileUploadRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
-import { ACCESS_TOKEN } from 'src/constant';
+import { fileUploadRequest, getBoardUserRequest, getCustomerMyPageRequest, getUserMuscleFatListRequest, getUserThreeMajorLiftListRequest, nicknameCheckRequest, patchCustomerRequest, patchUserMuscleFatRequest, patchUserThreeMajorLiftRequest } from 'src/apis';
+import { ACCESS_TOKEN, BOARD_DETAIL_ABSOLUTE_PATH } from 'src/constant';
 import { GetCustomerMyPageResponseDto, GetUserMuscleFatListResponseDto, GetUserThreeMajorLiftListResponseDto } from 'src/apis/dto/response/customer';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSignInCustomerStroe } from 'src/stores';
 import InputBox from 'src/components/InputBox';
 import { NicknameCheckRequestDto } from 'src/apis/dto/request/auth';
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PatchUserThreeMajorLiftRequestDto } from 'src/apis/dto/request/customer';
-
+import { usePagination } from 'src/hooks';
+import BoardUser from 'src/types/board-user.interface';
+import GetBoardUserResponseDto from 'src/apis/dto/response/board/get-board-user.response.dto';
+import Pagination from 'src/components/Pagination';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
@@ -27,7 +30,6 @@ interface changeMucleFatProps {
 interface changeThreeMajorLiftProps {
     onThreeMajorLiftChange: () => void;
 }
-
 
 // component: 개인정보 컴포넌트 //
 function Personal({ onPersonalChange }: changePersonalProps) {
@@ -113,7 +115,6 @@ function Personal({ onPersonalChange }: changePersonalProps) {
     )
 
 }
-
 
 // component: 개인정보 변경 팝업 컴포넌트 //
 function PersonalChange({ onPersonalChange }: changePersonalProps) {
@@ -366,7 +367,6 @@ function PersonalChange({ onPersonalChange }: changePersonalProps) {
 
 }
 
-
 // component: 신체정보 컴포넌트 //
 function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
 
@@ -403,6 +403,7 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
                 beginAtZero: true,
                 ticks: {
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -413,6 +414,7 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
                 ticks: {
                     stepSize: stepSize, // 최대값의 20%로 설정
                     font: {
+                        family: 'GangwonEdu',
                         size: 14,
                     },
                     color: 'black',
@@ -472,7 +474,6 @@ function MucleFat({ onMucleFatChange }: changeMucleFatProps) {
         </div>
     );
 }
-
 
 // component: 신체정보 변경 팝업 컴포넌트 //
 function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
@@ -621,7 +622,6 @@ function MucleFatChange({ onMucleFatChange }: changeMucleFatProps) {
 
 }
 
-
 // component: 3대측정 컴포넌트 //
 function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
 
@@ -692,7 +692,6 @@ function ThreeMajorLift({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
     )
 
 }
-
 
 // component: 3대측정 변경 팝업 컴포넌트 //
 function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftProps) {
@@ -812,9 +811,9 @@ function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftPr
 
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
-        if(!userId) return;
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) return;
+        if (!userId) return;
 
         getCustomerMyPageRequest(userId, accessToken).then(getCustomerResponse);
     }, [userId]);
@@ -843,20 +842,39 @@ function ThreeMajorLiftChange({ onThreeMajorLiftChange }: changeThreeMajorLiftPr
 
 }
 
+// interface: 고객 리스트 아이템 컴포넌트 Properties //
+interface TableRowProps {
+    boardUser: BoardUser;
+    getBoardUser: () => void;
+}
 
-// component: 내 게시물 컴포넌트 //
-function Board() {
+// component: 내 게시물 아이템 컴포넌트 //
+function TableRow({ boardUser, getBoardUser }: TableRowProps) {
 
-    // render: 내 게시물 컴포넌트 렌더딩 //
-    return (
-        <div className='board'>
-            <div className='board-title'>내 게시물</div>
-            <div></div>
+
+    // state: cookie 상태 //
+    const [cookies] = useCookies();
+
+
+    // function: 네비게이터 함수 //
+    const navigator = useNavigate();
+
+
+    // event handler: 상세 보기 버튼 클릭 이벤트 처리 함수 //
+    const onDetailButtonClickHandler = () => {
+        navigator(BOARD_DETAIL_ABSOLUTE_PATH(boardUser.boardNumber));
+    }
+
+    // render: 내 게시물 아이템 컴포넌트 렌더링 //
+    return(
+        <div className='tr-board-user' onClick={onDetailButtonClickHandler}>
+            <div className='td-board-user-title'>{boardUser.boardTitle}</div>
+            <div className='td-board-user-id'>{boardUser.userId}</div>
+            <div className='td-board-user-viewcount'>{boardUser.boardViewCount}</div>
         </div>
     )
 
 }
-
 
 // component: 리스트 그래프 컴포넌트 //
 function Graph() {
@@ -957,11 +975,17 @@ function Graph() {
             x: {
                 title: {
                     display: true,
+                    font: {
+                        family: 'GangwonEdu',
+                    }
                 }
             },
             y: {
                 title: {
                     display: true,
+                    font: {
+                        family: 'GangwonEdu',
+                    }
                 }
             }
         }
@@ -1173,7 +1197,6 @@ function Graph() {
 
 }
 
-
 // component: 마이페이지 컴포넌트 //
 export default function Mypage() {
 
@@ -1187,6 +1210,12 @@ export default function Mypage() {
     const [mucleFatChangePopUp, setMucleFatChangePopUp] = useState(false);
     const [threeMajorLiftChangePopUp, setThreeMajorLiftChangePopUp] = useState(false);
 
+    // state: 페이징 관련 상태 //
+    const {
+        currentPage, totalPage, totalCount, viewList,
+        setTotalList, initViewList, ...paginationProps
+    } = usePagination<BoardUser>();
+
     const onPersonalChangePopUp = () => {
         setPersonalChangePopUp(!personalChangePopUp);
     }
@@ -1199,18 +1228,43 @@ export default function Mypage() {
         setThreeMajorLiftChangePopUp(!threeMajorLiftChangePopUp);
     }
 
+    // function: get customer list response 처리 함수 //
+    const getBoardUserResponse = (responseBody: GetBoardUserResponseDto | ResponseDto | null) => {
+        const message = 
+            !responseBody ? '서버에 문제가 있습니다' : 
+            responseBody.code === 'AF' ? '잘못된 접근입니다' : 
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { boardList } = responseBody as GetBoardUserResponseDto;
+        setTotalList(boardList);
+    }
+
+    // function: customer list 불러오기 함수 //
+    const getCustomerList = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) return;
+        getBoardUserRequest(accessToken).then(getBoardUserResponse);
+    }
+
     // effect: 쿠키 유효성 검사 및 사용자 정보 요청 //
     useEffect(()=>{
         const accessToken = cookies[ACCESS_TOKEN];
         if (!accessToken) {
             navigate('/');
         }
+
+        getCustomerList();
     }, [cookies, navigate]);
 
     // render: 마이페이지 컴포넌트 렌더딩 //
     return (
         <div id='my-wrapper'>
-            
             <div className='my-page-left'>
                 <div className='my-page-title'>마이페이지</div>
             </div>
@@ -1222,7 +1276,19 @@ export default function Mypage() {
                 <div className='buttom'>
                     <div className='buttom-left'>
                         <ThreeMajorLift onThreeMajorLiftChange={onThreeMajorLiftChangePopUp} />
-                        <Board />
+                        <div className='board-user'>
+                            <div className='table-board-user'>
+                                <div className='th-board-user'>
+                                    <div className='td-board-user-title'>제목</div>
+                                    <div className='td-board-user-id'>작성자</div>
+                                    <div className='td-board-user-viewcount'>조회수</div>
+                                </div>
+                                {viewList.map((boardUser, index) => <TableRow key={index} boardUser={boardUser} getBoardUser={getCustomerList} />)}
+                            </div>
+                            <div className='board-user-pagination'>
+                                <Pagination currentPage={currentPage} {...paginationProps} />
+                            </div>
+                        </div>
                     </div>
                     <Graph />
                 </div>
@@ -1245,8 +1311,6 @@ export default function Mypage() {
             </div>)
             : (<div></div>)
             }
-
         </div>
-
     )
 }

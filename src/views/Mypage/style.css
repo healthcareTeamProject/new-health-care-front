@@ -1,6 +1,8 @@
 #my-wrapper {
     display: flex;
     gap: 45px;
+
+    font-family: 'GangwonEdu';
 }
 
 #my-wrapper .my-page-left {
@@ -15,7 +17,7 @@
 
     width: 300px;
     height: 60px;
-    padding: 15px 0 0 0; 
+    padding: 15px 0 0 15px; 
     margin: 0 15px;
 
     white-space: nowrap;
@@ -30,7 +32,7 @@
     margin-top: 20px;
 
     width: 1500px;
-    height: 1030px;
+    height: 1000px;
 }
 
 .my-page-main .top {
@@ -129,6 +131,7 @@
 .personal-goals-box .personal-goals-box-buttom .personal-goals-box-buttom-title {
     height: 30px;
 
+    padding-top: 10px;
     padding-left: 10px;
 
     font-size: 20px;
@@ -199,7 +202,7 @@
     display: flex;
 
     width: 1500px;
-    height: 710px;
+    height: 500px;
 }
 
 .my-page-main .buttom .buttom-left {
@@ -207,7 +210,7 @@
     flex-direction: column;
 
     width: 700px;
-    height: 710px;
+    height: 500px;
 
     gap: 10px;
 }
@@ -309,7 +312,7 @@
     display: flex;
 
     width: 800px;
-    height: 710px;
+    height: 500px;
 }
 
 
@@ -539,4 +542,68 @@
 .graph-bottom {
 
     width: 760px;
+}
+
+.board-user {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 700px;
+    height: 250px;
+
+    gap: 10px;
+}
+
+.table-board-user {
+    width: 630px;
+    height: 210px;
+}
+
+.th-board-user,
+.tr-board-user {
+    display: flex;
+    justify-content: space-between;
+
+    gap: 15px;
+}
+
+.th-board-user {
+    font-weight: 600;
+    border-top: 1px solid black;
+    border-bottom: 1px solid black;
+}
+
+.tr-board-user {
+    border-bottom: 1px solid black;
+
+    cursor: pointer;
+}
+
+.td-board-user-title {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 300px;
+    height: 30px;
+}
+
+.td-board-user-id {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 150px;
+    height: 30px;
+}
+
+.td-board-user-viewcount {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 150px;
+    height: 30px;
 }
