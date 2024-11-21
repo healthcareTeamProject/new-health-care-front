@@ -317,67 +317,63 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                         <div className="meal-schedule-dinner">저녁</div>
                     </div>
                 </div>
-                {mealType && (
-                    <div className="meal-detail-box">
-                        <div className="meal-detail-title">
-                            <div className="meal-detail-title-name">식품명</div>
-                            <div className="meal-detail-title-kcal">칼로리</div>
-                            <div className="meal-detail-title-count">개수</div>
-                        </div>
-                        <div className="meal-detail-middle">맵 존재할 위치</div>
-                        <div className="meal-detail-bottom">
-                            <div className="meal-detail-bottom-title">총 칼로리</div>
-                            <div className="meal-detail-bottom-total-kcal">총 칼로리 넣을 위치</div>
-                        </div>
-                        <div className="meal-detail-button-box">
-                            <div className="meal-detail-button-cancel">취소</div>
-                            <div className="meal-detail-button-save">저장</div>
-                        </div>
+                <div className="meal-detail-box">
+                    <div className="meal-detail-title">
+                        <div className="meal-detail-title-name">식품명</div>
+                        <div className="meal-detail-title-kcal">칼로리</div>
+                        <div className="meal-detail-title-count">개수</div>
                     </div>
-                )}
+                    <div className="meal-detail-middle">맵 존재할 위치</div>
+                    <div className="meal-detail-bottom">
+                        <div className="meal-detail-bottom-title">총 칼로리</div>
+                        <div className="meal-detail-bottom-total-kcal">총 칼로리 넣을 위치</div>
+                    </div>
+                    <div className="meal-detail-button-box">
+                        <div className="meal-detail-button-cancel">취소</div>
+                        <div className="meal-detail-button-save">저장</div>
+                    </div>
+                </div>
             </div>
             <div className="meal-popup-right">
-                {mealType && (
-                    <div className="meal-search-popup">
-                        <div className="meal-search-top">
-                            <div className="meal-search-detail-box">
-                                <input className="meal-search-input" placeholder="식품명을 입력해주세요" />
-                                <div className="meal-search-detail-delete"></div>
-                            </div>
-                            <div className="meal-search-detail-button">식품 검색</div>
+                <div className="meal-search-popup">
+                    <div className="meal-search-top">
+                        <div className="meal-search-detail-box">
+                            <input className="meal-search-input" placeholder="식품명을 입력해주세요" />
+                            <div className="meal-search-detail-delete"></div>
                         </div>
-                        <div className="meal-search-middle">
-                            <div className="meal-search-middle-top">
-                                <div className="meal-search-middle-top-name">식품명</div>
-                                <div className="meal-search-middle-top-kcal">칼로리</div>
-                                <div className="meal-search-middle-top-item">개수</div>
-                            </div>
-                            {/* mealMemo 데이터를 렌더링 */}
-                            {filteredMealMemoList.length > 0 ? (
-                                filteredMealMemoList.map((mealMemo, index) => (
-                                <div key={index} className="meal-search-middle-item">
-                                    <div className="meal-search-item-name">{mealMemo.mealName}</div>
-                                    <div className="meal-search-item-kcal">{mealMemo.mealKcal} kcal</div>
-                                    <div className="meal-search-item-count">
-                                        <button onClick={() => onDownCountHandler(mealMemo.mealName)}>-</button>
-                                        <span>{mealCounts[mealMemo.mealName] || 0}</span>
-                                        <button onClick={() => onUpCountHandler(mealMemo.mealName)}>+</button>
-                                    </div>
-                                </div>
-                                ))
-                            ) : (
-                                <div className="meal-search-middle-no-item">식품이 없습니다.</div>
-                            )}
-                        </div>
-                        <div className="meal-search-pagination">
-                            <Pagination currentPage={currentPage} {...paginationProps} />
-                        </div>
-                        <div className="meal-search-button-box">
-                            <div className="meal-search-button-cancel">취소</div>
-                            <div className="meal-search-button-save">저장</div>
-                        </div>
+                        <div className="meal-search-detail-button">식품 검색</div>
                     </div>
-                )}
+                    <div className="meal-search-middle">
+                        <div className="meal-search-middle-top">
+                            <div className="meal-search-middle-top-name">식품명</div>
+                            <div className="meal-search-middle-top-kcal">칼로리</div>
+                            <div className="meal-search-middle-top-item">개수</div>
+                        </div>
+                        {/* mealMemo 데이터를 렌더링 */}
+                        {filteredMealMemoList.length > 0 ? (
+                            filteredMealMemoList.map((mealMemo, index) => (
+                            <div key={index} className="meal-search-middle-item">
+                                <div className="meal-search-item-name">{mealMemo.mealName}</div>
+                                <div className="meal-search-item-kcal">{mealMemo.mealKcal} kcal</div>
+                                <div className="meal-search-item-count">
+                                    <button onClick={() => onDownCountHandler(mealMemo.mealName)}>-</button>
+                                    <span>{mealCounts[mealMemo.mealName] || 0}</span>
+                                    <button onClick={() => onUpCountHandler(mealMemo.mealName)}>+</button>
+                                </div>
+                            </div>
+                            ))
+                        ) : (
+                            <div className="meal-search-middle-no-item">식품이 없습니다.</div>
+                        )}
+                    </div>
+                    <div className="meal-search-pagination">
+                        <Pagination currentPage={currentPage} {...paginationProps} />
+                    </div>
+                    <div className="meal-search-button-box">
+                        <div className="meal-search-button-cancel">취소</div>
+                        <div className="meal-search-button-save">저장</div>
+                    </div>
+                </div>
             </div>
         </div>
     )
