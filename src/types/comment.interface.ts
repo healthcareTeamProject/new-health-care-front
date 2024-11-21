@@ -1,5 +1,5 @@
 export default interface Comment {
-  commentsNumber: number;
+  commentNumber: number;
   userId: string;
   commentContents: string;
   commentLikeCount: number;

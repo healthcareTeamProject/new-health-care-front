@@ -1,4 +1,4 @@
-import { ChangeEvent, useEffect, useState } from 'react';
+import { ChangeEvent, useEffect, useState, MouseEvent } from 'react';
 import './style.css';
 import Pagination from 'src/components/Pagination';
 import { usePagination } from 'src/hooks';
@@ -6,11 +6,13 @@ import { useLocation, useNavigate, useParams } from 'react-router';
 import { Board } from 'src/types';
 import { ACCESS_TOKEN, BOARD_DETAIL_ABSOLUTE_PATH, POST_ABSOLUTE_PATH } from 'src/constant';
 import { useCookies } from 'react-cookie';
-import { getBoardListRequest, getBoardRequest } from 'src/apis';
+import { getBoardCategoryListRequest, getBoardListRequest, getBoardRequest, getBoardTagListRequest, putViewRequest } from 'src/apis';
 import { GetBoardListResponseDto } from 'src/apis/dto/response/board';
 import { ResponseDto } from 'src/apis/dto/response';
 import { useSearchParams } from 'react-router-dom';
 import { useSignInCustomerStroe } from 'src/stores';
+import GetBoardCategoryListResponseDto from 'src/apis/dto/response/board/get-board-category-list.response.dtd';
+import GetBoardTagListResponseDto from 'src/apis/dto/response/board/get-board-tag-list.response.dtd';
 
 interface TableRowProps {
     board: Board;
@@ -21,15 +23,18 @@ interface TableRowProps {
 function TableRow({ board, getBoardList }: TableRowProps) {
 
     const { signInCustomer } = useSignInCustomerStroe();
+
     
     // state: cookies 상태 //
     const [cookies] = useCookies();
+
 
     // function: 네비게이터 함수 //
     const navigator = useNavigate();
 
     // event handler: 상세 보기 버튼 클릭 이벤트 처리 함수 //
-    const onDetailButtonClickHandler = () => {
+    const onDetailButtonClickHandler = (event: MouseEvent<HTMLDivElement>) => {
+        
         navigator(BOARD_DETAIL_ABSOLUTE_PATH(board.boardNumber));
     }
 
@@ -240,14 +245,57 @@ export default function Community() {
 
     // function: board list 불러오기 함수 //
     const getBoardList = () => {
+        const boardCategory = searchParameter.get('category');
+        const boardTag = searchParameter.get('hashTag');
         
-        getBoardListRequest().then(getBoardListResponse);
+        if (boardCategory) {getBoardCategoryListRequest(boardCategory).then(getBoardCategoryListResponse)}
+        else if (boardTag) {getBoardTagListRequest(boardTag).then(getBoardTagListResponse)}
+        else  getBoardListRequest().then(getBoardListResponse);
+    };
+
+    // function: get board category list response 처리 함수 //
+    const getBoardCategoryListResponse = (responseBody: GetBoardCategoryListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { boardCategoryList } = responseBody as GetBoardCategoryListResponseDto;
+        setTotalList(boardCategoryList);
+        setOriginalList(boardCategoryList);
+    };
+
+    // function: get board tag list response 처리 함수 //
+    const getBoardTagListResponse = (responseBody: GetBoardTagListResponseDto | ResponseDto | null) => {
+        const message =
+            !responseBody ? '서버에 문제가 있습니다' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if (!isSuccessed) {
+            alert(message);
+            return;
+        }
+
+        const { boardTagList } = responseBody as GetBoardTagListResponseDto;
+        setTotalList(boardTagList);
+        setOriginalList(boardTagList);
     };
 
     // function: get board list response 처리 함수 //
     const getBoardListResponse = (responseBody: GetBoardListResponseDto | ResponseDto | null) => {
         const message =
             !responseBody ? '서버에 문제가 있습니다' :
+            responseBody.code === 'VF' ? '잘못된 접근입니다.' :
             responseBody.code === 'AF' ? '잘못된 접근입니다.' :
             responseBody.code === 'DBE' ? '서버에 문제가 있습니다' : '';
 
@@ -264,6 +312,11 @@ export default function Community() {
 
     // event handler: 글쓰기 버튼 클릭 이벤트 처리 함수
     const onPostButtonClickHandler = () => {
+        const accessToken = cookies[ACCESS_TOKEN];
+        if (!accessToken) {
+            alert('로그인이 필요합니다!');
+            return;
+        }
         navigator(POST_ABSOLUTE_PATH);
     };
 
@@ -281,14 +334,14 @@ export default function Community() {
     }
 
     // effect: 컴포넌트 로드시 고객 리스트 불러오기 함수 //
-    useEffect(getBoardList, []);
+    useEffect(getBoardList, [searchParameter]);
 
     // useEffect(() => {
     //     const category = searchParameter.get('category');
     //     const popularTag = searchParameter.get('hashTag');
-        
+
     //     let newBoardList = [...originalList];
-    //     if (category) newBoardList = newBoardList.filter(item => item.category === category);
+    //     if (category) newBoardList = newBoardList.filter(item => item. === category);
     //     if (popularTag) newBoardList = newBoardList.filter(item => item.popularTag === popularTag);
 
     //     setTotalList(newBoardList);
@@ -331,7 +384,7 @@ export default function Community() {
                 </div>
             </div>
             <div className='bottom'>
-                <Pagination currentPage={currentPage} {...paginationProps} />
+                <Pagination currentPage={currentPage} {...paginationProps}/>
                 <button className="post-on" onClick={onPostButtonClickHandler}>글쓰기</button>
             </div>
         </div>

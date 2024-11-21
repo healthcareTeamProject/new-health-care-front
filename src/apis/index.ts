@@ -8,7 +8,7 @@ import { GetCustomerMyPageResponseDto, GetSignInResponseDto, GetUserMuscleFatLis
 import { PatchCustomerRequestDto, PatchUserMuscleFatRequestDto, PostThreeMajorLiftRequestDto, PostUserMuscleFatRequestDto } from "./dto/request/customer";
 import GetCustomerResposeDto from "./dto/response/customer/get-customer.response.dto";
 
-import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
+import { PatchBoardRequestDto, PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
 
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
 import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
@@ -18,6 +18,9 @@ import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user
 
 import GetCommentListResponseDto from "./dto/response/board/get-comment.response.dto";
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
+
+import { PostHealthBoardRequestDto } from "./dto/request/healthboard";
+
 import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
 import GetBoardUserResponseDto from "./dto/response/board/get-board-user.response.dto";
 import GetMealResponseDto from "./dto/response/schedule/get-meal.response.dto";
@@ -48,11 +51,18 @@ const PATCH_USER_THREE_MAJOR_LIFT_URL = (userId: string) => `${CUSTOMER_MODULE_U
 
 const BOARD_MODULE_URL = `${HEALTHCARE_API_DOMAIN}/api/v1/board`;
 
+const GET_BOARD_CATEGORY_LIST_API_URL = (boardCategory: string) => `${BOARD_MODULE_URL}/category/${boardCategory}`;
+const GET_BOARD_TAG_LIST_API_URL = (boardTag: string) => `${BOARD_MODULE_URL}/tag/${boardTag}`;
+
 const POST_BOARD_API_URL = `${BOARD_MODULE_URL}`;
 const DELETE_BOARD_API_URL = (boardNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}`;
-
+const PATCH_BOARD_API_URL = (boardNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}`;
 const GET_BOARD_NUMBER_URL = (boardNumber: string) => `${BOARD_MODULE_URL}/${boardNumber}`;
 const GET_BOARD_LIST_API_URL = `${BOARD_MODULE_URL}`;
+
+const PUT_VIEW_API_URL = (boardNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/view`
+const PUT_LIKE_API_URL = (boardNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/like`
+const PUT_COMMENT_LIKE_API_URL = (boardNumber: number | string, commentNumber: number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}/like`;
 
 const POST_COMMENTS_API_URL = (boardNumber : string | number) => `${BOARD_MODULE_URL}/${boardNumber}/comments`;
 const PATCH_COMMENTS_API_URL = (boardNumber : string | number, commentNumber : number | string) => `${BOARD_MODULE_URL}/${boardNumber}/comments/${commentNumber}`;
@@ -322,14 +332,30 @@ export const postBoardRequest = async (requestBody: PostBoardRequestDto, accessT
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
-}  
+}
 
-// function: get board 요청함수 List //
+// function: get board List 요청 함수 //
 export const getBoardListRequest = async () => {
-    const responseBody = await axios.get(GET_BOARD_LIST_API_URL)
+  const responseBody = await axios.get(GET_BOARD_LIST_API_URL)
+      .then(responseDataHandler<GetBoardListResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: get category board List 요청 함수 //
+export const getBoardCategoryListRequest = async (boardCategory: string) => {
+    const responseBody = await axios.get(GET_BOARD_CATEGORY_LIST_API_URL(boardCategory))
         .then(responseDataHandler<GetBoardListResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
+}
+
+// function: get tag board List 요청 함수 //
+export const getBoardTagListRequest = async (boardTag: string) => {
+  const responseBody = await axios.get(GET_BOARD_TAG_LIST_API_URL(boardTag))
+      .then(responseDataHandler<GetBoardListResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
 }
 
 // function: get board 요청함수 //
@@ -387,4 +413,44 @@ export const deleteCommentRequest = async (boardNumber: string | number, comment
         .then(responseDataHandler<ResponseDto>)
         .catch(responseErrorHandler);
     return responseBody;
+}
+
+// function: patch board 요청 함수 //
+export const patchBoardRequest = async (requestBody: PatchBoardRequestDto, boardNumber: number | string, accessToken: string) => {
+    const responseBody = await axios.patch(PATCH_BOARD_API_URL(boardNumber), requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: post health board 요청 함수 //
+export const postHealthBoardRequest = async (requestBody: PostHealthBoardRequestDto, accessToken: string) => {
+    const responseBody = await axios.post(POST_BOARD_API_URL, requestBody, bearerAuthorization(accessToken))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: put view 요청 함수 //
+export const putViewRequest = async (boardNumber: string) => {
+    const responseBody = await axios.put(PUT_VIEW_API_URL(boardNumber))
+        .then(responseDataHandler<ResponseDto>)
+        .catch(responseErrorHandler);
+    return responseBody;
+}
+
+// function: put Like 요청 함수 //
+export const putLikeRequest = async (boardNumber: string, accessToken: string) => {
+  const responseBody = await axios.put(PUT_LIKE_API_URL(boardNumber), {}, bearerAuthorization(accessToken))
+      .then(responseDataHandler<ResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
+}
+
+// function: put comment Like 요청 함수 //
+export const putCommentLikeRequest = async (boardNumber: string | number, commentNumber: string | number, accessToken: string) => {
+  const responseBody = await axios.put(PUT_COMMENT_LIKE_API_URL(boardNumber, commentNumber), {}, bearerAuthorization(accessToken))
+      .then(responseDataHandler<ResponseDto>)
+      .catch(responseErrorHandler);
+  return responseBody;
 }
