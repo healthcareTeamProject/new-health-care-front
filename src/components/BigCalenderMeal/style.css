@@ -147,24 +147,41 @@
 }
 .meal-schedule-title-popup{
     display: flex;
-    flex-direction: column;
+    justify-content: center;
     position: fixed;
 
-    box-sizing: border-box;
-    border-radius: 8px;
+    gap: 10px;
+
+    
 
     top: 30%;
     left: 30%;
     transform: translate(-50%, -50%);
 
-    width: 200px;
-
-    background-color: rgba(238, 238, 238, 1);
+    width: 1000px;
 }
+
+.meal-popup-left {
+    display: flex;
+    flex-direction: column;
+
+    gap: 10px;
+}
+
 .meal-schedule-detail-box{
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-self: flex-end;
+
+    box-sizing: border-box;
+    border-radius: 8px;
+
+    background-color: rgba(238, 238, 238, 1);
+
+    width: 200px;
+    height: 180px;
+
 }
 .meal-schedule-today-box{
     display: flex;
@@ -223,3 +240,205 @@
 }
 
 
+.meal-detail-box {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    width: 340px;
+    height: 480px;
+    border-radius: 8px;
+
+    background-color: rgba(238, 238, 238, 1);
+}
+
+.meal-detail-title {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 60px;
+
+    width: 320px;
+    height: 40px;
+
+    border-bottom: 2px solid var(--gray-default-color) ;
+}
+
+.meal-detail-middle {
+    display: flex;
+
+    width: 320px;
+    height: 360px;
+}
+
+.meal-detail-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 60px;
+
+    width: 320px;
+    height: 40px;
+
+    border-top: 2px solid var(--gray-default-color) ;
+}
+
+.meal-detail-button-box {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    width: 320px;
+}
+
+.meal-detail-button-cancel, 
+.meal-detail-button-save {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+
+    width: 60px;
+    height: 30px;
+
+    color: rgba(255, 255, 255, 1);
+    font-size: 13px;
+
+    background-color: rgba(0, 0, 0, 0.68);
+
+    cursor: pointer;
+}
+
+.meal-search-popup {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    width: 750px;
+    height: 670px;
+
+    border-radius: 8px;
+
+    background-color: rgba(238, 238, 238, 1);
+
+}
+
+.meal-search-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 20px;
+
+    height: 50px;
+}
+
+.meal-search-detail-box {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.meal-search-input {
+    display: flex;
+    align-items: center;
+
+    padding: 5px 10px 5px 10px;
+
+    border-radius: 30px;
+
+    width: 480px;
+    height: 30px;
+}
+
+.meal-search-detail-delete {
+    position: absolute;
+    right: 145px;
+
+    width: 30px;
+    height: 30px;
+
+    background-image: url('/public/images/Exit.png');
+    background-size: cover;
+    background-position: center;
+
+    cursor: pointer;
+}
+
+.meal-search-detail-button {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    width: 100px;
+    height: 40px;
+
+    color: rgba(255, 255, 255, 1);
+
+    border-radius: 30px;
+
+    background-color: rgba(0, 0, 0, 1);
+
+    cursor: pointer;
+}
+
+.meal-search-middle {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+
+    height: 530px;
+}
+
+.meal-search-middle-top {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 240px;
+
+    height: 40px;
+}
+
+.meal-search-middle-item,
+.meal-search-middle-no-item {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    gap: 240px;
+
+    height: 480px;
+}
+
+.meal-search-button-box {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+
+    width: 610px;
+}
+
+.meal-search-button-cancel, 
+.meal-search-button-save {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    border-radius: 8px;
+
+    width: 60px;
+    height: 30px;
+
+    color: rgba(255, 255, 255, 1);
+    font-size: 13px;
+
+    background-color: rgba(0, 0, 0, 0.68);
+
+    cursor: pointer;
+}
