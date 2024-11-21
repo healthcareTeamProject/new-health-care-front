@@ -10,7 +10,7 @@ import { ResponseDto } from "src/apis/dto/response";
 import { ACCESS_TOKEN } from "src/constant";
 import { access } from "fs";
 import { useMealScheduleStroe, useSignInCustomerStroe } from "src/stores";
-import { GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "src/apis/dto/response/schedule";
+import { GetMealMemoListResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "src/apis/dto/response/schedule";
 import { useParams } from "react-router";
 import { PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "src/apis/dto/request/schedule";
 import { deleteMealScheduleRequest, getMealMemoListRequest, getMealScheduleListRequest, getMealScheduleRequest, patchMealScheduleRequest, postMealScheduleRequest } from "src/apis";
@@ -139,6 +139,21 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         setMealScheduleList(mealSchedulelist);
     }
 
+    // function: get Meal Memo list response 처리 함수 //
+    const getMealMemoListResponse = (responseBody: GetMealMemoListResponseDto | ResponseDto | null) => {
+        const message = 
+        !responseBody ? '서버에 문제가 있습니다.' :
+            responseBody.code === 'AF' ? '잘못된 접근입니다.' :
+            responseBody.code === 'DBE' ? '서버에 문제가 있습니다.': '';
+
+        const isSuccessed = responseBody !== null && responseBody.code === 'SU';
+        if(!isSuccessed){
+            alert(message);
+            return;
+        }
+        const {mealMemoList} = responseBody as GetMealMemoListResponseDto;
+        setMealMemoList(mealMemoList);
+    }
     // event handler: 식사타입 변경 클릭 이벤트 핸들러 //
     const onMealTypeClickHandler = (mealType: 'breakfast' | 'lunch' | 'dinner') => {
         setMealType(mealType);
@@ -305,7 +320,7 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
     //     const accessToken = cookies[ACCESS_TOKEN];
     //     if(!accessToken) return;
     //     // 모든 mealMemo 리스트 가져오기
-    //     getMealMemoListRequest(accessToken).then(getMealScheduleListResponse);
+    //     getMealMemoListRequest(accessToken).then(getMealMemoListResponse);
     //     // 가져온 mealMemo 리스트에 대해 초기 count 값을 0으로 설정
     //     if(mealScheduleList){
     //         const initialCount: Record<string, number> = {};

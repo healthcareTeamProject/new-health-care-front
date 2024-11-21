@@ -11,7 +11,7 @@ import GetCustomerResposeDto from "./dto/response/customer/get-customer.response
 import { PatchCommentRequestDto, PostBoardRequestDto, PostCommentRequestDto } from "./dto/request/board";
 
 import PostHealthScheduleRequestDto from "./dto/request/schedule/post-health-schedule.request.dto";
-import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
+import { GetHealthScheduleListResponseDto, GetHealthScheduleResponseDto, GetMealMemoListResponseDto, GetMealScheduleListResponseDto, GetMealScheduleResponseDto } from "./dto/response/schedule";
 
 import { GetBoardListResponseDto, GetBoardResponseDto } from "./dto/response/board";
 import PatchUserThreeMajorLiftRequestDto from "./dto/request/customer/patch-user-three-major-lift.request.dto";
@@ -20,7 +20,7 @@ import GetCommentListResponseDto from "./dto/response/board/get-comment.response
 import GetCommentResponseDto from "./dto/response/board/get-comment.response.dto";
 import { PatchHealthScheduleRequestDto, PatchMealScheduleRequestDto, PostMealScheduleRequestDto } from "./dto/request/schedule";
 import GetBoardUserResponseDto from "./dto/response/board/get-board-user.response.dto";
-import GetMealResponseDto from "./dto/response/schedule/get-meal.response.dto";
+
 
 
 // variable: API URL 상수 //
@@ -307,7 +307,7 @@ export const deleteMealScheduleRequest = async (mealScheduleNumber: number | str
 // function: get meal memo list 요청합수 //
 export const getMealMemoListRequest = async (accessToken: string) => {
   const responseBody = await axios.get(GET_MEAL_MEMO_API_URL, bearerAuthorization(accessToken))
-    .then(responseDataHandler<GetMealResponseDto>)
+    .then(responseDataHandler<GetMealMemoListResponseDto>)
     .catch(responseErrorHandler)
   return responseBody;
 };
