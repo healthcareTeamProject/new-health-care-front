@@ -153,8 +153,8 @@
     box-sizing: border-box;
     border-radius: 8px;
 
-    top: 50%;
-    left: 50%;
+    top: 30%;
+    left: 30%;
     transform: translate(-50%, -50%);
 
     width: 200px;
@@ -201,4 +201,25 @@
     justify-content: center;
     align-items: center;
 }
+.meal-search-popup{
+    display: flex;
+    flex-direction: column;
+    position: fixed;
+
+    box-sizing: border-box;
+    border-radius: 8px;
+
+    width: 748px;
+    height: 707px;
+
+    left: 110%;
+
+    background-color: rgba(238, 238, 238, 1);
+
+}
+.meal-search-top{
+    display: flex;
+    
+}
+
 

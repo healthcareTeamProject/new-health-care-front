@@ -257,6 +257,23 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                 ...mealMemo,
                 count: mealCounts[mealMemo.mealName] || 0, // 각 항목의 개수를 상태에서 가져옵니다
             }));
+
+            if(mealMemoCountToSave.length === 0){
+                alert('하나 이상의 항복을 선택해주세요.');
+                return;
+            }
+        // event handler: 검색어 변경 이벤트 처리 //
+        const onSearchWordChangeHandler = (event: ChangeEvent<HTMLInputElement>) => {
+            const {value} = event.target;
+            setSearchWord(value);
+        }
+
+        // event handler: 검색어 버튼 클릭 이벤트 처리 //
+        const onSearchButtonClickHandler = () => {
+            const searchedMealMemoList = mealOriginalList.filter(mealMemo => mealMemo.mealName.includes(searchWord));
+            setTotalList(searchedMealMemoList);
+            initViewList(searchedMealMemoList);
+        }
     }
 
     // effect: 식단 스케줄이 변경될 시 실행할 함수 //
@@ -283,21 +300,21 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
         }
     }, [MealScheduleNumber, popupDate]);
 
-    // effect: meal Memo 데이터 가져올 때 실행할 함수 //
-    useEffect(() => {
-        const accessToken = cookies[ACCESS_TOKEN];
-        if(!accessToken) return;
-        // 모든 mealMemo 리스트 가져오기
-        getMealMemoListRequest(accessToken).then(getMealScheduleListResponse);
-        // 가져온 mealMemo 리스트에 대해 초기 count 값을 0으로 설정
-        if(mealScheduleList){
-            const initialCount: Record<string, number> = {};
-            mealScheduleList.forEach((mealMemo) => {
-                initialCount[mealMemo.mealTitle] = 0;
-            });
-            setMealCounts(initialCount);
-        }
-    }, [cookies]);
+    // // effect: meal Memo 데이터 가져올 때 실행할 함수 //
+    // useEffect(() => {
+    //     const accessToken = cookies[ACCESS_TOKEN];
+    //     if(!accessToken) return;
+    //     // 모든 mealMemo 리스트 가져오기
+    //     getMealMemoListRequest(accessToken).then(getMealScheduleListResponse);
+    //     // 가져온 mealMemo 리스트에 대해 초기 count 값을 0으로 설정
+    //     if(mealScheduleList){
+    //         const initialCount: Record<string, number> = {};
+    //         mealScheduleList.forEach((mealMemo) => {
+    //             initialCount[mealMemo.mealTitle] = 0;
+    //         });
+    //         setMealCounts(initialCount);
+    //     }
+    // }, [cookies]);
 
     // render: 일정 추가 컴포넌트 렌더링 //
     return(
@@ -320,7 +337,8 @@ function SchedulePopup({scheduleChange, schedules, popupDate, getMealScheduleLis
                 <div className="meal-search-popup">
                     <div className="meal-search-top">
                         <div className="meal-search-detail-box">
-                            <div className="meal-search-detail-delete"></div>
+                            <input type="text" placeholder="식품명을 입력하세요"
+                            />
                         </div>
                         <div className="meal-search-detail-button"></div>
                     </div>
